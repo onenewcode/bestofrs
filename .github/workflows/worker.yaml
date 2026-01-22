@@ -1,0 +1,13 @@
+name: bestofrs worker
+on:
+  schedule:
+    - cron: "0 0 * * *" # UTC 00:00
+
+jobs:
+  run-worker:
+    runs-on: [self-hosted, bestofrs, worker]
+    steps:
+      - name: Run worker
+        run: |
+          cd /root/bestofrs
+          docker compose -f compose-worker.yaml run --rm worker
