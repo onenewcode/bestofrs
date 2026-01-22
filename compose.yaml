@@ -1,0 +1,11 @@
+name: bestofrs
+services:
+  web:
+    image: bestofrs:local
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      APP_ENV: development
+    volumes:
+      - ./crates/infra/src/config/toml/development.toml:/app/crates/infra/src/config/toml/development.toml:ro

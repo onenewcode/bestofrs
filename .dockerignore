@@ -1,0 +1,12 @@
+**/target
+.git
+.DS_Store
+deploy
+**/*.db
+crates/infra/src/config/toml/*.toml
+!crates/infra/src/config/toml/example.toml
+**/dist
+LICENSES
+LICENSE
+temp
+README.md

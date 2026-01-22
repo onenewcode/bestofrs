@@ -1,0 +1,12 @@
+[package]
+name = "worker"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde_json = "1"
+tokio = { version = "1.0", features = ["full"] }
+
+app = { path = "../app" }
+infra = { path = "../infra" }
