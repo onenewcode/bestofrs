@@ -6,17 +6,40 @@ use domain::{Repo, RepoId, RepoWithTags, Tag};
 
 use crate::app_error::AppResult;
 use crate::common::{Page, Pagination};
-use crate::repo::{RepoRepo, RepoTagRepo};
+use crate::repo::{RepoRepo, RepoSearchCache, RepoTagRepo};
+
+#[derive(Debug, Clone)]
+pub struct RepoSearchResult {
+    pub repos: Page<Repo>,
+    pub tags: Page<Tag>,
+}
 
 #[derive(Clone)]
 pub struct RepoQueryHandler {
     repos: Arc<dyn RepoRepo>,
     repo_tags: Arc<dyn RepoTagRepo>,
+    cache: Option<Arc<dyn RepoSearchCache>>,
 }
 
 impl RepoQueryHandler {
     pub fn new(repos: Arc<dyn RepoRepo>, repo_tags: Arc<dyn RepoTagRepo>) -> Self {
-        Self { repos, repo_tags }
+        Self {
+            repos,
+            repo_tags,
+            cache: None,
+        }
+    }
+
+    pub fn new_with_cache(
+        repos: Arc<dyn RepoRepo>,
+        repo_tags: Arc<dyn RepoTagRepo>,
+        cache: Arc<dyn RepoSearchCache>,
+    ) -> Self {
+        Self {
+            repos,
+            repo_tags,
+            cache: Some(cache),
+        }
     }
 
     pub async fn get(&self, repo_id: &RepoId) -> AppResult<Option<Repo>> {
@@ -113,5 +136,32 @@ impl RepoQueryHandler {
         let full_name = format!("{owner}/{name}");
         let repo_id = RepoId::parse(&full_name)?;
         self.get_with_tags(&repo_id).await
+    }
+
+    pub async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<RepoSearchResult> {
+        let key = key.trim();
+        if let Some(cache) = &self.cache {
+            if let Ok(Some(cached)) = cache.get(key, page).await {
+                return Ok(cached);
+            }
+        }
+
+        let result = if key.is_empty() {
+            RepoSearchResult {
+                repos: self.repos.list(page).await?,
+                tags: self.repo_tags.list_tags(page).await?,
+            }
+        } else {
+            RepoSearchResult {
+                repos: self.repos.search_by_key(key, page).await?,
+                tags: self.repo_tags.search_tags_by_key(key, page).await?,
+            }
+        };
+
+        if let Some(cache) = &self.cache {
+            let _ = cache.set(key, page, &result).await;
+        }
+
+        Ok(result)
     }
 }

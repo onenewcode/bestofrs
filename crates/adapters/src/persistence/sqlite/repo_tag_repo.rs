@@ -1,4 +1,5 @@
 use app::app_error::AppResult;
+use async_trait::async_trait;
 use app::common::pagination::{Page, Pagination};
 use app::repo::RepoTagRepo;
 use domain::{RepoId, Tag, TagLabel, TagValue};
@@ -42,7 +43,7 @@ impl SqliteRepoTagRepo {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
 impl RepoTagRepo for SqliteRepoTagRepo {
     async fn replace_repo_tags(&self, repo_id: &RepoId, tags: &[Tag]) -> AppResult<()> {
         let mut tx = self.pool.begin().await.map_err(db_err)?;
@@ -162,6 +163,81 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         let items = rows
             .into_iter()
             .map(|(repo_id,)| RepoId::new_unchecked(repo_id))
+            .collect();
+        Ok(page.to_page(items, total as u64))
+    }
+
+    async fn list_tags(&self, page: Pagination) -> AppResult<Page<Tag>> {
+        let limit = page.limit();
+        let offset = page.offset();
+        let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tags")
+            .fetch_one(&self.pool)
+            .await
+            .map_err(db_err)?;
+
+        let rows: Vec<(String, String)> = sqlx::query_as(
+            r#"
+            SELECT label, value
+            FROM tags
+            ORDER BY label, value
+            LIMIT ? OFFSET ?
+            "#,
+        )
+        .bind(limit as i64)
+        .bind(offset as i64)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let items = rows
+            .into_iter()
+            .map(|(label, value)| Tag {
+                label: TagLabel::new(label),
+                value: TagValue::new(value),
+            })
+            .collect();
+        Ok(page.to_page(items, total as u64))
+    }
+
+    async fn search_tags_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Tag>> {
+        let key = format!("%{key}%");
+        let limit = page.limit();
+        let offset = page.offset();
+        let total: i64 = sqlx::query_scalar(
+            r#"
+            SELECT COUNT(*) FROM tags
+            WHERE label LIKE ? OR value LIKE ?
+            "#,
+        )
+        .bind(&key)
+        .bind(&key)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let rows: Vec<(String, String)> = sqlx::query_as(
+            r#"
+            SELECT label, value
+            FROM tags
+            WHERE label LIKE ? OR value LIKE ?
+            ORDER BY label, value
+            LIMIT ? OFFSET ?
+            "#,
+        )
+        .bind(&key)
+        .bind(&key)
+        .bind(limit as i64)
+        .bind(offset as i64)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let items = rows
+            .into_iter()
+            .map(|(label, value)| Tag {
+                label: TagLabel::new(label),
+                value: TagValue::new(value),
+            })
             .collect();
         Ok(page.to_page(items, total as u64))
     }

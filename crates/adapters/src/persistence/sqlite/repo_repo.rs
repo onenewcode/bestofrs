@@ -1,4 +1,5 @@
 use super::db_err;
+use async_trait::async_trait;
 use app::app_error::AppResult;
 use app::common::pagination::{Page, Pagination};
 use app::repo::RepoRepo;
@@ -45,7 +46,7 @@ impl SqliteRepoRepo {
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
 impl RepoRepo for SqliteRepoRepo {
     async fn upsert(&self, repo: &Repo) -> AppResult<()> {
         self.upsert_many(std::slice::from_ref(repo)).await
@@ -147,6 +148,51 @@ impl RepoRepo for SqliteRepoRepo {
         .fetch_all(&self.pool)
         .await
         .map_err(db_err)?;
+        let items = rows.into_iter().map(Into::into).collect();
+        Ok(page.to_page(items, total as u64))
+    }
+
+    async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Repo>> {
+        let key = format!("%{key}%");
+        let limit = page.limit();
+        let offset = page.offset();
+        let total: i64 = sqlx::query_scalar(
+            r#"
+            SELECT COUNT(DISTINCT r.id)
+            FROM repos r
+            LEFT JOIN projects p ON p.repo_id = r.id
+            WHERE r.id LIKE ? OR r.full_name LIKE ? OR p.description LIKE ?
+            "#,
+        )
+        .bind(&key)
+        .bind(&key)
+        .bind(&key)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let rows: Vec<RepoDb> = sqlx::query_as(
+            r#"
+            SELECT
+              r.id, r.github_repo_id, r.full_name,
+              r.stars, r.forks, r.open_issues, r.watchers,
+              r.last_fetched_at, r.etag
+            FROM repos r
+            LEFT JOIN projects p ON p.repo_id = r.id
+            WHERE r.id LIKE ? OR r.full_name LIKE ? OR p.description LIKE ?
+            ORDER BY r.stars DESC
+            LIMIT ? OFFSET ?
+            "#,
+        )
+        .bind(&key)
+        .bind(&key)
+        .bind(&key)
+        .bind(limit as i64)
+        .bind(offset as i64)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(db_err)?;
+
         let items = rows.into_iter().map(Into::into).collect();
         Ok(page.to_page(items, total as u64))
     }
