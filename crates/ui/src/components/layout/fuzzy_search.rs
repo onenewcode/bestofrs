@@ -77,46 +77,46 @@ pub fn FuzzySearch() -> Element {
             children: rsx! {},
         }
 
-        DialogRoot {
-            id: None,
-            open: open(),
-            on_open_change: move |v| open.set(v),
-                DialogContent {
-                    style: "top: 15%; transform: translate(-50%, 0); max-height: 80vh;",
-                    Input {
-                        class: "input w-full",
-                        oninput: move |e: FormEvent| draft.set(e.value()),
-                        onkeydown: move |e: KeyboardEvent| {
-                            if e.key() == Key::Enter {
-                                submit();
-                            }
-                        },
-                        placeholder: "Search repos / tags",
-                        value: draft,
-                        aria_label: "Search",
-                        children: rsx! {},
-                    }
+        DialogRoot { id: None, open: open(), on_open_change: move |v| open.set(v),
+            DialogContent { style: "top: 15%; transform: translate(-50%, 0); max-height: 80vh;",
+                Input {
+                    class: "input w-full",
+                    oninput: move |e: FormEvent| draft.set(e.value()),
+                    onkeydown: move |e: KeyboardEvent| {
+                        if e.key() == Key::Enter {
+                            submit();
+                        }
+                    },
+                    placeholder: "Search repos / tags",
+                    value: draft,
+                    aria_label: "Search",
+                    children: rsx! {},
+                }
 
-                    div { class: "flex-1 overflow-y-auto w-full",
-                        match result() {
-                                Some(Ok(res)) => {
-                                    let repos = res.repos.items;
-                                    let tags = res.tags.items;
-                                    let is_empty = repos.is_empty() && tags.is_empty();
+                div { class: "flex-1 overflow-y-auto w-full",
+                    match result() {
+                        Some(Ok(res)) => {
+                            let repos = res.repos.items;
+                            let tags = res.tags.items;
+                            let is_empty = repos.is_empty() && tags.is_empty();
 
-                                    rsx! {
-                                        if is_empty {
-                                            div { class: "flex flex-col items-center justify-center py-8 text-secondary-5",
-                                                "No results found"
-                                            }
-                                        } else {
-                                            div { class: "space-y-4",
-                                                if !repos.is_empty() {
-                                                    div { class: "space-y-1",
-                                                        div { class: "px-2 text-xs font-semibold text-secondary-5 uppercase tracking-wider",
-                                                            "Repositories"
-                                                        }
-                                                        {repos.into_iter().map(|repo| {
+                            rsx! {
+                                if is_empty {
+                                    div { class: "flex flex-col items-center justify-center py-8 text-secondary-5",
+                                        "No results found"
+                                    }
+                                } else {
+                                    div { class: "space-y-4",
+                                        if !repos.is_empty() {
+                                            div { class: "space-y-1",
+                                                div { class: "px-2 text-xs font-semibold text-secondary-5 uppercase tracking-wider",
+                                                    "Repositories"
+                                                }
+                                                {
+
+                                                    repos
+                                                        .into_iter()
+                                                        .map(|repo| {
                                                             let route = repo_route(&repo);
                                                             let repo_id = repo.id.clone();
                                                             let full_name = repo.full_name.clone();
@@ -133,17 +133,20 @@ pub fn FuzzySearch() -> Element {
                                                                     }
                                                                 }
                                                             }
-                                                        })}
-                                                    }
+                                                        })
                                                 }
+                                            }
+                                        }
 
-                                                if !tags.is_empty() {
-                                                    div { class: "space-y-1",
-                                                        div { class: "px-2 text-xs font-semibold text-secondary-5 uppercase tracking-wider",
-                                                            "Tags"
-                                                        }
-                                                        div { class: "flex flex-wrap gap-2 px-2",
-                                                            {tags.into_iter().map(|tag| {
+                                        if !tags.is_empty() {
+                                            div { class: "space-y-1",
+                                                div { class: "px-2 text-xs font-semibold text-secondary-5 uppercase tracking-wider",
+                                                    "Tags"
+                                                }
+                                                div { class: "flex flex-wrap gap-2 px-2",
+                                                    {
+                                                        tags.into_iter()
+                                                            .map(|tag| {
                                                                 let label = tag.label.clone();
                                                                 let value = tag.value.clone();
                                                                 rsx! {
@@ -155,23 +158,24 @@ pub fn FuzzySearch() -> Element {
                                                                         "{label}:{value}"
                                                                     }
                                                                 }
-                                                            })}
-                                                        }
+                                                            })
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                Some(Err(err)) => rsx! {
-                                    div { class: "p-4 text-center text-sm text-red-500", "{err}" }
-                                },
-                                None => rsx! {
-                                    div { class: "p-8 text-center text-sm text-secondary-5", "Loading..." }
-                                }
+                            }
                         }
+                        Some(Err(err)) => rsx! {
+                            div { class: "p-4 text-center text-sm text-red-500", "{err}" }
+                        },
+                        None => rsx! {
+                            div { class: "p-8 text-center text-sm text-secondary-5", "Loading..." }
+                        },
                     }
                 }
+            }
         }
     }
 }

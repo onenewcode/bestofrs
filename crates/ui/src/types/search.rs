@@ -1,5 +1,5 @@
-use app::repo::RepoSearchResult;
 use app::prelude::Page;
+use app::repo::RepoSearchResult;
 use domain::Repo;
 use serde::{Deserialize, Serialize};
 

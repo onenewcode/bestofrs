@@ -1,6 +1,8 @@
+pub mod avatar;
 pub mod button;
+pub mod dialog;
 pub mod input;
+pub mod pagination;
+pub mod select;
 pub mod skeleton;
 pub mod toast;
-pub mod avatar;
-pub mod dialog;

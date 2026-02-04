@@ -8,8 +8,8 @@ pub struct PendingOAuth {
 mod server {
     use dioxus::prelude::{ServerFnError, ServerFnResult};
 
-    use crate::impls::error::api_error;
     use super::PendingOAuth;
+    use crate::impls::error::api_error;
 
     use anyhow::{anyhow, Result};
     use async_trait::async_trait;
@@ -68,10 +68,7 @@ mod server {
         session.get_remove(KEY_PENDING_OAUTH)
     }
 
-    pub fn take_pending_oauth_checked(
-        session: &WebSession,
-        state: &str,
-    ) -> Result<PendingOAuth> {
+    pub fn take_pending_oauth_checked(session: &WebSession, state: &str) -> Result<PendingOAuth> {
         let Some(pending) = take_pending_oauth(session) else {
             return Err(anyhow!("missing pending oauth"));
         };
@@ -98,10 +95,7 @@ mod server {
 
     #[async_trait]
     impl Authentication<User, i64, AppStateHandle> for User {
-        async fn load_user(
-            userid: i64,
-            _pool: Option<&AppStateHandle>,
-        ) -> Result<User> {
+        async fn load_user(userid: i64, _pool: Option<&AppStateHandle>) -> Result<User> {
             // fallback as anonymous(e.g. cache miss).
             // This avoids turning auth resolution failures into 500s.
             Ok(get_cached_user(userid).unwrap_or_default())
@@ -168,8 +162,8 @@ mod client {
     use anyhow::{anyhow, Result};
     use dioxus::prelude::ServerFnResult;
 
-    use crate::impls::error::api_error;
     use super::PendingOAuth;
+    use crate::impls::error::api_error;
 
     #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
     pub struct User {
@@ -220,10 +214,7 @@ mod client {
         None
     }
 
-    pub fn take_pending_oauth_checked(
-        _session: &WebSession,
-        _state: &str,
-    ) -> Result<PendingOAuth> {
+    pub fn take_pending_oauth_checked(_session: &WebSession, _state: &str) -> Result<PendingOAuth> {
         Err(anyhow!("missing pending oauth"))
     }
 

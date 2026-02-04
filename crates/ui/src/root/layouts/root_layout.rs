@@ -1,11 +1,11 @@
+use crate::types::auth::MeDto;
 use crate::{
     components::{icons, toast::ToastProvider, FuzzySearch, UserProfile},
-    root::Route,
     root::theme::{is_dark_mode, theme_seed, toggle_theme},
+    root::Route,
     IO::auth::me,
 };
 use dioxus::prelude::*;
-use crate::types::auth::MeDto;
 
 #[derive(Clone, PartialEq)]
 pub enum UserState {

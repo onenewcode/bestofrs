@@ -5,7 +5,9 @@ use dioxus::prelude::*;
 #[cfg(feature = "server")]
 #[tokio::main]
 async fn main() {
-    use axum_session::{SameSite, SessionConfig, SessionLayer, SessionMode, SessionNullPool, SessionStore};
+    use axum_session::{
+        SameSite, SessionConfig, SessionLayer, SessionMode, SessionNullPool, SessionStore,
+    };
     use dioxus_server::DioxusRouterExt;
     use std::sync::Arc;
     use ui::impls::error::api_error;
