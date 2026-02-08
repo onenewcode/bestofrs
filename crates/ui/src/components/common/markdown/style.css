@@ -1,0 +1,273 @@
+.common-markdown {
+  --md-fg: hsl(var(--secondary-4));
+  --md-fg-muted: hsl(var(--secondary-5));
+  --md-heading: hsl(var(--secondary-2));
+  --md-link: hsl(var(--secondary-6));
+  --md-border: hsl(var(--primary-6));
+  --md-bg-soft: hsl(var(--primary-2));
+  --md-bg-code: hsl(var(--primary-1));
+  --md-bg-table: color-mix(in oklab, var(--md-bg-soft) 72%, var(--md-bg-code));
+
+  color: var(--md-fg);
+  font-size: 15px;
+  line-height: 1.75;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.common-markdown > :first-child {
+  margin-top: 0 !important;
+}
+
+.common-markdown > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.common-markdown h1,
+.common-markdown h2,
+.common-markdown h3,
+.common-markdown h4,
+.common-markdown h5,
+.common-markdown h6 {
+  color: var(--md-heading);
+  line-height: 1.3;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  margin: 1.7em 0 0.65em;
+}
+
+.common-markdown h1 {
+  font-size: clamp(1.6rem, 2.4vw, 2rem);
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--md-border);
+}
+
+.common-markdown h2 {
+  font-size: clamp(1.35rem, 2vw, 1.6rem);
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--md-border);
+}
+
+.common-markdown h3 { font-size: 1.25rem; }
+.common-markdown h4 { font-size: 1.1rem; }
+.common-markdown h5 { font-size: 1rem; }
+.common-markdown h6 {
+  font-size: 0.92rem;
+  color: var(--md-fg-muted);
+}
+
+.common-markdown p,
+.common-markdown ul,
+.common-markdown ol,
+.common-markdown dl,
+.common-markdown blockquote,
+.common-markdown pre,
+.common-markdown table,
+.common-markdown details {
+  margin: 0 0 1rem;
+}
+
+.common-markdown a {
+  color: #0969da;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  text-decoration-thickness: 0.08em;
+  border-bottom: 0;
+  transition: color 120ms ease;
+}
+
+.common-markdown a:hover {
+  color: #0550ae;
+}
+
+.common-markdown ul,
+.common-markdown ol {
+  padding-left: 1.5rem;
+}
+
+.common-markdown li + li {
+  margin-top: 0.35rem;
+}
+
+.common-markdown blockquote {
+  margin-inline: 0;
+  padding: 0.35rem 1rem;
+  color: var(--md-fg-muted);
+  border-left: 3px solid var(--md-border);
+  background: color-mix(in oklab, var(--md-bg-soft) 65%, transparent);
+  border-radius: 0 0.65rem 0.65rem 0;
+}
+
+.common-markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.86em;
+  background: var(--md-bg-soft);
+  border: 1px solid var(--md-border);
+  border-radius: 0.45rem;
+  padding: 0.14rem 0.36rem;
+}
+
+.common-markdown pre {
+  background: var(--md-bg-code);
+  border: 1px solid var(--md-border);
+  border-radius: 0.8rem;
+  padding: 0.9rem 1rem;
+  overflow: auto;
+  line-height: 1.6;
+}
+
+.common-markdown pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.9em;
+}
+
+.common-markdown hr {
+  border: 0;
+  border-top: 1px solid var(--md-border);
+  margin: 1.4rem 0;
+}
+
+.common-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  display: block;
+  overflow-x: auto;
+  background: var(--md-bg-table);
+  border: 1px solid var(--md-border);
+  border-radius: 0.75rem;
+}
+
+.common-markdown thead {
+  background: color-mix(in oklab, var(--md-bg-soft) 86%, transparent);
+}
+
+.common-markdown th,
+.common-markdown td {
+  padding: 0.62rem 0.8rem;
+  border: 1px solid var(--md-border);
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.common-markdown th {
+  font-weight: 640;
+  color: var(--md-heading);
+}
+
+.common-markdown tbody tr {
+  background: color-mix(in oklab, var(--md-bg-table) 88%, transparent);
+}
+
+.common-markdown tbody tr:nth-child(even) {
+  background: color-mix(in oklab, var(--md-bg-soft) 62%, var(--md-bg-code));
+}
+
+.common-markdown img {
+  display: block;
+  max-width: min(100%, 980px);
+  height: auto;
+  margin: 1rem 0;
+  border-radius: 0.7rem;
+}
+
+.common-markdown > p:first-of-type:has(a img) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.45rem 0.6rem;
+  text-align: left;
+}
+
+.common-markdown > p:first-of-type:has(> a:nth-of-type(2)):not(:has(img)) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  text-align: center;
+}
+
+.common-markdown > p:first-of-type:has(> a:nth-of-type(2)):not(:has(img)) > a {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.common-markdown > p:first-of-type:has(> span a) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  text-align: center;
+}
+
+.common-markdown > p:first-of-type:has(> span a) > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.common-markdown > p:first-of-type:has(> span a) > span a {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.common-markdown > p:first-of-type:has(a img) a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-bottom: 0;
+}
+
+.common-markdown > p:first-of-type:has(> span a img) {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.common-markdown > p:first-of-type:has(a img) img {
+  display: block;
+  margin: 0;
+  border-radius: 0;
+  max-height: 1.2rem;
+  width: auto;
+}
+
+.common-markdown p a:has(img) {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.common-markdown li a:has(img) {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.common-markdown li a:has(img) img {
+  display: inline-block;
+  margin: 0;
+  border-radius: 0;
+  max-width: 100%;
+  height: auto;
+}
+
+.common-markdown li img {
+  display: inline-block;
+  margin: 0;
+  border-radius: 0;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .common-markdown a {
+    transition: none;
+  }
+}

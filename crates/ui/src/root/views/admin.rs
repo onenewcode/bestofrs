@@ -16,7 +16,7 @@ pub fn Admin() -> Element {
 #[component]
 fn AdminContent() -> Element {
     rsx! {
-        div { class: "mx-auto max-w-6xl px-4 py-6 space-y-6",
+        div { class: "mx-auto max-w-6xl px-4 py-8 space-y-6",
             div { class: "space-y-1",
                 h1 { class: "text-2xl font-semibold tracking-tight", "Admin" }
                 p { class: "text-sm text-secondary-5",
@@ -55,7 +55,7 @@ fn ProjectManagement() -> Element {
     let mut json_file_name = use_signal(String::new);
 
     rsx! {
-        section { class: "rounded-xl border border-primary-6 bg-primary-3 p-4 space-y-4",
+        section { class: "rounded-xl border border-primary-6 bg-primary-2 p-5 space-y-4",
             div { class: "space-y-1",
                 h2 { class: "text-lg font-semibold", "Project 管理" }
                 p { class: "text-sm text-secondary-5",
@@ -91,7 +91,7 @@ fn ProjectManagement() -> Element {
                     }
                 }
 
-                div { class: "rounded-md border border-primary-6 bg-primary-1 p-3 space-y-2",
+                div { class: "rounded-md border border-primary-6 bg-primary-1 p-4 space-y-2",
                     div { class: "text-sm font-medium", "通过 JSON 文件批量导入" }
                     div { class: "text-xs text-secondary-5",
                         "JSON 格式: [{{\"name\": \"xxx\", \"full_name\": \"owner/name\"}}, ...]"
@@ -117,7 +117,7 @@ fn ProjectManagement() -> Element {
                         }
                     }
                     button {
-                        class: "inline-flex items-center justify-center rounded-md bg-secondary-2 px-3 py-2 text-xs font-medium text-primary hover:bg-secondary-1 disabled:opacity-50 disabled:cursor-not-allowed",
+                        class: "inline-flex items-center justify-center rounded-md border border-primary-6 bg-primary-1 px-3 py-2 text-xs font-medium text-secondary-5 hover:bg-primary-3 hover:text-secondary-4 disabled:cursor-not-allowed disabled:opacity-50",
                         disabled: submitting() || json_file().is_none(),
                         onclick: move |_| {
                             let Some(file) = json_file() else {
@@ -174,7 +174,7 @@ fn ProjectManagement() -> Element {
 
                 div { class: "flex items-center gap-3",
                     button {
-                        class: "inline-flex items-center justify-center rounded-md bg-secondary-2 px-4 py-2 text-sm font-medium text-primary hover:bg-secondary-1 disabled:opacity-50 disabled:cursor-not-allowed",
+                        class: "inline-flex items-center justify-center rounded-md border border-primary-6 bg-primary-1 px-4 py-2 text-sm font-medium text-secondary-5 hover:bg-primary-3 hover:text-secondary-4 disabled:cursor-not-allowed disabled:opacity-50",
                         disabled: submitting(),
                         onclick: move |_| {
                             let repo_id_v = repo_id();
@@ -260,9 +260,9 @@ fn ProjectManagement() -> Element {
 
                 match projects() {
                     Some(Ok(page)) => rsx! {
-                        div { class: "max-h-[520px] overflow-auto space-y-2",
+                        div { class: "max-h-[520px] space-y-2 overflow-auto",
                             for p in page.items {
-                                div { key: "{p.id}", class: "flex items-center justify-between gap-3 rounded-md border border-primary-6 bg-primary-2 px-3 py-2",
+                                div { key: "{p.id}", class: "flex items-center justify-between gap-3 rounded-md border border-primary-6 bg-primary-1 px-3 py-2",
                                     div { class: "min-w-0",
                                         div { class: "font-medium truncate", "{p.name}" }
                                         div { class: "text-xs text-secondary-5 truncate", "{p.repo_id}" }
@@ -270,7 +270,7 @@ fn ProjectManagement() -> Element {
                                     div { class: "flex items-center gap-3 shrink-0",
                                         div { class: "text-xs text-secondary-5", "{p.slug}" }
                                         button {
-                                            class: "text-xs text-red-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed",
+                                            class: "text-xs text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50",
                                             disabled: submitting(),
                                             onclick: move |_| {
                                                 let repo_id = p.repo_id.clone();
@@ -321,7 +321,7 @@ fn IngestDailySnapshotsControl() -> Element {
     })?;
 
     rsx! {
-        section { class: "rounded-xl border border-primary-6 bg-primary-3 p-4 space-y-4",
+        section { class: "rounded-xl border border-primary-6 bg-primary-2 p-5 space-y-4",
             div { class: "space-y-1",
                 h2 { class: "text-lg font-semibold", "Ingest Daily Snapshots" }
                 p { class: "text-sm text-secondary-5",
@@ -330,7 +330,7 @@ fn IngestDailySnapshotsControl() -> Element {
             }
 
             button {
-                class: "inline-flex items-center justify-center rounded-md bg-secondary-2 px-4 py-2 text-sm font-medium text-primary hover:bg-secondary-1",
+                class: "inline-flex items-center justify-center rounded-md border border-primary-6 bg-primary-1 px-4 py-2 text-sm font-medium text-secondary-5 hover:bg-primary-3 hover:text-secondary-4",
                 onclick: move |_| run_nonce.with_mut(|v| *v += 1),
                 "Run once"
             }

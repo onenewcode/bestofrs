@@ -18,6 +18,23 @@ pub enum UserState {
 pub type UserContext = Signal<UserState>;
 
 #[component]
+fn HeaderNav() -> Element {
+    let user_state = use_context::<UserContext>();
+    let show_admin = matches!(user_state(), UserState::User(me) if me.role == "Admin");
+
+    rsx! {
+        nav { class: "flex items-center gap-4 text-sm",
+            Link { class: "text-secondary-5 hover:text-secondary-4 hover:underline", to: Route::Home {}, "Home" }
+            Link { class: "text-secondary-5 hover:text-secondary-4 hover:underline", to: Route::RepoList {}, "Repo" }
+            Link { class: "text-secondary-5 hover:text-secondary-4 hover:underline", to: Route::TagList {}, "Tag" }
+            if show_admin {
+                Link { class: "text-secondary-5 hover:text-secondary-4 hover:underline", to: Route::Admin {}, "Admin" }
+            }
+        }
+    }
+}
+
+#[component]
 pub fn RootLayout() -> Element {
     let mut is_dark = use_signal(|| false);
     let mut user_state: UserContext = use_signal(|| UserState::Loading);
@@ -47,21 +64,17 @@ pub fn RootLayout() -> Element {
 
     rsx! {
         ToastProvider {
-            header { class: "border-b border-primary-6 bg-primary-2",
+            header {
+                class: "border-b border-primary-6 bg-primary-2",
                 div { class: "mx-auto max-w-6xl px-4 py-3 flex items-center justify-between",
-                    div { class: "flex items-center gap-4",
-                        Link { class: "font-semibold", to: Route::Home {}, "bestofrs" }
-                        nav { class: "flex items-center gap-3 text-sm",
-                            Link { class: "text-secondary-5 hover:underline", to: Route::Home {}, "Home" }
-                            Link { class: "text-secondary-5 hover:underline", to: Route::RepoList {}, "Repo" }
-                            Link { class: "text-secondary-5 hover:underline", to: Route::TagList {}, "Tag" }
-                            Link { class: "text-secondary-5 hover:underline", to: Route::Admin {}, "Admin" }
-                        }
+                    div { class: "flex items-center gap-6",
+                        Link { class: "font-semibold tracking-tight text-secondary-4", to: Route::Home {}, "bestofrs" }
+                        HeaderNav {}
                     }
                     div { class: "flex items-center gap-3",
                         FuzzySearch {}
                         button {
-                            class: "inline-flex items-center justify-center rounded-md border border-primary-6 bg-primary-1 p-2 text-secondary-5 hover:bg-primary-4",
+                            class: "inline-flex items-center justify-center rounded-md border border-primary-6 bg-primary-1 p-2 text-secondary-5 hover:bg-primary-3 hover:text-secondary-4",
                             onclick: move |_| {
                                 toggle_theme();
                                 is_dark.set(!is_dark());
@@ -78,12 +91,13 @@ pub fn RootLayout() -> Element {
                 }
             }
 
-            main { class: "min-h-screen",
+            main {
+                class: "min-h-screen bg-primary-1",
                 SuspenseBoundary {
                     fallback: move |_: SuspenseContext| {
                         rsx! {
                             div { class: "mx-auto max-w-6xl px-4 py-6",
-                                Skeleton { class: "w-full h-[420px]" }
+                                Skeleton { class: "w-full h-[420px] rounded-xl border border-primary-6 bg-primary-2" }
                             }
                         }
                     },

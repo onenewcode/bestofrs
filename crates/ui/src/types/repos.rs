@@ -1,4 +1,5 @@
 use super::tags::TagDto;
+use app::repo::GithubReadme;
 use domain::{Repo, RepoWithTags};
 use serde::{Deserialize, Serialize};
 
@@ -45,6 +46,23 @@ impl From<RepoWithTags> for RepoDto {
             watchers: repo.watchers,
             last_fetched_at: repo.last_fetched_at,
             tags,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct RepoReadmeDto {
+    pub content: String,
+    pub html_url: Option<String>,
+    pub download_url: Option<String>,
+}
+
+impl From<GithubReadme> for RepoReadmeDto {
+    fn from(value: GithubReadme) -> Self {
+        Self {
+            content: value.content,
+            html_url: value.html_url,
+            download_url: value.download_url,
         }
     }
 }

@@ -1,8 +1,7 @@
 use dioxus::prelude::*;
-
 use crate::impls::error::api_error;
 use crate::impls::state::State;
-use crate::types::repos::RepoDto;
+use crate::types::repos::{RepoDto, RepoReadmeDto};
 use crate::types::search::SearchResultDto;
 use crate::types::snapshot_deltas::SnapshotDeltaDto;
 use crate::types::snapshots::SnapshotDto;
@@ -48,6 +47,21 @@ pub async fn get_repo(owner: String, name: String) -> ServerFnResult<Option<Repo
         .map_err(api_error)?;
 
     Ok(repo.map(RepoDto::from))
+}
+
+
+#[post("/api/repos/:owner/:name/readme", state: State)]
+pub async fn get_repo_readme(owner: String, name: String) -> ServerFnResult<Option<RepoReadmeDto>> {
+    let app_state = state.0;
+
+    let readme = app_state
+        .repo
+        .query
+        .get_readme_by_owner_name(&owner, &name)
+        .await
+        .map_err(api_error)?;
+
+    Ok(readme.map(RepoReadmeDto::from))
 }
 
 #[post("/api/repos/:owner/:name/tags/replace", state: State)]
