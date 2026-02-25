@@ -1,5 +1,6 @@
 use super::tags::TagDto;
 use app::repo::GithubReadme;
+use app::repo::BulkUpdateRepoTagResult;
 use domain::{Repo, RepoWithTags};
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +17,23 @@ pub struct RepoDto {
     pub watchers: i64,
     pub last_fetched_at: Option<String>,
     pub tags: Vec<TagDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct BulkUpdateRepoTagResultDto {
+    pub total: usize,
+    pub updated: usize,
+    pub skipped: usize,
+}
+
+impl From<BulkUpdateRepoTagResult> for BulkUpdateRepoTagResultDto {
+    fn from(value: BulkUpdateRepoTagResult) -> Self {
+        Self {
+            total: value.total,
+            updated: value.updated,
+            skipped: value.skipped,
+        }
+    }
 }
 
 impl From<Repo> for RepoDto {

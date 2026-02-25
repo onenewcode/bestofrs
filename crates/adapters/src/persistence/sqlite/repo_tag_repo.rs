@@ -1,14 +1,11 @@
 use app::app_error::AppResult;
 use app::common::pagination::{Page, Pagination};
-use app::repo::RepoTagRepo;
+use app::repo::{RepoTagRepo, UNTAG_LABEL, UNTAG_VALUE};
 use async_trait::async_trait;
 use domain::{RepoId, Tag, TagLabel, TagValue};
 use sqlx::{QueryBuilder, Sqlite};
 
 use super::db_err;
-
-const DEFAULT_TAG_LABEL: &str = "UNTAG";
-const DEFAULT_TAG_VALUE: &str = "untagged";
 
 fn tag_id(label: &str, value: &str) -> String {
     format!("tag:{label}:{value}")
@@ -93,6 +90,38 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         Ok(())
     }
 
+    async fn upsert_tag(&self, tag: &Tag) -> AppResult<()> {
+        let id = tag_id(tag.label.as_str(), tag.value.as_str());
+        sqlx::query(
+            "INSERT INTO tags (id, label, value) VALUES (?, ?, ?) \
+             ON CONFLICT(id) DO UPDATE SET label = excluded.label, value = excluded.value",
+        )
+        .bind(id)
+        .bind(tag.label.as_str())
+        .bind(tag.value.as_str())
+        .execute(&self.pool)
+        .await
+        .map_err(db_err)?;
+        Ok(())
+    }
+
+    async fn delete_tag(&self, tag: &Tag) -> AppResult<()> {
+        let id = tag_id(tag.label.as_str(), tag.value.as_str());
+        let mut tx = self.pool.begin().await.map_err(db_err)?;
+        sqlx::query("DELETE FROM repo_tag_map WHERE tag_id = ?")
+            .bind(&id)
+            .execute(&mut *tx)
+            .await
+            .map_err(db_err)?;
+        sqlx::query("DELETE FROM tags WHERE id = ?")
+            .bind(&id)
+            .execute(&mut *tx)
+            .await
+            .map_err(db_err)?;
+        tx.commit().await.map_err(db_err)?;
+        Ok(())
+    }
+
     async fn list_by_repo_ids(&self, repo_ids: &[RepoId]) -> AppResult<Vec<(RepoId, Tag)>> {
         if repo_ids.is_empty() {
             return Ok(Vec::new());
@@ -117,6 +146,44 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             .await
             .map_err(db_err)?;
         Ok(rows.into_iter().map(RepoTagRow::into_pair).collect())
+    }
+
+    async fn list_repo_ids_without_tags(&self, page: Pagination) -> AppResult<Page<RepoId>> {
+        let total: i64 = sqlx::query_scalar(
+            r#"
+            SELECT COUNT(*)
+            FROM repos r
+            WHERE NOT EXISTS (
+              SELECT 1 FROM repo_tag_map m WHERE m.repo_id = r.id
+            )
+            "#,
+        )
+        .fetch_one(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let rows: Vec<(String,)> = sqlx::query_as(
+            r#"
+            SELECT r.id
+            FROM repos r
+            WHERE NOT EXISTS (
+              SELECT 1 FROM repo_tag_map m WHERE m.repo_id = r.id
+            )
+            ORDER BY r.id
+            LIMIT ? OFFSET ?
+            "#,
+        )
+        .bind(page.limit() as i64)
+        .bind(page.offset() as i64)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let items = rows
+            .into_iter()
+            .map(|(repo_id,)| RepoId::new_unchecked(repo_id))
+            .collect();
+        Ok(page.to_page(items, total as u64))
     }
 
     async fn list_repo_ids_by_label(
@@ -170,7 +237,11 @@ impl RepoTagRepo for SqliteRepoTagRepo {
     async fn list_tags(&self, page: Pagination) -> AppResult<Page<Tag>> {
         let limit = page.limit();
         let offset = page.offset();
-        let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tags")
+        let total: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM tags WHERE NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))",
+        )
+            .bind(UNTAG_LABEL)
+            .bind(UNTAG_VALUE)
             .fetch_one(&self.pool)
             .await
             .map_err(db_err)?;
@@ -179,10 +250,13 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             r#"
             SELECT label, value
             FROM tags
+            WHERE NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
             ORDER BY label, value
             LIMIT ? OFFSET ?
             "#,
         )
+        .bind(UNTAG_LABEL)
+        .bind(UNTAG_VALUE)
         .bind(limit as i64)
         .bind(offset as i64)
         .fetch_all(&self.pool)
@@ -206,11 +280,14 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         let total: i64 = sqlx::query_scalar(
             r#"
             SELECT COUNT(*) FROM tags
-            WHERE label LIKE ? OR value LIKE ?
+            WHERE (label LIKE ? OR value LIKE ?)
+              AND NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
             "#,
         )
         .bind(&key)
         .bind(&key)
+        .bind(UNTAG_LABEL)
+        .bind(UNTAG_VALUE)
         .fetch_one(&self.pool)
         .await
         .map_err(db_err)?;
@@ -219,13 +296,16 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             r#"
             SELECT label, value
             FROM tags
-            WHERE label LIKE ? OR value LIKE ?
+            WHERE (label LIKE ? OR value LIKE ?)
+              AND NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
             ORDER BY label, value
             LIMIT ? OFFSET ?
             "#,
         )
         .bind(&key)
         .bind(&key)
+        .bind(UNTAG_LABEL)
+        .bind(UNTAG_VALUE)
         .bind(limit as i64)
         .bind(offset as i64)
         .fetch_all(&self.pool)
@@ -242,38 +322,4 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         Ok(page.to_page(items, total as u64))
     }
 
-    async fn ensure_default_tag_for_repos(&self, repo_ids: &[RepoId]) -> AppResult<()> {
-        if repo_ids.is_empty() {
-            return Ok(());
-        }
-        let mut tx = self.pool.begin().await.map_err(db_err)?;
-        let default_id = tag_id(DEFAULT_TAG_LABEL, DEFAULT_TAG_VALUE);
-        sqlx::query("INSERT OR IGNORE INTO tags (id, label, value) VALUES (?, ?, ?)")
-            .bind(&default_id)
-            .bind(DEFAULT_TAG_LABEL)
-            .bind(DEFAULT_TAG_VALUE)
-            .execute(&mut *tx)
-            .await
-            .map_err(db_err)?;
-
-        let mut builder: QueryBuilder<Sqlite> = QueryBuilder::new(
-            "INSERT INTO repo_tag_map (repo_id, tag_id, source) \
-             SELECT r.id, ",
-        );
-        builder.push_bind(&default_id);
-        builder.push(", 'system' FROM repos r WHERE r.id IN (");
-        let mut first = true;
-        for repo_id in repo_ids {
-            if !first {
-                builder.push(", ");
-            }
-            first = false;
-            builder.push_bind(repo_id.as_str());
-        }
-        builder.push(") AND NOT EXISTS (SELECT 1 FROM repo_tag_map m WHERE m.repo_id = r.id)");
-        builder.build().execute(&mut *tx).await.map_err(db_err)?;
-
-        tx.commit().await.map_err(db_err)?;
-        Ok(())
-    }
 }

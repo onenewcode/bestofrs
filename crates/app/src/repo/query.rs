@@ -64,7 +64,7 @@ impl RepoQueryHandler {
             None => return Ok(None),
         };
         let pairs = self.repo_tags.list_by_repo_ids(from_ref(repo_id)).await?;
-        let tags = pairs
+        let tags: Vec<Tag> = pairs
             .into_iter()
             .filter_map(|(id, tag)| if id == *repo_id { Some(tag) } else { None })
             .collect();
@@ -98,10 +98,11 @@ impl RepoQueryHandler {
         value: Option<&str>,
         page: Pagination,
     ) -> AppResult<Page<RepoWithTags>> {
-        let repo_ids_page = self
-            .repo_tags
-            .list_repo_ids_by_label(label, value, page)
-            .await?;
+        let repo_ids_page = if label.trim().is_empty() {
+            self.repo_tags.list_repo_ids_without_tags(page).await?
+        } else {
+            self.repo_tags.list_repo_ids_by_label(label, value, page).await?
+        };
         let mut repos = Vec::with_capacity(repo_ids_page.items.len());
         for repo_id in &repo_ids_page.items {
             if let Some(repo) = self.repos.get(repo_id).await? {
@@ -155,6 +156,14 @@ impl RepoQueryHandler {
         self.github.fetch_readme(&full_name).await
     }
 
+    pub async fn list_tags(&self, page: Pagination) -> AppResult<Page<Tag>> {
+        self.repo_tags.list_tags(page).await
+    }
+
+    pub async fn search_tags_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Tag>> {
+        self.repo_tags.search_tags_by_key(key, page).await
+    }
+
     pub async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<RepoSearchResult> {
         let key = key.trim();
         if let Some(cache) = &self.cache {
@@ -181,4 +190,5 @@ impl RepoQueryHandler {
 
         Ok(result)
     }
+
 }

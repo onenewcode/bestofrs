@@ -18,7 +18,10 @@ pub trait RepoRepo: Send + Sync {
 #[async_trait]
 pub trait RepoTagRepo: Send + Sync {
     async fn replace_repo_tags(&self, repo_id: &RepoId, tags: &[Tag]) -> AppResult<()>;
+    async fn upsert_tag(&self, tag: &Tag) -> AppResult<()>;
+    async fn delete_tag(&self, tag: &Tag) -> AppResult<()>;
     async fn list_by_repo_ids(&self, repo_ids: &[RepoId]) -> AppResult<Vec<(RepoId, Tag)>>;
+    async fn list_repo_ids_without_tags(&self, page: Pagination) -> AppResult<Page<RepoId>>;
     async fn list_repo_ids_by_label(
         &self,
         label: &str,
@@ -27,7 +30,6 @@ pub trait RepoTagRepo: Send + Sync {
     ) -> AppResult<Page<RepoId>>;
     async fn list_tags(&self, page: Pagination) -> AppResult<Page<Tag>>;
     async fn search_tags_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Tag>>;
-    async fn ensure_default_tag_for_repos(&self, repo_ids: &[RepoId]) -> AppResult<()>;
 }
 
 #[async_trait]
