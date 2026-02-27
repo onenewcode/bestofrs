@@ -19,4 +19,8 @@ impl ProjectQueryHandler {
     pub async fn list(&self, page: Pagination) -> AppResult<Page<Project>> {
         self.projects.list(page).await
     }
+
+    pub async fn search_by_key(&self, key: String, page: Pagination) -> AppResult<Page<Project>> {
+        self.projects.search_by_key(key, page).await
+    }
 }

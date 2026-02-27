@@ -1,8 +1,10 @@
 use dioxus::prelude::*;
 
-use crate::IO::projects::{import_projects, import_projects_json, list_projects, remove_project};
+use crate::IO::projects::{
+    import_projects, import_projects_json, list_projects, remove_project, search_projects,
+};
 use crate::types::projects::{ProjectDto, ProjectImportItem};
-use app::prelude::Pagination;
+use app::prelude::{Page, Pagination};
 
 fn optional_text(value: String) -> Option<String> {
     let value = value.trim();
@@ -11,6 +13,10 @@ fn optional_text(value: String) -> Option<String> {
     } else {
         Some(value.to_string())
     }
+}
+
+fn empty_projects_page(page: Pagination) -> Page<ProjectDto> {
+    page.to_page(Vec::new(), 0)
 }
 
 #[component]
@@ -49,6 +55,20 @@ pub fn ProjectManagement() -> Element {
     let mut remove_pending = use_signal(|| false);
     let mut create_message = use_signal(|| Option::<String>::None);
     let mut editor_message = use_signal(|| Option::<String>::None);
+    let page = Pagination {
+        limit: Some(50),
+        offset: Some(0),
+    };
+    let mut project_editor_search_key = use_signal(String::new);
+    let mut project_editor_search = use_action({
+        let page = page;
+        move |key: String| async move {
+            if key.trim().is_empty() {
+                return Ok(empty_projects_page(page));
+            }
+            search_projects(key, page).await
+        }
+    });
 
     let mut json_file = use_signal(|| Option::<dioxus_elements::FileData>::None);
     let mut json_file_name = use_signal(String::new);
@@ -90,7 +110,7 @@ pub fn ProjectManagement() -> Element {
                         }
                         textarea {
                             class: "w-full min-h-[96px] rounded-md border border-primary-6 bg-primary px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-focused-border",
-                            placeholder: "description *",
+                            placeholder: "description",
                             value: create_description,
                             oninput: move |e| *create_description.write() = e.value(),
                         }
@@ -137,9 +157,9 @@ pub fn ProjectManagement() -> Element {
                                     let repo_id = create_repo_id().trim().to_string();
                                     let name = create_name().trim().to_string();
                                     let slug = create_slug().trim().to_string();
-                                    let description = create_description().trim().to_string();
-                                    if repo_id.is_empty() || name.is_empty() || slug.is_empty() || description.is_empty() {
-                                        *create_message.write() = Some("必填字段不能为空（repo_id/name/slug/description）".to_string());
+                                    let description = create_description().to_string();
+                                    if repo_id.is_empty() || name.is_empty() || slug.is_empty() {
+                                        *create_message.write() = Some("必填字段不能为空（repo_id/name/slug）".to_string());
                                         return;
                                     }
 
@@ -332,7 +352,71 @@ pub fn ProjectManagement() -> Element {
                     section { class: "space-y-3 border border-primary-6 bg-primary-1 p-4 xl:sticky xl:top-4",
                         div { class: "space-y-1",
                             div { class: "text-sm font-semibold", "Repo 深度编辑面板" }
-                            p { class: "text-xs text-secondary-5", "从左侧选择一个 repo 后，在此进行快速更新并可随时切换。" }
+                            p { class: "text-xs text-secondary-5", "可先搜索 project 并选择编辑，也可继续从左侧列表点击切换。" }
+                        }
+                        div { class: "space-y-2 border-b border-dashed border-primary-6 pb-3",
+                            div { class: "text-xs font-medium text-secondary-5", "搜索 Project 并编辑" }
+                            div { class: "flex flex-col gap-2 md:flex-row",
+                                input {
+                                    class: "w-full rounded-md border border-primary-6 bg-primary px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-focused-border",
+                                    placeholder: "输入 repo_id / name / slug / description",
+                                    value: project_editor_search_key,
+                                    oninput: move |e| *project_editor_search_key.write() = e.value(),
+                                    onkeydown: move |e| {
+                                        if e.key() == Key::Enter {
+                                            project_editor_search.call(project_editor_search_key());
+                                        }
+                                    },
+                                }
+                                button {
+                                    class: "rounded-md border border-primary-6 bg-primary px-3 py-2 text-sm hover:bg-primary-3",
+                                    onclick: move |_| project_editor_search.call(project_editor_search_key()),
+                                    "搜索"
+                                }
+                            }
+                            if let Some(Ok(result)) = project_editor_search.value() {
+                                {
+                                    let projects = result().items.clone();
+                                    rsx! {
+                                        div { class: "max-h-[220px] space-y-2 overflow-auto rounded-md border border-primary-6 bg-primary p-2",
+                                            if projects.is_empty() {
+                                                div { class: "text-xs text-secondary-5", "无匹配结果" }
+                                            } else {
+                                                for p in projects {
+                                                    div { key: "search-{p.id}", class: "flex items-center justify-between gap-2 rounded-md border border-primary-6 bg-primary-1 px-2 py-2",
+                                                        div { class: "min-w-0",
+                                                            div { class: "truncate text-sm font-medium", "{p.name}" }
+                                                            div { class: "truncate text-xs text-secondary-5", "{p.repo_id}" }
+                                                        }
+                                                        button {
+                                                            class: "rounded-md border border-primary-6 bg-primary px-2 py-1 text-xs hover:bg-primary-3 disabled:opacity-50",
+                                                            disabled: editor_pending() || remove_pending(),
+                                                            onclick: {
+                                                                let project = p.clone();
+                                                                move |_| {
+                                                                    selected_project.set(Some(project.clone()));
+                                                                    edit_name.set(project.name.clone());
+                                                                    edit_slug.set(project.slug.clone());
+                                                                    edit_description.set(project.description.clone());
+                                                                    edit_url.set(project.url.clone().unwrap_or_default());
+                                                                    edit_avatar_url.set(project.avatar_url.clone().unwrap_or_default());
+                                                                    edit_status.set(project.status.clone().unwrap_or_default());
+                                                                    edit_logo.set(project.logo.clone().unwrap_or_default());
+                                                                    edit_twitter.set(project.twitter.clone().unwrap_or_default());
+                                                                    editor_message.set(Some(format!("已通过搜索选择: {}", project.repo_id)));
+                                                                }
+                                                            },
+                                                            "选择编辑"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if let Some(Err(err)) = project_editor_search.value() {
+                                div { class: "text-xs text-primary-error", "{err}" }
+                            }
                         }
                         if let Some(selected) = selected_project() {
                             div { class: "space-y-3",
@@ -354,7 +438,7 @@ pub fn ProjectManagement() -> Element {
                                 }
                                 textarea {
                                     class: "w-full min-h-[96px] rounded-md border border-primary-6 bg-primary px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-focused-border",
-                                    placeholder: "description *",
+                                    placeholder: "description",
                                     value: edit_description,
                                     oninput: move |e| *edit_description.write() = e.value(),
                                 }
@@ -403,9 +487,9 @@ pub fn ProjectManagement() -> Element {
                                             };
                                             let name = edit_name().trim().to_string();
                                             let slug = edit_slug().trim().to_string();
-                                            let description = edit_description().trim().to_string();
-                                            if name.is_empty() || slug.is_empty() || description.is_empty() {
-                                                *editor_message.write() = Some("必填字段不能为空（name/slug/description）".to_string());
+                                            let description = edit_description().to_string();
+                                            if name.is_empty() || slug.is_empty() {
+                                                *editor_message.write() = Some("必填字段不能为空（name/slug）".to_string());
                                                 return;
                                             }
                                             *editor_pending.write() = true;

@@ -11,3 +11,4 @@ pub mod sidebar;
 pub mod separator;
 pub mod tooltip;
 pub mod sheet;
+pub mod tabs;

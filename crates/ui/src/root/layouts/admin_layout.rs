@@ -17,6 +17,7 @@ pub fn AdminLayout() -> Element {
     let navigator = use_navigator();
     let navigator_for_projects = navigator.clone();
     let navigator_for_tags = navigator.clone();
+    let navigator_for_job = navigator.clone();
     let current_route = use_route::<Route>();
     let mut redirected = use_signal(|| false);
     let user_state = use_context::<UserContext>();
@@ -26,6 +27,7 @@ pub fn AdminLayout() -> Element {
     };
     let is_projects = matches!(current_route, Route::AdminProjectsView {});
     let is_tags = matches!(current_route, Route::AdminTagsView {});
+    let is_job = matches!(current_route, Route::AdminJobView {});
 
     use_effect(move || {
         if redirected() {
@@ -104,7 +106,7 @@ pub fn AdminLayout() -> Element {
                                     SidebarMenuItem {
                                         SidebarMenuButton {
                                             is_active: is_tags,
-                                            tooltip: rsx!("Tags / Jobs 管理"),
+                                            tooltip: rsx!("Tags 管理"),
                                             as: move |attributes: Vec<Attribute>| rsx! {
                                                 button {
                                                     onclick: move |_| {
@@ -112,7 +114,23 @@ pub fn AdminLayout() -> Element {
                                                     },
                                                     ..attributes,
                                                     TagsIcon {}
-                                                    span { "Tags / Jobs 管理" }
+                                                    span { "Tags 管理" }
+                                                }
+                                            },
+                                        }
+                                    }
+                                    SidebarMenuItem {
+                                        SidebarMenuButton {
+                                            is_active: is_job,
+                                            tooltip: rsx!("Job 管理"),
+                                            as: move |attributes: Vec<Attribute>| rsx! {
+                                                button {
+                                                    onclick: move |_| {
+                                                        let _ = navigator_for_job.push(Route::AdminJobView {});
+                                                    },
+                                                    ..attributes,
+                                                    ScrollTextIcon {}
+                                                    span { "Job 管理" }
                                                 }
                                             },
                                         }
@@ -148,7 +166,15 @@ pub fn AdminLayout() -> Element {
                             div { class: "min-w-0",
                                 div { class: "font-mono text-[11px] tracking-widest text-secondary-5", "ADMIN PANEL" }
                                 h1 { class: "truncate text-sm font-semibold text-secondary-3 md:text-base",
-                                    if is_projects { "Project Management" } else { "Tags / Jobs Management" }
+                                    if is_projects {
+                                        "Project Management"
+                                    } else if is_tags {
+                                        "Tags Management"
+                                    } else if is_job {
+                                        "Job Management"
+                                    } else {
+                                        "Admin Management"
+                                    }
                                 }
                             }
                         }

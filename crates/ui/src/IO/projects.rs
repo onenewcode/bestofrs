@@ -21,6 +21,19 @@ pub async fn list_projects(page: Pagination) -> ServerFnResult<Page<ProjectDto>>
     Ok(projects_page.map(ProjectDto::from))
 }
 
+#[post("/api/projects/search", state: State)]
+pub async fn search_projects(key: String, page: Pagination) -> ServerFnResult<Page<ProjectDto>> {
+    let app_state = state.0;
+    let projects_page = app_state
+        .project
+        .query
+        .search_by_key(key, page)
+        .await
+        .map_err(api_error)?;
+
+    Ok(projects_page.map(ProjectDto::from))
+}
+
 #[post("/api/projects/import", state: State)]
 pub async fn import_projects(
     items: Vec<ProjectImportItem>,

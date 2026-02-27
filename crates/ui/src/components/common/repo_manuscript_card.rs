@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-
+use crate::components::ui::avatar::{Avatar, AvatarFallback, AvatarImage, AvatarImageSize};
 use crate::root::Route;
 use crate::types::repos::RepoDto;
 
@@ -25,15 +25,39 @@ pub fn RepoManuscriptCard(repo: RepoDto) -> Element {
         format!("https://github.com/{owner}/{name}")
     };
     let homepage = homepage_url.as_deref().and_then(normalize_url);
-    let avatar_src = avatar_url
-        .or_else(|| {
-            if owner.is_empty() {
-                None
-            } else {
-                Some(format!("https://github.com/{owner}.png"))
-            }
-        })
-        .unwrap_or_else(|| "https://github.com/github.png".to_string());
+    let favicon_url = homepage
+        .as_ref()
+        .map(|v| format!("{}/favicon.ico", v.trim_end_matches('/')));
+    let owner_avatar_url = if owner.is_empty() {
+        None
+    } else {
+        Some(format!("https://github.com/{owner}.png"))
+    };
+    let mut avatar_candidates = Vec::<String>::new();
+    if let Some(url) = favicon_url {
+        avatar_candidates.push(url);
+    }
+    if let Some(url) = avatar_url {
+        if !avatar_candidates.contains(&url) {
+            avatar_candidates.push(url);
+        }
+    }
+    if let Some(url) = owner_avatar_url {
+        if !avatar_candidates.contains(&url) {
+            avatar_candidates.push(url);
+        }
+    }
+    let github_fallback = "https://github.com/github.png".to_string();
+    if !avatar_candidates.contains(&github_fallback) {
+        avatar_candidates.push(github_fallback);
+    }
+    let avatar_candidates_for_error = avatar_candidates.clone();
+    let mut avatar_index = use_signal(|| 0usize);
+    let avatar_fallback = name
+        .chars()
+        .next()
+        .map(|c| c.to_ascii_uppercase().to_string())
+        .unwrap_or_else(|| "?".to_string());
 
     let route = if owner.is_empty() {
         Route::HomeView {}
@@ -54,10 +78,29 @@ pub fn RepoManuscriptCard(repo: RepoDto) -> Element {
                 div { class: "flex min-w-0 items-start gap-4",
                     div { class: "relative h-14 w-14 shrink-0",
                         div { class: "absolute left-1 top-1 h-14 w-14 border border-primary-6 bg-screentone" }
-                        img {
-                            class: "relative z-10 h-14 w-14 border border-primary-6 bg-primary object-cover grayscale contrast-125 transition-all group-hover:grayscale-0",
-                            src: avatar_src,
-                            alt: "{display_name} avatar",
+                        if let Some(src) = avatar_candidates.get(avatar_index()).cloned() {
+                            Avatar {
+                                key: "{src}",
+                                class: "relative z-10 h-14 w-14 border border-primary-6 bg-primary grayscale contrast-125 transition-all group-hover:grayscale-0",
+                                size: AvatarImageSize::Large,
+                                on_error: move |_| {
+                                    let next = avatar_index() + 1;
+                                    if next < avatar_candidates_for_error.len() {
+                                        avatar_index.set(next);
+                                    } else {
+                                        avatar_index.set(usize::MAX);
+                                    }
+                                },
+                                AvatarImage {
+                                    src: src,
+                                    alt: "{display_name} avatar",
+                                }
+                                AvatarFallback { "{avatar_fallback}" }
+                            }
+                        } else {
+                            div { class: "relative z-10 flex h-14 w-14 items-center justify-center border border-primary-6 bg-primary-2 font-bold text-secondary-4",
+                                "{avatar_fallback}"
+                            }
                         }
                     }
                     div { class: "min-w-0",

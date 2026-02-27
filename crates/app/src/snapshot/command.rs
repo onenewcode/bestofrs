@@ -119,7 +119,6 @@ impl IngestDailySnapshots {
                     let avatar_url = Self::resolve_avatar_url(
                         p.id.as_str(),
                         p.avatar_url.as_deref(),
-                        homepage_url.as_deref(),
                         repo.owner_avatar_url.as_deref(),
                     );
 
@@ -127,6 +126,7 @@ impl IngestDailySnapshots {
                         id: p.id.clone(),
                         github_repo_id: Some(repo.id),
                         full_name: Some(repo.full_name),
+                        description: repo.description,
                         homepage_url,
                         avatar_url,
                         stars: repo.stargazers_count,
@@ -183,12 +183,10 @@ impl IngestDailySnapshots {
     fn resolve_avatar_url(
         repo_id: &str,
         project_avatar_url: Option<&str>,
-        homepage_url: Option<&str>,
         owner_avatar_url: Option<&str>,
     ) -> Option<String> {
         project_avatar_url
             .and_then(Self::normalize_url)
-            .or_else(|| Self::homepage_favicon_url(homepage_url))
             .or_else(|| owner_avatar_url.and_then(Self::normalize_url))
             .or_else(|| {
                 let owner = repo_id.split('/').next()?;
@@ -197,11 +195,6 @@ impl IngestDailySnapshots {
                 }
                 Some(format!("https://github.com/{owner}.png"))
             })
-    }
-
-    fn homepage_favicon_url(homepage_url: Option<&str>) -> Option<String> {
-        let homepage = homepage_url.and_then(Self::normalize_url)?;
-        Some(format!("{}/favicon.ico", homepage.trim_end_matches('/')))
     }
 
     fn normalize_url(value: &str) -> Option<String> {

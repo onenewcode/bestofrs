@@ -49,6 +49,7 @@ impl GithubClient {
 struct GithubRepoResponse {
     id: i64,
     full_name: String,
+    description: Option<String>,
     homepage: Option<String>,
     owner: GithubRepoOwner,
     stargazers_count: i64,
@@ -87,6 +88,10 @@ impl GithubGateway for GithubClient {
         Ok(GithubRepoInfo {
             id: repo.id,
             full_name: repo.full_name,
+            description: repo
+                .description
+                .map(|v| v.trim().to_string())
+                .filter(|v| !v.is_empty()),
             homepage: repo
                 .homepage
                 .map(|v| v.trim().to_string())

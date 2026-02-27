@@ -22,3 +22,11 @@ pub fn AdminTags() -> Element {
         IOCell { TagsManagement {} }
     }
 }
+
+#[component]
+pub fn AdminJob() -> Element {
+    rsx! {
+        document::Link { rel: "stylesheet", href: asset!("./style.css") }
+        IOCell { IngestDailySnapshotsControl {} }
+    }
+}

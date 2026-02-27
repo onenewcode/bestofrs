@@ -26,56 +26,41 @@ pub fn DeltasSection(owner: String, name: String, refresh_tick: Signal<u32>) -> 
             h3 { class: "text-sm font-semibold text-secondary-4", "Daily deltas" }
             match deltas_fut() {
                 Some(Ok(page)) => {
-                    let labels = page
-                        .items
+                    let mut sorted_items = page.items.clone();
+                    sorted_items.sort_by(|a, b| a.snapshot_date.cmp(&b.snapshot_date));
+
+                    let labels = sorted_items
                         .iter()
                         .map(|item| short_date_label(&item.snapshot_date))
                         .collect::<Vec<_>>();
-                    let stars_deltas = page
-                        .items
+                    let stars_deltas = sorted_items
                         .iter()
                         .map(|item| item.stars_delta.unwrap_or(0))
                         .collect::<Vec<_>>();
+                    let forks_deltas = sorted_items
+                        .iter()
+                        .map(|item| item.forks_delta.unwrap_or(0))
+                        .collect::<Vec<_>>();
+                    let issues_deltas = sorted_items
+                        .iter()
+                        .map(|item| item.open_issues_delta.unwrap_or(0))
+                        .collect::<Vec<_>>();
                     let delta_chart_id = chart_dom_id(&owner, &name, "delta");
                     let delta_chart_width = chart_min_width_px(labels.len()) as u32;
-                    let delta_config = build_delta_chart_config(labels, stars_deltas);
+                    let delta_config =
+                        build_delta_chart_config(labels, stars_deltas, forks_deltas, issues_deltas);
 
                     rsx! {
                         div { class: "text-sm text-secondary-5", "count: {page.meta.total}" }
                         if page.items.is_empty() {
                             div { class: "text-sm text-secondary-5", "No delta data" }
                         } else {
-                            div { class: "space-y-3",
-                                div { class: "border border-primary-6 bg-primary-1 p-3",
-                                    ChartJsCanvas {
-                                        chart_id: delta_chart_id,
-                                        config: delta_config,
-                                        height_px: 280,
-                                        min_width_px: delta_chart_width,
-                                    }
-                                }
-
-                                div { class: "max-h-[240px] space-y-2 overflow-auto",
-                                    for d in page.items {
-                                        div {
-                                            key: "{d.snapshot_date}",
-                                            class: "rounded-md border border-primary-6 bg-primary-1 px-3 py-2 text-sm",
-                                            div { class: "flex items-center justify-between",
-                                                span { class: "font-medium", "{d.snapshot_date}" }
-                                                span {
-                                                    class: if d.stars_delta.unwrap_or(0) >= 0 { "text-green-600" } else { "text-red-600" },
-                                                    if d.stars_delta.unwrap_or(0) >= 0 {
-                                                        "+{d.stars_delta.unwrap_or(0)}"
-                                                    } else {
-                                                        "{d.stars_delta.unwrap_or(0)}"
-                                                    }
-                                                }
-                                            }
-                                            div { class: "text-xs text-secondary-5",
-                                                "forks: {d.forks_delta:?} | issues: {d.open_issues_delta:?} | watchers: {d.watchers_delta:?}"
-                                            }
-                                        }
-                                    }
+                            div { class: "border border-primary-6 bg-primary-1 p-3",
+                                ChartJsCanvas {
+                                    chart_id: delta_chart_id,
+                                    config: delta_config,
+                                    height_px: 320,
+                                    min_width_px: delta_chart_width,
                                 }
                             }
                         }

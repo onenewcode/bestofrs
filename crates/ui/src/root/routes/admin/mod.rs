@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::views::admin::{AdminProjects, AdminTags};
+use crate::components::views::admin::{AdminJob, AdminProjects, AdminTags};
 
 #[component]
 pub fn AdminProjectsView() -> Element {
@@ -10,4 +10,9 @@ pub fn AdminProjectsView() -> Element {
 #[component]
 pub fn AdminTagsView() -> Element {
     rsx! { AdminTags {} }
+}
+
+#[component]
+pub fn AdminJobView() -> Element {
+    rsx! { AdminJob {} }
 }

@@ -134,6 +134,57 @@ impl ProjectRepo for SqliteProjectRepo {
         Ok(page.to_page(items, total as u64))
     }
 
+    async fn search_by_key(&self, key: String, page: Pagination) -> AppResult<Page<Project>> {
+        let limit = page.limit();
+        let offset = page.offset();
+        let key = key.trim();
+        if key.is_empty() {
+            return Ok(page.to_page(Vec::new(), 0));
+        }
+        let pattern = format!("%{key}%");
+
+        let total: i64 = sqlx::query_scalar(
+            r#"
+            SELECT COUNT(*)
+            FROM projects
+            WHERE repo_id LIKE ? OR name LIKE ? OR slug LIKE ? OR description LIKE ?
+            "#,
+        )
+        .bind(&pattern)
+        .bind(&pattern)
+        .bind(&pattern)
+        .bind(&pattern)
+        .fetch_one(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let rows: Vec<ProjectDb> = sqlx::query_as(
+            r#"
+            SELECT
+              repo_id,
+              name, slug, description,
+              url, avatar_url,
+              status, logo, twitter
+            FROM projects
+            WHERE repo_id LIKE ? OR name LIKE ? OR slug LIKE ? OR description LIKE ?
+            ORDER BY name ASC
+            LIMIT ? OFFSET ?
+            "#,
+        )
+        .bind(&pattern)
+        .bind(&pattern)
+        .bind(&pattern)
+        .bind(&pattern)
+        .bind(limit as i64)
+        .bind(offset as i64)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(db_err)?;
+
+        let items = rows.into_iter().map(Into::into).collect();
+        Ok(page.to_page(items, total as u64))
+    }
+
     async fn remove(&self, repo_id: String) -> AppResult<()> {
         sqlx::query("DELETE FROM projects WHERE repo_id = ?")
             .bind(repo_id)

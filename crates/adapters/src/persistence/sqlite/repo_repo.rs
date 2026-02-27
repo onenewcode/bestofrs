@@ -11,6 +11,7 @@ struct RepoDb {
     id: String,
     github_repo_id: Option<i64>,
     full_name: Option<String>,
+    description: Option<String>,
     homepage_url: Option<String>,
     avatar_url: Option<String>,
     stars: i64,
@@ -27,6 +28,7 @@ impl From<RepoDb> for Repo {
             id: RepoId::new_unchecked(db.id),
             github_repo_id: db.github_repo_id,
             full_name: db.full_name,
+            description: db.description,
             homepage_url: db.homepage_url,
             avatar_url: db.avatar_url,
             stars: db.stars,
@@ -66,7 +68,7 @@ impl RepoRepo for SqliteRepoRepo {
         let mut builder: QueryBuilder<Sqlite> = QueryBuilder::new(
             r#"
             INSERT INTO repos (
-              id, github_repo_id, full_name,
+              id, github_repo_id, full_name, description,
               homepage_url, avatar_url,
               stars, forks, open_issues, watchers,
               last_fetched_at, etag,
@@ -79,6 +81,7 @@ impl RepoRepo for SqliteRepoRepo {
             b.push_bind(r.id.as_str())
                 .push_bind(r.github_repo_id)
                 .push_bind(&r.full_name)
+                .push_bind(&r.description)
                 .push_bind(&r.homepage_url)
                 .push_bind(&r.avatar_url)
                 .push_bind(r.stars)
@@ -95,6 +98,7 @@ impl RepoRepo for SqliteRepoRepo {
             ON CONFLICT(id) DO UPDATE SET
               github_repo_id = excluded.github_repo_id,
               full_name = excluded.full_name,
+              description = excluded.description,
               homepage_url = excluded.homepage_url,
               avatar_url = excluded.avatar_url,
               stars = excluded.stars,
@@ -118,7 +122,7 @@ impl RepoRepo for SqliteRepoRepo {
         let row: Option<RepoDb> = sqlx::query_as(
             r#"
             SELECT
-              id, github_repo_id, full_name,
+              id, github_repo_id, full_name, description,
               homepage_url, avatar_url,
               stars, forks, open_issues, watchers,
               last_fetched_at, etag
@@ -145,7 +149,7 @@ impl RepoRepo for SqliteRepoRepo {
         let rows: Vec<RepoDb> = sqlx::query_as(
             r#"
             SELECT
-              id, github_repo_id, full_name,
+              id, github_repo_id, full_name, description,
               homepage_url, avatar_url,
               stars, forks, open_issues, watchers,
               last_fetched_at, etag
@@ -185,7 +189,7 @@ impl RepoRepo for SqliteRepoRepo {
         let rows: Vec<RepoDb> = sqlx::query_as(
             r#"
             SELECT
-              r.id, r.github_repo_id, r.full_name,
+              r.id, r.github_repo_id, r.full_name, r.description,
               r.homepage_url, r.avatar_url,
               r.stars, r.forks, r.open_issues, r.watchers,
               r.last_fetched_at, r.etag
