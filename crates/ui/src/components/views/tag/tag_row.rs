@@ -22,7 +22,7 @@ pub fn TagRow(tag: TagListItemDto, index: usize) -> Element {
     rsx! {
         article { class: "group relative overflow-hidden border-b border-primary-6 px-8 py-24 last:border-0",
             div {
-                class: "relative z-0 mb-[-10px] whitespace-nowrap text-7xl font-bold leading-none tracking-tighter opacity-80 md:mb-[-20px] md:text-[180px]",
+                class: "relative z-0 mb-[-10px] font-mono whitespace-nowrap text-7xl font-bold leading-none tracking-tighter opacity-80 md:mb-[-20px] md:text-[180px]",
                 style: "-webkit-text-stroke: 1px color-mix(in oklab, var(--secondary-color) 22%, transparent); color: transparent;",
                 "{outlined}"
             }

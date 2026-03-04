@@ -329,7 +329,7 @@ fn RepoListIO(
 
             rsx! {
                 div { class: "space-y-8",
-                    div { class: "flex items-center justify-between gap-4 border border-primary-6 bg-primary px-4 py-3",
+                    div { class: "flex items-center justify-between gap-4 border border-primary-6 px-4 py-3",
                         div { class: "text-xs font-mono tracking-wide text-secondary-5",
                             if active_tags.is_empty() {
                                 "ENTRIES: "
