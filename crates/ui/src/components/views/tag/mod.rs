@@ -87,7 +87,13 @@ pub fn TagList() -> Element {
                                 } else {
                                     div {
                                         for (index , tag) in page.items.into_iter().enumerate() {
-                                            TagRow { key: "{tag.label}:{tag.value}", tag, index }
+                                            TagRow {
+                                                key: "{tag.label}:{tag.value}",
+                                                tag,
+                                                index,
+                                                current_page: current_page(),
+                                                page_size: page_size(),
+                                            }
                                         }
                                     }
                                 }

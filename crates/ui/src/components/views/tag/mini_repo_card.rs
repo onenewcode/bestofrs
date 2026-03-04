@@ -22,14 +22,14 @@ pub fn MiniRepoCard(repo: TagTopRepoDto) -> Element {
     let avatar_style = format!("transform: translate({translate}px, {translate}px);");
     let repo_name = repo.repo_id.to_uppercase();
     let base_style = if is_hovered() {
-        "border-color: var(--grid-accent); background-color: color-mix(in oklab, var(--grid-accent) 20%, transparent);"
+        "background-color: color-mix(in oklab, var(--grid-accent) 20%, transparent);"
     } else {
-        "border-color: var(--primary-color-6); background-color: color-mix(in oklab, var(--primary-color-6) 36%, transparent);"
+        "background-color: color-mix(in oklab, var(--primary-color-6) 36%, transparent);"
     };
     let avatar_ring_style = if is_hovered() {
-        "border-color: var(--grid-accent); box-shadow: 0 0 20px color-mix(in oklab, var(--grid-accent) 30%, transparent);"
+        "box-shadow: 0 0 20px color-mix(in oklab, var(--grid-accent) 30%, transparent);"
     } else {
-        "border-color: var(--primary-color-6);"
+        ""
     };
     let tooltip_style = "color: var(--grid-accent);";
 
@@ -43,14 +43,18 @@ pub fn MiniRepoCard(repo: TagTopRepoDto) -> Element {
                     class: "contents",
                     to: Route::RepoDetailView { owner, name },
                     div {
-                        class: "absolute inset-0 translate-x-[10px] translate-y-[10px] rounded-full border transition-all duration-300 ease-out",
+                        class: if is_hovered() {
+                            "absolute inset-0 translate-x-[10px] translate-y-[10px] rounded-full border border-[var(--grid-accent)] transition-all duration-300 ease-out"
+                        } else {
+                            "absolute inset-0 translate-x-[10px] translate-y-[10px] rounded-full border border-primary-6 transition-all duration-300 ease-out"
+                        },
                         style: "{base_style}",
                     }
                     div {
                         class: if is_hovered() {
-                            "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 bg-primary-1 transition-all duration-300 ease-out"
+                            "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 border-[var(--grid-accent)] bg-primary-1 transition-all duration-300 ease-out"
                         } else {
-                            "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 bg-primary-1 grayscale transition-all duration-300 ease-out"
+                            "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 border-primary-6 bg-primary-1 grayscale transition-all duration-300 ease-out"
                         },
                         style: "{avatar_style} {avatar_ring_style}",
                         RepoAvatar {
@@ -76,14 +80,18 @@ pub fn MiniRepoCard(repo: TagTopRepoDto) -> Element {
                 onmouseenter: move |_| is_hovered.set(true),
                 onmouseleave: move |_| is_hovered.set(false),
                 div {
-                    class: "absolute inset-0 translate-x-[10px] translate-y-[10px] rounded-full border transition-all duration-300 ease-out",
+                    class: if is_hovered() {
+                        "absolute inset-0 translate-x-[10px] translate-y-[10px] rounded-full border border-[var(--grid-accent)] transition-all duration-300 ease-out"
+                    } else {
+                        "absolute inset-0 translate-x-[10px] translate-y-[10px] rounded-full border border-primary-6 transition-all duration-300 ease-out"
+                    },
                     style: "{base_style}",
                 }
                 div {
                     class: if is_hovered() {
-                        "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 bg-primary-1 transition-all duration-300 ease-out"
+                        "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 border-[var(--grid-accent)] bg-primary-1 transition-all duration-300 ease-out"
                     } else {
-                        "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 bg-primary-1 grayscale transition-all duration-300 ease-out"
+                        "relative z-10 h-12 w-12 overflow-hidden rounded-full border-4 border-primary-6 bg-primary-1 grayscale transition-all duration-300 ease-out"
                     },
                     style: "{avatar_style} {avatar_ring_style}",
                     RepoAvatar {
