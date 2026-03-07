@@ -24,7 +24,7 @@ pub fn RootLayout() -> Element {
     use_context_provider(|| user_state);
     let me_fut = use_server_future(move || me())?;
 
-    // Initialize theme
+    // Init theme
     use_effect(move || {
         theme_seed();
     });
@@ -44,10 +44,8 @@ pub fn RootLayout() -> Element {
 
     rsx! {
         ToastProvider {
-            div { class: "min-h-screen overflow-x-hidden bg-primary text-secondary-5",
-                ScrollProgress {}
-                Outlet::<Route> {}
-            }
+            ScrollProgress {}
+            Outlet::<Route> {}
         }
     }
 }

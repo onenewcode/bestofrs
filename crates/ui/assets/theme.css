@@ -178,3 +178,17 @@
 .shadow-comic-sm {
   box-shadow: 2px 2px 0 0 color-mix(in oklab, var(--primary-color-6) 70%, transparent);
 }
+
+#root-scroll-progress::-webkit-progress-bar {
+  background: var(--primary-color-6);
+}
+
+#root-scroll-progress::-webkit-progress-value {
+  background: var(--secondary-color-3);
+  transition: width 100ms ease-out;
+}
+
+#root-scroll-progress::-moz-progress-bar {
+  background: var(--secondary-color-3);
+  transition: width 100ms ease-out;
+}

@@ -11,7 +11,7 @@ pub fn Footer() -> Element {
     rsx! {
         footer { class: "relative mt-auto h-full min-h-[340px] overflow-hidden border-t border-dashed border-primary-6 bg-transparent",
             div { class: "pointer-events-none absolute inset-x-0 bottom-0 h-[460px] overflow-hidden -z-0",
-                GearMap { count: 7, class: "text-secondary-6/60", height: 460 }
+                GearMap { count: 7, class: "text-secondary-6/60", height: 460, seed: 12 }
             }
             div { class: "relative z-10 flex h-full min-h-[340px] flex-col px-6 py-8 md:px-10",
                 div { class: "grid flex-1 grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-12",

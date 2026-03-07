@@ -1,0 +1,94 @@
+.hero-block::before {
+  content: '';
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 136vw;
+  height: 136vw;
+  border-radius: 50%;
+  border: 8px solid var(--primary-color);
+  background: var(--primary-color);
+  clip-path: inset(50% 0 0 0);
+  box-shadow:
+    0 0 12px var(--primary-color),
+    0 12px 12px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  z-index: 6;
+}
+
+.hero-block::after {
+  content: '';
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 140vw;
+  height: 140vw;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg,
+      #ff0000,
+      #ff7f00,
+      #ffff00,
+      #00ff00,
+      #0000ff,
+      #4b0082,
+      #8b00ff,
+      #ff0000);
+  filter: blur(60px);
+  opacity: 0.4;
+  animation: rotate-rainbow 12s linear infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes rotate-rainbow {
+  from {
+    transform: translate(-50%, 50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, 50%) rotate(360deg);
+  }
+}
+
+.rank-card {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.rank-card:hover {
+  border-top-color: color-mix(in oklab, var(--rank-accent) 38%, var(--primary-color-6));
+  border-right-color: color-mix(in oklab, var(--rank-accent) 38%, var(--primary-color-6));
+  border-bottom-color: color-mix(in oklab, var(--rank-accent) 38%, var(--primary-color-6));
+  box-shadow: 0 10px 20px -14px color-mix(in oklab, var(--rank-accent) 68%, transparent);
+}
+
+.rank-card:hover .rank-card-number {
+  color: color-mix(in oklab, var(--rank-accent) 78%, var(--secondary-color-2));
+}
+
+.rank-card:hover .rank-card-title {
+  color: color-mix(in oklab, var(--rank-accent) 74%, var(--secondary-color-2));
+}
+
+.rank-card:hover .rank-card-icon {
+  color: color-mix(in oklab, var(--rank-accent) 92%, var(--secondary-color-2)) !important;
+}
+
+.rank-card:hover .rank-card-avatar {
+  border-color: color-mix(in oklab, var(--rank-accent) 78%, var(--primary-color-6)) !important;
+}
+
+.rank-card:hover .rank-card-tail {
+  background: color-mix(in oklab, var(--rank-accent) 86%, var(--secondary-color-2));
+}
+
+.rank-card-tag {
+  transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+.rank-card:hover .rank-card-tag {
+  border-color: color-mix(in oklab, var(--rank-accent) 56%, var(--primary-color-6)) !important;
+  background: color-mix(in oklab, var(--rank-accent) 16%, var(--primary-color)) !important;
+  color: color-mix(in oklab, var(--rank-accent) 60%, var(--secondary-color-4));
+}

@@ -9,8 +9,7 @@ function update_scroll_progress() {
   const scrollableHeight = Math.max(doc.scrollHeight - window.innerHeight, 0);
   const ratio = scrollableHeight > 0 ? scrollTop / scrollableHeight : 0;
   const progress = Math.min(100, Math.max(0, ratio * 100));
-
-  bar.style.width = `${progress}%`;
+  bar.value = progress;
   bar.setAttribute("aria-valuenow", `${Math.round(progress)}`);
 }
 
