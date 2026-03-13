@@ -74,6 +74,7 @@
 }
 
 @theme inline {
+  --color-grid-accent: var(--grid-accent);
   --color-primary: var(--primary-color);
   --color-primary-1: var(--primary-color-1);
   --color-primary-2: var(--primary-color-2);

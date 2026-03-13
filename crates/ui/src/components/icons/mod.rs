@@ -25,6 +25,46 @@ pub fn ArrowLeftIcon(
     }
 }
 
+#[component]
+pub fn MenuIcon(
+    #[props(default = 24)] width: u32,
+    #[props(default = 24)] height: u32,
+    #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
+) -> Element {
+    rsx! {
+        svg {
+            class: "lucide lucide-menu-icon lucide-menu",
+            fill: "none",
+            height: "{height}",
+            stroke: "currentColor",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            stroke_width: "2",
+            view_box: "0 0 24 24",
+            width: "{width}",
+            xmlns: "http://www.w3.org/2000/svg",
+            ..attributes,
+            line {
+                x1: "4",
+                y1: "7",
+                x2: "20",
+                y2: "7",
+            }
+            line {
+                x1: "8",
+                y1: "12",
+                x2: "20",
+                y2: "12",
+            }
+            line {
+                x1: "4",
+                y1: "17",
+                x2: "20",
+                y2: "17",
+            }
+        }
+    }
+}
 
 #[component]
 pub fn MoonIcon(
@@ -305,7 +345,6 @@ pub fn UsersRoundIcon(
         }
     }
 }
-
 
 #[component]
 pub fn ArrowRightIcon(

@@ -4,6 +4,7 @@ use crate::components::common::{
     CommonPagination, GradientDirection, GridBackground, GridPadding, GridPattern, GridType,
     GridWrapper, IOCell,
 };
+use crate::components::icons::MenuIcon;
 use crate::components::select::{
     Select, SelectGroup, SelectGroupLabel, SelectItemIndicator, SelectList, SelectOption,
     SelectTrigger, SelectValue,
@@ -71,33 +72,10 @@ fn TagRouteMenu() -> Element {
             onmouseenter: move |_| ctx.menu_hovered.set(true),
             onmouseleave: move |_| ctx.menu_hovered.set(false),
             div { class: "relative text-right",
-                div { class: if hovered { "mb-2 inline-flex h-10 w-10 items-center justify-center text-[var(--grid-accent)] transition-colors" } else { "mb-2 inline-flex h-10 w-10 items-center justify-center text-secondary-6 transition-colors" },
-                    svg {
-                        width: "18",
-                        height: "18",
-                        view_box: "0 0 24 24",
-                        fill: "none",
-                        stroke: "currentColor",
-                        stroke_width: "2",
-                        stroke_linecap: "round",
-                        line {
-                            x1: "4",
-                            y1: "7",
-                            x2: "20",
-                            y2: "7",
-                        }
-                        line {
-                            x1: "4",
-                            y1: "12",
-                            x2: "20",
-                            y2: "12",
-                        }
-                        line {
-                            x1: "4",
-                            y1: "17",
-                            x2: "20",
-                            y2: "17",
-                        }
+                div { class: if hovered { "mb-2 inline-flex h-10 w-10 items-center justify-center text-grid-accent transition-colors" } else { "mb-2 inline-flex h-10 w-10 items-center justify-center text-secondary-6 transition-colors" },
+                    MenuIcon {
+                        width: 18,
+                        height: 18,
                     }
                 }
                 div { class: if hovered { "absolute right-0 top-10 w-64 max-h-[calc(100vh-7.5rem)] overflow-auto space-y-1 pr-1 opacity-100 transition-opacity duration-150" } else { "pointer-events-none absolute right-0 top-10 w-64 max-h-0 overflow-hidden opacity-0 transition-opacity duration-150" },
@@ -106,7 +84,7 @@ fn TagRouteMenu() -> Element {
                             a {
                                 key: "{item.value}",
                                 href: "#{item.value}",
-                                class: "block px-2 py-1 text-sm font-mono text-secondary-6 hover:text-[var(--grid-accent)] transition-colors",
+                                class: "block px-2 py-1 text-sm font-mono text-secondary-6 hover:text-grid-accent transition-colors",
                                 "{item.label}"
                             }
                         }
@@ -162,14 +140,12 @@ pub fn TagList() -> Element {
                             div { class: "text-xs font-mono tracking-wide text-secondary-5",
                                 "List "
                                 span {
-                                    class: "font-semibold",
-                                    style: "color: var(--grid-accent);",
+                                    class: "font-semibold text-grid-accent",
                                     "{summary().from}-{summary().to}"
                                 }
                                 " of "
                                 span {
-                                    class: "font-semibold",
-                                    style: "color: var(--grid-accent);",
+                                    class: "font-semibold text-grid-accent",
                                     "{summary().total}"
                                 }
                             }

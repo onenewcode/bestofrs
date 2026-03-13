@@ -2,17 +2,16 @@ use dioxus::prelude::*;
 
 use crate::IO::repos::get_repo_readme;
 use crate::components::common::CommonMarkdown;
+use super::RepoDetailContext;
+
+pub(super) mod skeleton;
 
 #[component]
-pub fn ReadmeSection(owner: String, name: String, refresh_tick: Signal<u32>) -> Element {
-    let readme_fut = use_server_future({
-        let owner = owner.clone();
-        let name = name.clone();
-        move || {
-            let _ = refresh_tick();
-            get_repo_readme(owner.clone(), name.clone())
-        }
-    })?;
+pub(crate) fn ReadmeSection() -> Element {
+    let ctx = use_context::<RepoDetailContext>();
+    let owner = ctx.owner;
+    let name = ctx.name;
+    let readme_fut = use_server_future(move || get_repo_readme(owner(), name()))?;
 
     rsx! {
         section { class: "space-y-4 border border-primary-6 bg-primary p-5 shadow-comic-sm",
@@ -33,7 +32,7 @@ pub fn ReadmeSection(owner: String, name: String, refresh_tick: Signal<u32>) -> 
                 },
                 Some(Ok(None)) => rsx! { div { class: "text-sm text-secondary-5", "README not found" } },
                 Some(Err(e)) => Err(e)?,
-                None => rsx! { div { class: "text-sm text-secondary-5", "Loading README..." } },
+                None => rsx! { skeleton::ReadmeSectionSkeleton {} },
             }
         }
     }
