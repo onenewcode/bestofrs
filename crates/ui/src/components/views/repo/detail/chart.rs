@@ -37,7 +37,7 @@ pub(super) fn build_trend_chart_config(
             "labels": labels,
             "datasets": [
                 {
-                    "label": "stars",
+                    "label": "STARS",
                     "data": stars_series,
                     "borderColor": "#2563eb",
                     "backgroundColor": "rgba(37, 99, 235, 0.15)",
@@ -46,7 +46,7 @@ pub(super) fn build_trend_chart_config(
                     "tension": 0.25
                 },
                 {
-                    "label": "forks",
+                    "label": "FORKS",
                     "data": forks_series,
                     "borderColor": "#7c3aed",
                     "backgroundColor": "rgba(124, 58, 237, 0.15)",
@@ -55,7 +55,7 @@ pub(super) fn build_trend_chart_config(
                     "tension": 0.25
                 },
                 {
-                    "label": "open_issues",
+                    "label": "ISSUES",
                     "data": issues_series,
                     "borderColor": "#f59e0b",
                     "backgroundColor": "rgba(245, 158, 11, 0.15)",
@@ -64,7 +64,7 @@ pub(super) fn build_trend_chart_config(
                     "tension": 0.25
                 },
                 {
-                    "label": "watchers",
+                    "label": "WATCHERS",
                     "data": watchers_series,
                     "borderColor": "#10b981",
                     "backgroundColor": "rgba(16, 185, 129, 0.15)",
@@ -112,21 +112,21 @@ pub(super) fn build_delta_chart_config(
             "labels": labels,
             "datasets": [
                 {
-                    "label": "stars_delta",
+                    "label": "ΔSTARS",
                     "data": stars_deltas,
                     "backgroundColor": "rgba(16, 185, 129, 0.7)",
                     "borderColor": "#10b981",
                     "borderWidth": 1
                 },
                 {
-                    "label": "forks_delta",
+                    "label": "ΔFORKS",
                     "data": forks_deltas,
                     "backgroundColor": "rgba(124, 58, 237, 0.7)",
                     "borderColor": "#7c3aed",
                     "borderWidth": 1
                 },
                 {
-                    "label": "open_issues_delta",
+                    "label": "ΔISSUES",
                     "data": issues_deltas,
                     "backgroundColor": "rgba(245, 158, 11, 0.7)",
                     "borderColor": "#f59e0b",

@@ -1,7 +1,7 @@
-use dioxus::prelude::*;
+use super::{apply_metric_visibility, TrendContext};
 use crate::{types::snapshot_deltas::SnapshotDeltaDto, IO::repos::list_repo_deltas_in_duration};
 use app::prelude::{DurationRange, Page};
-use super::{apply_metric_visibility, TrendContext};
+use dioxus::prelude::*;
 
 use super::super::{
     build_delta_chart_config, chart_dom_id, short_date_label, ChartJsCanvas, RepoDetailContext,
@@ -73,7 +73,8 @@ fn DeltaChartContent(page: Page<SnapshotDeltaDto>) -> Element {
                 .map(|item| item.open_issues_delta.unwrap_or(0))
                 .collect::<Vec<_>>();
 
-            let config = build_delta_chart_config(labels, stars_deltas, forks_deltas, issues_deltas);
+            let config =
+                build_delta_chart_config(labels, stars_deltas, forks_deltas, issues_deltas);
             apply_metric_visibility(config, &current_metric, "delta")
         }
     });
@@ -83,7 +84,6 @@ fn DeltaChartContent(page: Page<SnapshotDeltaDto>) -> Element {
 
     rsx! {
         div { class: "flex h-full flex-col gap-2",
-            div { class: "text-sm text-secondary-5", "count: {page.meta.total}" }
             if page.items.is_empty() {
                 div { class: "text-sm text-secondary-5", "No delta data" }
             } else {
