@@ -53,12 +53,14 @@ pub fn RepoManuscriptCard(
             div { class: "relative flex shrink-0 items-center gap-3 p-4 md:w-56",
                 div { class: "relative h-16 w-16 shrink-0",
                     div { class: "absolute left-1 top-1 h-16 w-16 border border-primary-6 bg-screentone transition-all duration-200 group-hover:left-2 group-hover:top-2 group-hover:[border-color:color-mix(in_oklab,var(--grid-accent)_72%,var(--primary-color-6))] group-hover:[background-color:color-mix(in_oklab,var(--grid-accent)_18%,var(--primary-color))]" }
-                    RepoAvatar {
-                        repo_id: id.clone(),
-                        avatar_urls: avatar_urls.clone(),
-                        size: AvatarImageSize::Large,
-                        class: "relative z-10 h-16 w-16 border border-primary-6 bg-primary grayscale contrast-125 transition-all group-hover:grayscale-0",
-                        fallback_class: "relative z-10 flex h-16 w-16 items-center justify-center border border-primary-6 bg-primary-2 font-bold text-secondary-4",
+                    div { class: "relative z-10 h-16 w-16 overflow-hidden border border-primary-6 bg-primary transition-all group-hover:border-focused-border",
+                        RepoAvatar {
+                            repo_id: id.clone(),
+                            avatar_urls: avatar_urls.clone(),
+                            size: AvatarImageSize::Large,
+                            class: "h-16 w-16 bg-transparent grayscale contrast-125 transition-all group-hover:grayscale-0",
+                            fallback_class: "flex h-16 w-16 items-center justify-center bg-primary-2 font-bold text-secondary-4",
+                        }
                     }
                 }
                 div { class: "flex min-w-0 flex-1 flex-col justify-center gap-2 pl-2",

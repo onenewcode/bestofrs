@@ -50,12 +50,14 @@ pub(crate) fn MetaSection() -> Element {
                             div { class: "flex flex-col items-start gap-8 md:flex-row",
                                 div { class: "relative h-32 w-32 shrink-0 md:h-40 md:w-40",
                                     div { class: "absolute left-2 top-2 h-full w-full border-2 border-primary-6 bg-screentone" }
-                                    RepoAvatar {
-                                        repo_id: format!("{owner}/{name}"),
-                                        avatar_urls: avatar_candidates.clone(),
-                                        size: AvatarImageSize::Custom,
-                                        class: "relative z-10 h-32 w-32 border-2 border-primary-6 bg-primary shadow-comic md:h-40 md:w-40",
-                                        fallback_class: "relative z-10 flex h-32 w-32 items-center justify-center border-2 border-primary-6 bg-primary-2 text-3xl font-black text-secondary-3 md:h-40 md:w-40",
+                                    div { class: "relative z-10 h-32 w-32 border-4 border-primary-6 bg-primary shadow-comic md:h-40 md:w-40",
+                                        RepoAvatar {
+                                            repo_id: format!("{owner}/{name}"),
+                                            avatar_urls: avatar_candidates.clone(),
+                                            size: AvatarImageSize::Custom,
+                                            class: "h-32 w-32 bg-transparent md:h-40 md:w-40",
+                                            fallback_class: "flex h-32 w-32 items-center justify-center bg-primary-2 text-3xl font-black text-secondary-3 md:h-40 md:w-40",
+                                        }
                                     }
                                 }
                                 div { class: "flex min-w-0 flex-1 flex-col gap-4",
