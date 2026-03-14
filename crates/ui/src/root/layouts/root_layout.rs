@@ -1,6 +1,6 @@
 use crate::types::auth::MeDto;
 use crate::{
-    components::{toast::ToastProvider, ScrollProgress},
+    components::{toast::ToastProvider, ScrollProgress, ScrollToTop},
     root::theme::theme_seed,
     root::Route,
     IO::auth::me,
@@ -45,6 +45,7 @@ pub fn RootLayout() -> Element {
     rsx! {
         ToastProvider {
             ScrollProgress {}
+            ScrollToTop {}
             Outlet::<Route> {}
         }
     }

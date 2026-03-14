@@ -180,6 +180,15 @@
   box-shadow: 2px 2px 0 0 color-mix(in oklab, var(--primary-color-6) 70%, transparent);
 }
 
+.scroll-to-top-btn {
+  box-shadow: 2px 2px 0 0 color-mix(in oklab, var(--primary-color-6) 70%, transparent);
+}
+
+.scroll-to-top-btn:hover {
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--grid-accent) 28%, transparent),
+    4px 4px 0 0 color-mix(in oklab, var(--grid-accent) 65%, transparent);
+}
+
 #root-scroll-progress::-webkit-progress-bar {
   background: var(--primary-color-6);
 }
