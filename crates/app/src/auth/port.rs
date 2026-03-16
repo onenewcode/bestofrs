@@ -1,4 +1,4 @@
-use domain::{Role, UserId};
+use domain::{AuthUser, Role, UserId};
 
 use crate::app_error::AppResult;
 
@@ -34,4 +34,11 @@ pub trait OAuth2ResourceOwnerPort: Send + Sync {
 
 pub trait RolePolicy: Send + Sync {
     fn role_for(&self, user_id: &UserId) -> Role;
+}
+
+/// Cache for authenticated user data (e.g. backed by Redis).
+#[async_trait::async_trait]
+pub trait AuthUserCache: Send + Sync {
+    async fn get(&self, user_id: &UserId) -> Option<AuthUser>;
+    fn put(&self, user: &AuthUser);
 }

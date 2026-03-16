@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::impls::auth;
-use crate::impls::auth::{Auth, PendingOAuth, User};
+use crate::impls::auth::{Auth, PendingOAuth};
 use crate::impls::error::api_error;
 use crate::impls::state::State;
 use crate::types::auth::MeDto;
@@ -62,15 +62,8 @@ pub async fn github_login_callback(code: String, state: String) -> ServerFnResul
                 details: None,
             })?;
 
-    auth::cache_user(User {
-        id: github_id,
-        anonymous: false,
-        login: auth_user.login,
-        avatar_url: auth_user.avatar_url,
-        role: auth_user.role,
-    });
-
     auth.login_user(github_id);
+    auth.session.renew();
 
     auth.session.set_store(true);
 

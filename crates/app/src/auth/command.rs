@@ -4,7 +4,8 @@ use domain::AuthUser;
 
 use crate::app_error::AppResult;
 use crate::auth::{
-    AuthorizationRedirect, OAuth2AuthorizationCodePkcePort, OAuth2ResourceOwnerPort, RolePolicy,
+    AuthUserCache, AuthorizationRedirect, OAuth2AuthorizationCodePkcePort,
+    OAuth2ResourceOwnerPort, RolePolicy,
 };
 
 #[derive(Clone)]
@@ -12,6 +13,7 @@ pub struct AuthCommandHandler {
     oauth: Arc<dyn OAuth2AuthorizationCodePkcePort>,
     resource_owner: Arc<dyn OAuth2ResourceOwnerPort>,
     roles: Arc<dyn RolePolicy>,
+    user_cache: Arc<dyn AuthUserCache>,
 }
 
 impl AuthCommandHandler {
@@ -19,11 +21,13 @@ impl AuthCommandHandler {
         oauth: Arc<dyn OAuth2AuthorizationCodePkcePort>,
         resource_owner: Arc<dyn OAuth2ResourceOwnerPort>,
         roles: Arc<dyn RolePolicy>,
+        user_cache: Arc<dyn AuthUserCache>,
     ) -> Self {
         Self {
             oauth,
             resource_owner,
             roles,
+            user_cache,
         }
     }
 
@@ -37,11 +41,15 @@ impl AuthCommandHandler {
 
         let role = self.roles.role_for(&owner.user_id);
 
-        Ok(AuthUser {
+        let user = AuthUser {
             user_id: owner.user_id,
             login: owner.login,
             avatar_url: owner.avatar_url,
             role,
-        })
+        };
+
+        self.user_cache.put(&user);
+
+        Ok(user)
     }
 }

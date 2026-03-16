@@ -12,9 +12,14 @@ dependencies = [
  "chrono",
  "domain",
  "oauth2",
+ "redis",
+ "redis_pool",
  "reqwest",
  "serde",
+ "serde_json",
  "sqlx",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -120,6 +125,12 @@ checksum = "7eb93bbb63b9c227414f6eb3a0adfddca591a8ce1e9b60661bb08969b87e340b"
 dependencies = [
  "object",
 ]
+
+[[package]]
+name = "arcstr"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03918c3dbd7701a85c6b9887732e2921175f26c350b4563841d0958c21d57e6d"
 
 [[package]]
 name = "arraydeque"
@@ -437,6 +448,18 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "axum_session_redispool"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b4d464e656a23d1f0be118105c18b8b58c859d6448cef0b418ab905d7be3533"
+dependencies = [
+ "async-trait",
+ "axum_session",
+ "redis",
+ "redis_pool",
 ]
 
 [[package]]
@@ -776,7 +799,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba5a308b75df32fe02788e748662718f03fde005016435c444eea572398219fd"
 dependencies = [
  "bytes",
+ "futures-core",
  "memchr",
+ "pin-project-lite",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -3363,6 +3390,8 @@ dependencies = [
  "adapters",
  "app",
  "config",
+ "redis",
+ "redis_pool",
  "serde",
 ]
 
@@ -4124,7 +4153,7 @@ version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d"
 dependencies = [
- "base64 0.21.7",
+ "base64 0.22.1",
  "chrono",
  "getrandom 0.2.16",
  "http",
@@ -5137,6 +5166,45 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "20675572f6f24e9e76ef639bc5552774ed45f1c30e2951e1e99c59888861c539"
 
 [[package]]
+name = "redis"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b36964393906eb775b89b25b05b7b95685b8dd14062f1663a31ff93e75c452e5"
+dependencies = [
+ "arcstr",
+ "bytes",
+ "cfg-if",
+ "combine",
+ "futures-util",
+ "itoa",
+ "num-bigint",
+ "percent-encoding",
+ "pin-project-lite",
+ "ryu",
+ "sha1_smol",
+ "socket2",
+ "tokio",
+ "tokio-util",
+ "url",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "redis_pool"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9475439acab052cea301723b60eed31858706e100d9a4e67a3e672ebac2cd508"
+dependencies = [
+ "async-trait",
+ "crossbeam-queue",
+ "parking_lot",
+ "redis",
+ "thiserror 2.0.17",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "redox_syscall"
 version = "0.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5619,6 +5687,12 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
+
+[[package]]
+name = "sha1_smol"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbfa15b3dddfee50a0fff136974b3e1bde555604ba463834a7eb7deb6417705d"
 
 [[package]]
 name = "sha2"
@@ -6973,6 +7047,8 @@ dependencies = [
  "axum",
  "axum_session",
  "axum_session_auth",
+ "axum_session_redispool",
+ "chrono",
  "dioxus",
  "dioxus-charts",
  "dioxus-markdown",
@@ -6981,6 +7057,8 @@ dependencies = [
  "dioxus-use-js",
  "domain",
  "infra",
+ "redis",
+ "redis_pool",
  "serde",
  "serde_json",
  "tokio",
@@ -7504,7 +7582,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

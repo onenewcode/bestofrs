@@ -2,17 +2,18 @@ use std::sync::Arc;
 
 use adapters::persistence;
 use app::app_error::{AppError, AppResult};
-use app::auth::{OAuth2AuthorizationCodePkcePort, OAuth2ResourceOwnerPort};
+use app::auth::{AuthUserCache, OAuth2AuthorizationCodePkcePort, OAuth2ResourceOwnerPort};
 use app::prelude::{
-    AuthCommandHandler, IngestDailySnapshots, ProjectCommandHandler, ProjectEventHandler, ProjectQueryHandler,
-    RepoCommandHandler, RepoQueryHandler, SnapshotCommandHandler, SnapshotEventHandler,
-    SnapshotQueryHandler,
+    AuthCommandHandler, IngestDailySnapshots, ProjectCommandHandler, ProjectEventHandler,
+    ProjectQueryHandler, RepoCommandHandler, RepoQueryHandler, SnapshotCommandHandler,
+    SnapshotEventHandler, SnapshotQueryHandler,
 };
 
 use crate::config::Config as AppConfig;
-use adapters::auth::{ConfigRolePolicy, GithubOAuthAdapter};
+use adapters::auth::{ConfigRolePolicy, GithubOAuthAdapter, RedisAuthUserCache};
 use adapters::clock::SystemClock;
 use adapters::github::GithubClient;
+use redis_pool::SingleRedisPool;
 
 pub struct ProjectState {
     pub query: ProjectQueryHandler,
@@ -36,6 +37,9 @@ pub struct AuthState {
 pub struct AppContainer {
     pub config: AppConfig,
 
+    pub redis_pool: SingleRedisPool,
+    pub user_cache: Arc<dyn AuthUserCache>,
+
     pub auth: AuthState,
 
     pub project: ProjectState,
@@ -54,7 +58,6 @@ pub async fn init_app_container() -> AppResult<AppContainer> {
     let config = AppConfig::load().map_err(AppError::internal)?;
 
     let repos = persistence::build_repos_by_url(&config.database.url).await?;
-
 
     let github = Arc::new(GithubClient::new(Some(config.server.github_token.clone()))?);
 
@@ -95,8 +98,14 @@ pub async fn init_app_container() -> AppResult<AppContainer> {
 
     let role_policy = Arc::new(ConfigRolePolicy::new(config.auth.admin_github_ids.clone()));
 
+    let redis_client =
+        redis::Client::open(config.redis.url.as_str()).map_err(AppError::internal)?;
+    let redis_pool = redis_pool::RedisPool::from(redis_client);
+    let user_cache: Arc<dyn AuthUserCache> =
+        Arc::new(RedisAuthUserCache::new(redis_pool.clone()));
+
     let auth = AuthState {
-        command: AuthCommandHandler::new(oauth, resource_owner, role_policy),
+        command: AuthCommandHandler::new(oauth, resource_owner, role_policy, user_cache.clone()),
     };
 
     let clock = Arc::new(SystemClock);
@@ -112,6 +121,8 @@ pub async fn init_app_container() -> AppResult<AppContainer> {
 
     Ok(AppContainer {
         config,
+        redis_pool,
+        user_cache,
         auth,
         project,
         repo,

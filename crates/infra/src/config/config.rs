@@ -7,6 +7,8 @@ pub struct Config {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
     #[serde(default)]
+    pub redis: RedisConfig,
+    #[serde(default)]
     pub auth: AuthConfig,
 }
 
@@ -20,6 +22,17 @@ pub struct ServerConfig {
 #[derive(Debug, Clone, Deserialize)]
 pub struct DatabaseConfig {
     pub url: String,
+}
+#[derive(Debug, Clone, Deserialize)]
+pub struct RedisConfig {
+    #[serde(default)]
+    pub url: String,
+}
+
+impl Default for RedisConfig {
+    fn default() -> Self {
+        Self { url: String::new() }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]

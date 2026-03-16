@@ -10,6 +10,7 @@ app = { path = "../app" }
 
 async-trait = "0.1"
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1"
 
 chrono = { version = "0.4", default-features = false, features = [
   "clock",
@@ -24,6 +25,11 @@ oauth2 = { version = "5", default-features = false, features = [
   "reqwest",
   "rustls-tls",
 ] }
+
+redis = { version = "1.0", features = ["aio", "tokio-comp"] }
+redis_pool = "0.10"
+tokio = { version = "1.0", features = ["rt"] }
+tracing = "0.1"
 
 sqlx = { version = "0.8", default-features = false, features = [
   "runtime-tokio-rustls",

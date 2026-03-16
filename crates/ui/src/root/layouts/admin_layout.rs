@@ -151,8 +151,7 @@ pub fn AdminLayout() -> Element {
                                             ArrowLeftIcon { width: 16 }
                                         }
                                         div { class: "grid flex-1 text-left text-sm leading-tight",
-                                            span { class: "truncate font-semibold", "返回" }
-                                            span { class: "truncate text-xs", "返回首页" }
+                                            span { class: "truncate font-semibold", "back" }
                                         }
                                     }
                                 }
