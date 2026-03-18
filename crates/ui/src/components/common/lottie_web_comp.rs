@@ -15,7 +15,7 @@ pub fn LottieWebComp(
         dotlottie-wc {
             src,
             autoplay: true,
-            r#loop: true,
+            "loop": true,
             style,
         }
     }
