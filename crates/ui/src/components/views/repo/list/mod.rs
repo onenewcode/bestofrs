@@ -1,3 +1,4 @@
+use crate::components::common::{SEOHead, SEOProp};
 use dioxus::prelude::*;
 use std::collections::BTreeSet;
 
@@ -299,6 +300,16 @@ pub fn RepoList(
     });
 
     rsx! {
+        SEOHead {
+            data: SEOProp {
+                title: "Project Trends".into(),
+                description: "A ranking panel show curated Rust repositories and compare stars, forks, issues, and recent movement with daily snapshots.".into(),
+                keywords: "best of rs, rust repository list, rust ranking, rust metrics, github rust projects, rust ecosystem trends".into(),
+                canonical_url: "/repo".into(),
+                og_type: "website".into(),
+                ..Default::default()
+            },
+        }
         div { class: "min-h-screen grid grid-rows-[auto_auto_minmax(0,1fr)]",
             GridWrapper {
                 grid_type: GridType::Default,

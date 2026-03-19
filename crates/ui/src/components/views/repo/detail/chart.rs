@@ -160,6 +160,8 @@ pub(super) fn build_delta_chart_config(
     })
 }
 
+const CHART_JS_CDN: &str = "https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js";
+
 #[component]
 pub(super) fn ChartJsCanvas(
     id: ReadSignal<String>,
@@ -175,6 +177,7 @@ pub(super) fn ChartJsCanvas(
     });
 
     rsx! {
+        document::Script { src: CHART_JS_CDN, r#type: "module" },
         div { class: "border border-primary-6 bg-primary-1 p-3 h-80 {class}",
             canvas { class: "w-full h-full", id: "{id()}" }
         }

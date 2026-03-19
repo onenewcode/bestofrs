@@ -7,7 +7,7 @@ components_dir = "src/components/ui"
 [web.app]
 
 # HTML title tag content
-title = "bestofrs"
+title = "Best of Rust DEV"
 
 # include `assets` in web platform
 [web.resource]
@@ -26,3 +26,9 @@ script = []
 
 [web.wasm_opt]
 level = "0"
+debug = true
+keep_names = true
+
+[web.watcher]
+index_on_404 = true
+watch_path = ["src"]

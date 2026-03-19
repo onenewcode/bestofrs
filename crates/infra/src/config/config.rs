@@ -10,6 +10,21 @@ pub struct Config {
     pub redis: RedisConfig,
     #[serde(default)]
     pub auth: AuthConfig,
+    #[serde(default)]
+    pub web: WebConfig,
+}
+#[derive(Debug, Clone, Deserialize)]
+pub struct WebConfig {
+    #[serde(default = "default_site_url")]
+    pub site_url: String,
+}
+
+impl Default for WebConfig {
+    fn default() -> Self {
+        Self {
+            site_url: default_site_url(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -63,6 +78,10 @@ impl Default for AuthConfig {
 
 fn default_session_ttl_seconds() -> u64 {
     60 * 60 * 24 * 7
+}
+
+fn default_site_url() -> String {
+    "http://localhost:8080".to_string()
 }
 
 impl Config {

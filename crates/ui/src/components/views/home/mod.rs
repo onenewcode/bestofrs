@@ -1,3 +1,4 @@
+use crate::components::common::{SEOHead, SEOProp};
 use dioxus::prelude::*;
 
 use crate::root::Route;
@@ -8,7 +9,7 @@ use rank_panel::HomeRankPanel;
 mod action_section;
 mod faq_section;
 mod rank_panel;
-const CAT_IMAGE: Asset = asset!(
+const FERRIS_IMAGE: Asset = asset!(
     "/assets/ferris.gif",
     AssetOptions::builder().with_hash_suffix(false)
 );
@@ -17,13 +18,23 @@ const CAT_IMAGE: Asset = asset!(
 pub fn Home() -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
+        SEOHead {
+            data: SEOProp {
+                title: "Daily Trends".into(),
+                description: "Discover awesome Rust open source projects with daily tracked stars, forks, issues, and ecosystem momentum.".into(),
+                keywords: "best of rs, rust projects, rust open source, github, rust trends, rust ranking, community health".into(),
+                canonical_url: "/".into(),
+                og_type: "website".into(),
+                ..Default::default()
+            },
+        }
         div { class: "min-h-screen bg-primary flex flex-col items-center selection:bg-secondary-2 selection:text-primary relative transition-colors duration-300",
             div { class: "hero-block absolute top-0 left-1/2 -translate-x-1/2 w-screen h-[85vh] z-0 flex items-center transition-colors duration-300 overflow-visible",
                 div { class: "absolute inset-0 z-10 overflow-hidden bg-primary transition-colors duration-300",
                     div { class: "absolute inset-0 z-0",
                         img {
-                            src: CAT_IMAGE,
-                            alt: "Background Animation",
+                            src: FERRIS_IMAGE,
+                            alt: "Best of Rust Ferris",
                             class: "w-full h-full object-contain opacity-40 mix-blend-multiply pointer-events-none transition-all"
                         }
                         div { class: "absolute inset-0", style: "background: color-mix(in oklab, var(--primary-color) 20%, transparent);" }
@@ -38,7 +49,7 @@ pub fn Home() -> Element {
                         div { class: "flex items-center gap-3 mb-8",
                             div { class: "w-12 h-[1px] bg-secondary-6" }
                             span { class: "font-mono text-[10px] tracking-[0.5em] uppercase text-secondary-6 font-bold",
-                                "System_Archive_v.2.6"
+                                "For Rustacean"
                             }
                         }
                         h1 { class: "text-7xl md:text-[120px] font-black font-sans leading-[0.8] tracking-tighter uppercase mb-10 italic text-secondary-1",

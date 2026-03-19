@@ -29,3 +29,6 @@ pub use grid_slash_transition::GridSlashTransition;
 
 mod typing_text;
 pub use typing_text::TypingText;
+
+mod seo;
+pub use seo::{SEOContext, SEOData, SEOHead, SEOProp};

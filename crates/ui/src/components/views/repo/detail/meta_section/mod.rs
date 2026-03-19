@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 use crate::components::common::{
     GradientDirection, GridBackground, GridLineType, GridPadding, GridPattern, GridType,
-    GridWrapper, RepoAvatar,
+    GridWrapper, RepoAvatar, SEOHead, SEOProp,
 };
 use crate::components::icons::{
     ArrowRightIcon, CircleDotIcon, GitForkIcon, GithubIcon, HouseIcon, StarIcon, UsersRoundIcon,
@@ -33,12 +33,51 @@ pub(crate) fn MetaSection() -> Element {
 
     let github_url = format!("https://github.com/{owner}/{name}");
     let homepage_url = repo_data.as_ref().and_then(|r| r.homepage_url.clone());
+
+    // SEO part
+    let seo_description = repo_data
+        .as_ref()
+        .and_then(|r| r.description.clone())
+        .unwrap_or_else(|| {
+            format!("Track stars, forks, issues, and community health trends for {owner}/{name}.")
+        });
+
+    let seo_keywords = repo_data
+        .as_ref()
+        .map(|r| {
+            let tag_values = r
+                .tags
+                .iter()
+                .map(|t| t.value.clone())
+                .collect::<Vec<_>>()
+                .join(", ");
+            if tag_values.is_empty() {
+                "best of rs, rust repository, github rust, rust trends, community health"
+                    .to_string()
+            } else {
+                format!("best of rs, rust repository, {}", tag_values)
+            }
+        })
+        .unwrap_or_else(|| {
+            "best of rs, rust repository, github rust, rust trends, community health".to_string()
+        });
+    let canonical_url = format!("/repo/{owner}/{name}");
     let avatar_candidates = repo_data
         .as_ref()
         .map(|repo| repo.avatar_urls.clone())
         .unwrap_or_default();
 
     rsx! {
+        SEOHead {
+            data: SEOProp {
+                title: format!("{owner}/{name}"),
+                description: seo_description,
+                keywords: seo_keywords,
+                canonical_url,
+                og_type: "article".into(),
+                ..Default::default()
+            },
+        }
         section { class: "relative min-h-80 overflow-hidden",
             div { class: "relative z-10 flex flex-col gap-10",
                 div { class: "grid grid-cols-1 lg:grid-cols-12",

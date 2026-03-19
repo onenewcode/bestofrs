@@ -7,10 +7,10 @@ use dioxus::prelude::*;
 async fn main() {
     use dioxus_server::DioxusRouterExt;
     use std::sync::Arc;
+    use ui::components::providers::ConfigContext;
     use ui::impls::{error::api_error, session::create_session_setup};
 
     logger::init(Level::INFO).expect("Logger init failed");
-
     error!("info init with Level::INFO success");
 
     let container = infra::setup::init_app_container()
@@ -35,9 +35,13 @@ async fn main() {
     .await;
 
     let user_cache = container.user_cache.clone();
+    let web_config = ConfigContext {
+        site_url: container.config.web.site_url.clone(),
+    };
+    let serve_cfg = ServeConfig::default().context_provider(move || web_config.clone());
     let app_state = Arc::new(container);
     let router = axum::Router::new()
-        .serve_dioxus_application(ServeConfig::new(), ui::root::App)
+        .serve_dioxus_application(serve_cfg, ui::root::App)
         .layer(axum::Extension(app_state.clone()))
         .layer(ui::impls::auth::auth_layer(app_state.clone(), user_cache))
         .layer(session_setup.layer);
@@ -45,6 +49,7 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(server_addr)
         .await
         .expect("bind server addr failed");
+
     warn!("🚀 Server running on :{server_addr}");
 
     axum::serve(listener, router).await.expect("server error");

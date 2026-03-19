@@ -14,3 +14,6 @@ github_client_secret = ""
 github_redirect_url = "http://localhost:8080/api/auth/callback/github"
 admin_github_ids = []
 session_ttl_seconds = 604800
+
+[web]
+site_url = "http://localhost:8080"

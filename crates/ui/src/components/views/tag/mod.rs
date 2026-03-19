@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 use crate::components::common::{
     CommonPagination, GradientDirection, GridBackground, GridPadding, GridPattern, GridType,
-    GridWrapper, IOCell,
+    GridWrapper, IOCell, SEOHead, SEOProp,
 };
 use crate::components::icons::MenuIcon;
 use crate::components::select::{
@@ -114,6 +114,16 @@ pub fn TagList() -> Element {
     });
 
     rsx! {
+        SEOHead {
+            data: SEOProp {
+                title: "Tag Trends".into(),
+                description: "Explore a comprehensive tag index of the Rust ecosystem and discover curated projects by category on Best of RS.".into(),
+                keywords: "best of rs, rust tags, rust categories, rust group rank".into(),
+                canonical_url: "/tag".into(),
+                og_type: "website".into(),
+                ..Default::default()
+            },
+        }
         TagRouteMenu {}
         GridWrapper {
             class: "min-h-screen",

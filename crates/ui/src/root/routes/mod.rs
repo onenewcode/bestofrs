@@ -56,7 +56,10 @@ impl Route {
     pub fn is_auth(&self) -> bool {
         matches!(
             self,
-            Route::AdminProjectsView {} | Route::AdminTagsView {} | Route::AdminJobView {}
+            Route::AdminProjectsView {}
+                | Route::AdminTagsView {}
+                | Route::AdminJobView {}
+                | Route::LoginView {}
         )
     }
 }

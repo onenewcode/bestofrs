@@ -8,6 +8,7 @@ mod layout;
 pub use layout::*;
 
 pub mod common;
+pub mod providers;
 pub mod views;
 
 pub mod icons;
