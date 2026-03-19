@@ -1,18 +1,18 @@
-mod admin;
 mod about;
+mod admin;
 mod home;
 mod login;
 mod repo;
 mod tag;
 
-use dioxus::prelude::*;
 use super::layouts::{AdminLayout, RootLayout, UserLayout};
+use about::AboutView;
 use admin::{AdminJobView, AdminProjectsView, AdminTagsView};
+use dioxus::prelude::*;
 use home::HomeView;
 use login::LoginView;
 use repo::{RepoDetailView, RepoListView};
 use tag::TagListView;
-use about::AboutView;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -50,4 +50,13 @@ pub enum Route {
             LoginView {},
             #[route("/about")]
             AboutView {}
+}
+
+impl Route {
+    pub fn is_auth(&self) -> bool {
+        matches!(
+            self,
+            Route::AdminProjectsView {} | Route::AdminTagsView {} | Route::AdminJobView {}
+        )
+    }
 }

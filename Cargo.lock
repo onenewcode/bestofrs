@@ -173,6 +173,12 @@ dependencies = [
 
 [[package]]
 name = "askama_escape"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "619743e34b5ba4e9703bba34deac3427c72507c7159f5fd030aea8cac0cfe341"
+
+[[package]]
+name = "askama_escape"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3df27b8d5ddb458c5fb1bbc1ce172d4a38c614a97d550b0ac89003897fb01de4"
@@ -1338,16 +1344,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dioxus-charts"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7902922ee4e2f1fce0e6afc179eebef8e3fdc32fadfa0272416208fea3d4f401"
-dependencies = [
- "dioxus",
- "log",
-]
-
-[[package]]
 name = "dioxus-cli-config"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1914,7 +1910,7 @@ version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "088efddedd39fc29d007bc91c8a61b25130355149ea5313469f96fb695c5e3ab"
 dependencies = [
- "askama_escape",
+ "askama_escape 0.13.0",
  "dioxus-core",
  "dioxus-core-types",
  "rustc-hash 2.1.1",
@@ -7043,6 +7039,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "app",
+ "askama_escape 0.10.3",
  "async-trait",
  "axum",
  "axum_session",
@@ -7050,7 +7047,6 @@ dependencies = [
  "axum_session_redispool",
  "chrono",
  "dioxus",
- "dioxus-charts",
  "dioxus-markdown",
  "dioxus-primitives",
  "dioxus-sdk-time",

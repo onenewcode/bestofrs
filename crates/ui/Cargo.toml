@@ -6,7 +6,6 @@ authors.workspace = true
 
 [dependencies]
 dioxus = { version = "0.7.2", features = ["router", "fullstack"] }
-dioxus-charts = "0.4.0"
 dioxus-use-js = "0.4.6"
 dioxus-sdk-time = "0.7"
 axum = { version = "0.8.0", optional = true }
@@ -24,6 +23,7 @@ anyhow = { version = "1" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 url = "2"
+askama_escape = { version = "0.10", optional = true }
 dioxus-primitives = { git = "https://github.com/DioxusLabs/components", version = "0.0.1", default-features = false }
 dioxus-markdown = { git = "https://github.com/rambip/rust-web-markdown", package = "dioxus-markdown" }
 
@@ -51,4 +51,5 @@ server = [
   "dep:async-trait",
   "dep:tokio",
   "dep:infra",
+  "dep:askama_escape",
 ]
