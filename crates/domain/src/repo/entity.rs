@@ -14,6 +14,7 @@ pub struct Repo {
     pub forks: i64,
     pub open_issues: i64,
     pub watchers: i64,
+    pub created_at: String,
     pub last_fetched_at: Option<String>,
     pub etag: Option<String>,
 }

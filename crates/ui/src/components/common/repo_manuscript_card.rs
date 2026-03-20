@@ -6,10 +6,7 @@ use crate::types::repos::RepoDto;
 use dioxus::prelude::*;
 
 #[component]
-pub fn RepoManuscriptCard(
-    repo: RepoDto,
-    on_open: Option<EventHandler<String>>,
-) -> Element {
+pub fn RepoManuscriptCard(repo: RepoDto, on_open: Option<EventHandler<String>>) -> Element {
     let RepoDto {
         id,
         stars,
@@ -93,15 +90,15 @@ pub fn RepoManuscriptCard(
                 div { class: "flex w-full flex-col items-end gap-1 text-xs font-mono text-secondary-5",
                     div { class: "flex w-full items-center justify-end gap-2",
                         span { class: "font-bold text-secondary-5 transition-colors group-hover:text-secondary-3", "{stars}" }
-                        StarIcon { width: 12, height: 12, class: "text-secondary-4 transition-colors group-hover:text-secondary-2" }
+                        StarIcon { width: 16, height: 16, class: "text-secondary-4 transition-colors group-hover:text-secondary-2" }
                     }
                     div { class: "flex w-full items-center justify-end gap-2",
                         span { class: "font-bold text-secondary-5 transition-colors group-hover:text-secondary-3", "{forks}" }
-                        GitForkIcon { width: 12, height: 12, class: "text-secondary-4 transition-colors group-hover:text-secondary-2" }
+                        GitForkIcon { width: 16, height: 16, class: "text-secondary-4 transition-colors group-hover:text-secondary-2" }
                     }
                     div { class: "flex w-full items-center justify-end gap-2",
                         span { class: "font-bold text-secondary-5 transition-colors group-hover:text-secondary-3", "{open_issues}" }
-                        CircleDotIcon { width: 12, height: 12, class: "text-secondary-4 transition-colors group-hover:text-secondary-2" }
+                        CircleDotIcon { width: 16, height: 16, class: "text-secondary-4 transition-colors group-hover:text-secondary-2" }
                     }
                 }
                 div { class: "mt-auto w-full border-t border-primary-5 pt-2 text-right text-[10px] font-mono text-secondary-5",
@@ -113,8 +110,8 @@ pub fn RepoManuscriptCard(
                     "{description.clone().unwrap_or_else(|| \"No description\".to_string())}"
                 }
                 div { class: "flex flex-wrap justify-start gap-x-2 gap-y-2",
-                    for tag in tags.iter().take(6) {
-                        span { class: "border-b border-primary-5 pb-0.5 font-mono text-[10px] uppercase tracking-wider text-secondary-5 transition-colors hover:border-secondary-6 hover:text-secondary-6",
+                    for tag in tags.iter() {
+                        span { class: "border-b border-transparent pb-0.5 font-mono text-[10px] uppercase tracking-wider text-secondary-5 transition-colors hover:border-secondary-6 hover:text-secondary-6",
                             "#{tag.label}"
                         }
                     }
@@ -145,4 +142,3 @@ fn repo_anchor_id(repo_id: &str) -> String {
         .collect::<String>();
     format!("repo-{normalized}")
 }
-

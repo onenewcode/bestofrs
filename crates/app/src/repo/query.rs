@@ -94,7 +94,10 @@ impl RepoQueryHandler {
         let repos_page = if normalized_values.is_empty() {
             self.repos.list(page).await?
         } else {
-            let tags = self.repo_tags.find_tags_by_values(&normalized_values).await?;
+            let tags = self
+                .repo_tags
+                .find_tags_by_values(&normalized_values)
+                .await?;
             let mut tags_by_value = HashMap::new();
             for tag in tags {
                 tags_by_value.insert(tag.value.as_str().to_string(), tag);
@@ -232,7 +235,9 @@ impl RepoQueryHandler {
         let repo_ids_page = if label.trim().is_empty() {
             self.repo_tags.list_repo_ids_without_tags(page).await?
         } else {
-            self.repo_tags.list_repo_ids_by_label(label, value, page).await?
+            self.repo_tags
+                .list_repo_ids_by_label(label, value, page)
+                .await?
         };
         let mut repos = Vec::with_capacity(repo_ids_page.items.len());
         for repo_id in &repo_ids_page.items {
@@ -349,5 +354,4 @@ impl RepoQueryHandler {
             .list_tag_facets_by_active_values(&normalized, limit)
             .await
     }
-
 }

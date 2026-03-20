@@ -150,6 +150,7 @@ impl IngestDailySnapshots {
                         forks: repo.forks_count,
                         open_issues: repo.open_issues_count,
                         watchers: repo.subscribers_count,
+                        created_at: fetched_at.clone(),
                         last_fetched_at: Some(fetched_at.clone()),
                         etag: None,
                     };

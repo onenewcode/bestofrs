@@ -188,7 +188,7 @@ pub(super) fn sort_label(sort: SortType) -> &'static str {
         SortType::Star => "Stars",
         SortType::Fork => "Forks",
         SortType::Issue => "Issues",
-        SortType::AddTime => "Update Time",
+        SortType::AddTime => "Create Time",
     }
 }
 

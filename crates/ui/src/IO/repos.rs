@@ -37,8 +37,6 @@ pub async fn list_repos_with_query(query: RepoListQuery) -> ServerFnResult<Page<
         .as_ref()
         .filter(|tags| !tags.is_empty())
         .cloned();
-    let is_default_rank = query.metric == Some(RepoRankMetric::Star)
-        && query.range == Some(RepoRankTimeRange::Weekly);
 
     let repos_page = if let Some(tags) = tags {
         app_state
@@ -47,7 +45,7 @@ pub async fn list_repos_with_query(query: RepoListQuery) -> ServerFnResult<Page<
             .list_with_tags(query.page, Some(tags))
             .await
             .map_err(api_error)?
-    } else if (query.metric.is_none() && query.range.is_none()) || is_default_rank {
+    } else if query.metric.is_none() && query.range.is_none() {
         return list_repos(query.page).await;
     } else if let (Some(metric), Some(range)) = (query.metric, query.range) {
         app_state

@@ -155,6 +155,7 @@ impl ProjectCommandHandler {
                             forks: github_repo.forks_count,
                             open_issues: github_repo.open_issues_count,
                             watchers: github_repo.subscribers_count,
+                            created_at: chrono::Utc::now().to_rfc3339(),
                             last_fetched_at: None,
                             etag: None,
                         }))

@@ -18,6 +18,7 @@ pub struct RepoDto {
     pub forks: i64,
     pub open_issues: i64,
     pub watchers: i64,
+    pub created_at: String,
     pub last_fetched_at: Option<String>,
     pub tags: Vec<TagDto>,
 }
@@ -54,6 +55,7 @@ impl From<Repo> for RepoDto {
             forks: value.forks,
             open_issues: value.open_issues,
             watchers: value.watchers,
+            created_at: value.created_at,
             last_fetched_at: value.last_fetched_at,
             tags: Vec::new(),
         }
@@ -77,6 +79,7 @@ impl From<RepoWithTags> for RepoDto {
             forks: repo.forks,
             open_issues: repo.open_issues,
             watchers: repo.watchers,
+            created_at: repo.created_at,
             last_fetched_at: repo.last_fetched_at,
             tags,
         }

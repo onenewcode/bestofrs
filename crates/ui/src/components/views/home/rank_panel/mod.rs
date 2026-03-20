@@ -1,9 +1,10 @@
 use dioxus::prelude::*;
 
 use crate::components::icons::{
-    ArrowRightIcon, CalendarDaysIcon, CircleDotIcon, GitForkIcon, StarIcon,
+    ArrowRightIcon, CalendarDaysIcon, CircleDotIcon, GitForkIcon, RustDEVIcon, StarIcon,
 };
 use crate::components::{common::IOCell, icons::RustGearIcon};
+use crate::impls::datetime::format_utc_ymd_hm;
 use crate::root::Route;
 use crate::types::repos::RepoDto;
 use app::repo::{RepoRankMetric as RankType, RepoRankTimeRange as TimeRange};
@@ -26,7 +27,7 @@ fn rank_metric_query(metric: RankType) -> &'static str {
 }
 
 pub(super) fn stat_icon_tab(tab: RankType) -> Element {
-    stat_icon_with_size(tab, 16)
+    stat_icon_with_size(tab, 32)
 }
 
 pub(super) fn stat_icon_list(tab: RankType) -> Element {
@@ -51,7 +52,7 @@ struct HomeRankRepo {
     stars: i64,
     forks: i64,
     issues: i64,
-    updated_at: String,
+    created_at: String,
 }
 
 pub(super) fn row_border_style(index: usize) -> String {
@@ -84,9 +85,9 @@ pub(super) fn HomeRankPanel() -> Element {
         div { class: "bg-primary border border-2 border-x-4 border-primary-6 shadow-2xl rounded-[3.5rem] overflow-hidden flex flex-col lg:flex-row min-h-[600px] transition-colors duration-300 relative z-10",
             div { class: "w-full lg:w-[260px] flex flex-col bg-primary border-r border-primary-6 self-stretch p-4",
                 div { class: "p-4 mb-2 flex items-center gap-2",
-                    RustGearIcon { width: 48.0 }
+                    RustDEVIcon {  width: 48.0, height: 48.0 }
                     div {
-                        h3 { class: "text-2xl font-black font-sans uppercase tracking-tighter italic text-secondary-1",
+                        h3 { class: "text-2xl font-black font-sans uppercase tracking-tighter text-secondary-1",
                             "Ranking"
                         }
                         p { class: "text-[10px] font-mono text-secondary-6 uppercase tracking-widest mt-1 font-bold",
@@ -125,7 +126,7 @@ pub(super) fn HomeRankPanel() -> Element {
                             div { class: "relative group",
                                 div { class: "absolute inset-0 rounded-full bg-primary-1 border-2 border-primary-6 translate-x-[10px] translate-y-[10px]" }
                                 div { class: "relative px-8 py-3 rounded-full text-sm font-black font-sans uppercase tracking-[0.2em] italic bg-secondary-2 text-primary border-4 border-secondary-2 translate-x-[3.82px] translate-y-[3.82px] shadow-[0_0_20px_color-mix(in_oklab,var(--grid-accent)_24%,transparent)]",
-                                    "Latest Insert"
+                                    "Latest Inserted"
                                 }
                             }
                         }
@@ -167,10 +168,6 @@ pub(super) fn map_rank_repo(repo: RepoDto) -> HomeRankRepo {
         .clone()
         .or_else(|| repo.avatar_urls.first().cloned())
         .unwrap_or_else(|| fallback_avatar(&repo.id));
-    let updated_at = repo
-        .last_fetched_at
-        .clone()
-        .unwrap_or_else(|| "1970-01-01".to_string());
 
     HomeRankRepo {
         id: repo.id,
@@ -191,7 +188,7 @@ pub(super) fn map_rank_repo(repo: RepoDto) -> HomeRankRepo {
         stars: repo.stars,
         forks: repo.forks,
         issues: repo.open_issues,
-        updated_at,
+        created_at: repo.created_at,
     }
 }
 
@@ -252,13 +249,8 @@ pub(super) fn stat_value(repo: &HomeRankRepo, tab: RankType) -> String {
         RankType::Star => repo.stars.to_string(),
         RankType::Fork => repo.forks.to_string(),
         RankType::Issue => repo.issues.to_string(),
-        RankType::Recent => short_date(&repo.updated_at),
+        RankType::Recent => format_utc_ymd_hm(&repo.created_at),
     }
-}
-
-fn short_date(value: &str) -> String {
-    let cutoff = value.find('T').unwrap_or(value.len());
-    value[..cutoff].to_string()
 }
 
 fn stat_icon_with_size(tab: RankType, size: u32) -> Element {

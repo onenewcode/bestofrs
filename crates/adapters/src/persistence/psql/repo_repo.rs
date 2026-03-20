@@ -20,6 +20,7 @@ struct RepoDb {
     forks: i64,
     open_issues: i64,
     watchers: i64,
+    created_at: String,
     last_fetched_at: Option<String>,
     etag: Option<String>,
 }
@@ -37,6 +38,7 @@ impl From<RepoDb> for Repo {
             forks: db.forks,
             open_issues: db.open_issues,
             watchers: db.watchers,
+            created_at: db.created_at,
             last_fetched_at: db.last_fetched_at,
             etag: db.etag,
         }
@@ -175,6 +177,7 @@ impl RepoRepo for PostgresRepoRepo {
               id, github_repo_id, full_name, description,
               homepage_url, avatar_url,
               stars, forks, open_issues, watchers,
+              created_at::TEXT AS created_at,
               last_fetched_at, etag
             FROM repos
             WHERE id = $1
@@ -232,6 +235,7 @@ impl RepoRepo for PostgresRepoRepo {
               id, github_repo_id, full_name, description,
               homepage_url, avatar_url,
               stars, forks, open_issues, watchers,
+              created_at::TEXT AS created_at,
               last_fetched_at, etag
             FROM repos
             ORDER BY stars DESC
@@ -262,9 +266,10 @@ impl RepoRepo for PostgresRepoRepo {
                   id, github_repo_id, full_name, description,
                   homepage_url, avatar_url,
                   stars, forks, open_issues, watchers,
+                  created_at::TEXT AS created_at,
                   last_fetched_at, etag
                 FROM repos
-                ORDER BY last_fetched_at DESC, stars DESC
+                ORDER BY created_at DESC, stars DESC
                 LIMIT $1 OFFSET $2
                 "#,
             )
@@ -294,7 +299,7 @@ impl RepoRepo for PostgresRepoRepo {
                 RepoRankMetric::Star => "stars",
                 RepoRankMetric::Fork => "forks",
                 RepoRankMetric::Issue => "open_issues",
-                RepoRankMetric::Recent => "r.last_fetched_at",
+                RepoRankMetric::Recent => "r.created_at",
             };
             let sql = format!(
                 r#"
@@ -305,6 +310,7 @@ impl RepoRepo for PostgresRepoRepo {
                   COALESCE(SUM(d.forks_delta), 0)::BIGINT AS forks,
                   ABS(COALESCE(SUM(d.open_issues_delta), 0))::BIGINT AS open_issues,
                   r.watchers,
+                  r.created_at::TEXT AS created_at,
                   r.last_fetched_at, r.etag
                 FROM repos r
                 LEFT JOIN snapshot_deltas d
@@ -314,7 +320,7 @@ impl RepoRepo for PostgresRepoRepo {
                 GROUP BY
                   r.id, r.github_repo_id, r.full_name, r.description,
                   r.homepage_url, r.avatar_url,
-                  r.watchers,
+                  r.watchers, r.created_at,
                   r.last_fetched_at, r.etag
                 ORDER BY {order_expr} DESC, r.stars DESC
                 LIMIT $3 OFFSET $4
@@ -333,7 +339,7 @@ impl RepoRepo for PostgresRepoRepo {
                 RepoRankMetric::Star => "stars",
                 RepoRankMetric::Fork => "forks",
                 RepoRankMetric::Issue => "open_issues",
-                RepoRankMetric::Recent => "last_fetched_at",
+                RepoRankMetric::Recent => "created_at",
             };
             let sql = format!(
                 r#"
@@ -341,6 +347,7 @@ impl RepoRepo for PostgresRepoRepo {
                   id, github_repo_id, full_name, description,
                   homepage_url, avatar_url,
                   0 AS stars, 0 AS forks, 0 AS open_issues, watchers,
+                  created_at::TEXT AS created_at,
                   last_fetched_at, etag
                 FROM repos
                 ORDER BY {fallback_order} DESC, stars DESC
@@ -382,6 +389,7 @@ impl RepoRepo for PostgresRepoRepo {
               r.id, r.github_repo_id, r.full_name, r.description,
               r.homepage_url, r.avatar_url,
               r.stars, r.forks, r.open_issues, r.watchers,
+              r.created_at::TEXT AS created_at,
               r.last_fetched_at, r.etag
             FROM repos r
             LEFT JOIN projects p ON p.repo_id = r.id

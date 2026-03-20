@@ -8,6 +8,7 @@ use crate::components::icons::{
     ArrowRightIcon, CircleDotIcon, GitForkIcon, GithubIcon, HouseIcon, StarIcon, UsersRoundIcon,
 };
 use crate::components::ui::avatar::AvatarImageSize;
+use crate::impls::datetime::format_utc_ymd_hms;
 use crate::root::Route;
 use crate::IO::repos::get_repo;
 
@@ -121,7 +122,7 @@ pub(crate) fn MetaSection() -> Element {
 
                             if let Some(date) = repo_data.as_ref().and_then(|r| r.last_fetched_at.clone()) {
                                 div { class: "font-mono text-[10px] tracking-widest text-secondary-6 uppercase",
-                                    "last updated // {date}"
+                                    "last updated // {format_utc_ymd_hms(&date)}"
                                 }
                             }
 

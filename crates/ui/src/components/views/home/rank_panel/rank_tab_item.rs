@@ -40,7 +40,7 @@ pub(super) fn HomeRankTabItem(props: HomeRankTabItemProps) -> Element {
                 class: "px-6 flex-grow flex items-start overflow-hidden transition-all duration-700 ease-in-out",
                 class: if is_active { "pb-12" } else { "max-h-0 opacity-0" },
                 div { class: "relative pt-2",
-                    p { class: "text-sm text-secondary-4 font-serif italic leading-relaxed pl-4",
+                    p { class: "text-sm text-secondary-4 font-mono leading-relaxed pl-4",
                         "{rank_desc(props.tab)}"
                     }
                 }
