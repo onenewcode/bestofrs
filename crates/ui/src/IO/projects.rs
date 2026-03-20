@@ -1,3 +1,4 @@
+use crate::impls::auth::AdminAuth;
 use crate::types::projects::{ImportProjectsResult, ProjectDto, ProjectImportItem};
 use dioxus::prelude::*;
 
@@ -34,7 +35,7 @@ pub async fn search_projects(key: String, page: Pagination) -> ServerFnResult<Pa
     Ok(projects_page.map(ProjectDto::from))
 }
 
-#[post("/api/projects/import", state: State)]
+#[post("/api/projects/import", state: State, _auth: AdminAuth)]
 pub async fn import_projects(
     items: Vec<ProjectImportItem>,
 ) -> ServerFnResult<ImportProjectsResult> {
@@ -75,7 +76,7 @@ pub async fn import_projects(
     })
 }
 
-#[post("/api/projects/update", state: State)]
+#[post("/api/projects/update", state: State, _auth: AdminAuth)]
 pub async fn update_projects(
     items: Vec<ProjectImportItem>,
 ) -> ServerFnResult<ImportProjectsResult> {
@@ -121,7 +122,7 @@ struct ProjectSeedItem {
     tags: Option<Vec<String>>,
 }
 
-#[post("/api/projects/import_json", state: State)]
+#[post("/api/projects/import_json", state: State, _auth: AdminAuth)]
 pub async fn import_projects_json(json_text: String) -> ServerFnResult<ImportProjectsResult> {
     let app_state = state.0;
 
@@ -167,7 +168,7 @@ pub async fn import_projects_json(json_text: String) -> ServerFnResult<ImportPro
     })
 }
 
-#[post("/api/projects/remove", state: State)]
+#[post("/api/projects/remove", state: State, _auth: AdminAuth)]
 pub async fn remove_project(repo_id: String) -> ServerFnResult<()> {
     let app_state = state.0;
 

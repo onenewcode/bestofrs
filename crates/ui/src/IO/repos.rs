@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use crate::impls::auth::AdminAuth;
 use crate::impls::error::api_error;
 use crate::impls::state::State;
 use crate::types::repos::{BulkUpdateRepoTagResultDto, RepoDto, RepoReadmeDto};
@@ -7,12 +7,12 @@ use crate::types::snapshot_deltas::SnapshotDeltaDto;
 use crate::types::snapshot_deltas_summary::SnapshotDeltasSummaryDto;
 use crate::types::snapshots::SnapshotDto;
 use crate::types::tags::{ImportTagsResult, TagDto, TagFacetDto, TagImportItem, TagListItemDto};
+use dioxus::prelude::*;
 
 use app::prelude::{DurationRange, Page, Pagination};
 use app::repo::{
     BulkTagUpdateAction, BulkUpdateRepoTagCommand, ImportTagCommand, ImportTagsCommand,
-    ReplaceRepoTagsCommand, RepoListQuery, RepoRankMetric, RepoRankTimeRange, RepoRankQuery,
-    TagInput,
+    ReplaceRepoTagsCommand, RepoListQuery, RepoRankQuery, TagInput,
 };
 use serde::Deserialize;
 
@@ -32,11 +32,7 @@ pub async fn list_repos(page: Pagination) -> ServerFnResult<Page<RepoDto>> {
 #[post("/api/repos/query", state: State)]
 pub async fn list_repos_with_query(query: RepoListQuery) -> ServerFnResult<Page<RepoDto>> {
     let app_state = state.0;
-    let tags = query
-        .tags
-        .as_ref()
-        .filter(|tags| !tags.is_empty())
-        .cloned();
+    let tags = query.tags.as_ref().filter(|tags| !tags.is_empty()).cloned();
 
     let repos_page = if let Some(tags) = tags {
         app_state
@@ -85,7 +81,6 @@ pub async fn get_repo(owner: String, name: String) -> ServerFnResult<Option<Repo
     Ok(repo.map(RepoDto::from))
 }
 
-
 #[post("/api/repos/:owner/:name/readme", state: State)]
 pub async fn get_repo_readme(owner: String, name: String) -> ServerFnResult<Option<RepoReadmeDto>> {
     let app_state = state.0;
@@ -100,7 +95,7 @@ pub async fn get_repo_readme(owner: String, name: String) -> ServerFnResult<Opti
     Ok(readme.map(RepoReadmeDto::from))
 }
 
-#[post("/api/repos/:owner/:name/tags/replace", state: State)]
+#[post("/api/repos/:owner/:name/tags/replace", state: State, _auth: AdminAuth)]
 pub async fn replace_repo_tags(
     owner: String,
     name: String,
@@ -126,9 +121,8 @@ pub async fn replace_repo_tags(
     Ok(())
 }
 
-#[post("/api/tags/import", state: State)]
+#[post("/api/tags/import", state: State, _auth: AdminAuth)]
 pub async fn import_tags(items: Vec<TagImportItem>) -> ServerFnResult<ImportTagsResult> {
-
     let app_state = state.0;
     let cmd = ImportTagsCommand {
         items: items
@@ -165,7 +159,7 @@ struct TagSeedItem {
     description: Option<String>,
 }
 
-#[post("/api/tags/import_json", state: State)]
+#[post("/api/tags/import_json", state: State, _auth: AdminAuth)]
 pub async fn import_tags_json(json_text: String) -> ServerFnResult<ImportTagsResult> {
     let app_state = state.0;
     let items: Vec<TagSeedItem> =
@@ -202,7 +196,7 @@ pub async fn import_tags_json(json_text: String) -> ServerFnResult<ImportTagsRes
     })
 }
 
-#[post("/api/repos/tags/bulk_update", state: State)]
+#[post("/api/repos/tags/bulk_update", state: State, _auth: AdminAuth)]
 pub async fn bulk_update_repo_tag(
     repo_ids: Vec<String>,
     label: String,
@@ -285,7 +279,7 @@ pub async fn search_tags(key: String, page: Pagination) -> ServerFnResult<Page<T
     Ok(tags_page.map(TagDto::from))
 }
 
-#[post("/api/tags/create", state: State)]
+#[post("/api/tags/create", state: State, _auth: AdminAuth)]
 pub async fn create_tag(label: String, value: String) -> ServerFnResult<()> {
     let app_state = state.0;
     app_state
@@ -297,7 +291,7 @@ pub async fn create_tag(label: String, value: String) -> ServerFnResult<()> {
     Ok(())
 }
 
-#[post("/api/tags/update", state: State)]
+#[post("/api/tags/update", state: State, _auth: AdminAuth)]
 pub async fn update_tag(
     label: String,
     value: String,
@@ -313,7 +307,7 @@ pub async fn update_tag(
     Ok(())
 }
 
-#[post("/api/tags/delete", state: State)]
+#[post("/api/tags/delete", state: State, _auth: AdminAuth)]
 pub async fn delete_tag(label: String, value: String) -> ServerFnResult<()> {
     let app_state = state.0;
     app_state

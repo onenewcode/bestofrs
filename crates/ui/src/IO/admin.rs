@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
 
+use crate::impls::auth::AdminAuth;
 use crate::impls::error::api_error;
 use crate::impls::state::State;
-
-#[cfg(feature = "server")]
-use crate::impls::auth::AdminAuth;
 
 use app::prelude::IngestDailySnapshotsResult;
 
