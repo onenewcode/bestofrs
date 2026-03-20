@@ -6,17 +6,20 @@ body:
   - type: markdown
     attributes:
       value: |
-        # Repository Recommendation
-        <sub>项目举荐</sub>
+        <div align="center">
+          <h1>Recommend One</h1>
+          <p>You can recommend useful Rust projects to Best Of Rust here.</p>
+          <sub>你可以在此向 Best Of Rust 举荐好用的 Rust 项目。</sub>
+        </div>
 
-        You can recommend useful Rust projects to Best Of Rust here.
-        <sub>你可以在此向 Best Of Rust 举荐好用的 Rust 项目。</sub>
+        <br>
   - type: markdown
     attributes:
       value: |
-        ## 1. Repository URL / 仓库地址
-        Please provide the GitHub repository URL of the project.
+        ## 1. Please provide the GitHub repository URL of the project.
         <sub>请提供项目的 GitHub 仓库地址。</sub>
+
+        <br>
 
   - type: input
     id: repo_url
@@ -28,9 +31,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## 2. Tags / Tag 分类
-        Which tags should this project belong to? (format: tag1, tag2, tag3)
+        ## 2. Which tags should this project belong to? (format: tag1, tag2, tag3)
         <sub>这个项目应归属到哪些 Tag 分类？（格式：tag1, tag2, tag3）</sub>
+
+        <br>
 
   - type: input
     id: tags
@@ -42,9 +46,10 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## 3. Why this project / 推荐理由
-        What impressed you about this project? A brief description is enough (e.g., impact, help, or usage experience).
+        ## 3. What impressed you about this project? A brief description is enough (e.g., impact, help, or usage experience).
         <sub>这个项目有哪些地方让你印象深刻？简要介绍即可（例如：它对你的影响、帮助、使用体验等）。</sub>
+
+        <br>
 
   - type: textarea
     id: why_impressed
@@ -57,8 +62,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ### Thank you for supporting Best Of Rust!
-        <sub>感谢你对 Best Of Rust 的支持！</sub>
-
-        #### If you'd like to go further, PRs are welcome.
-        <sub>如果你想更进一步，欢迎为本项目提交 PR。</sub>
+        <div align="center">
+          <h3>Thank you for supporting Best Of Rust! If you'd like to go further, PRs are welcome.</h3>
+          <sub>感谢你对 Best Of Rust 的支持！如果你想更进一步，欢迎为本项目提交 PR。</sub>
+        </div>
