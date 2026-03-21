@@ -118,11 +118,11 @@ pub(super) struct TagAdviceItem {
 
 #[derive(Clone, Copy)]
 pub(super) struct RepoListContext {
-    active_tags: Signal<Vec<String>>,
-    filter_type: Signal<FilterType>,
-    sort_type: Signal<SortType>,
-    page_size: Signal<u32>,
-    current_page: Signal<u32>,
+    active_tags: ReadSignal<Vec<String>>,
+    filter_type: ReadSignal<FilterType>,
+    sort_type: ReadSignal<SortType>,
+    page_size: ReadSignal<u32>,
+    current_page: ReadSignal<u32>,
     summary: Signal<ListSummary>,
     last_success: Signal<Option<RepoListCachedPage>>,
 }
@@ -275,17 +275,22 @@ use repo_meta::RepoMeta;
 
 #[component]
 pub fn RepoList(
-    tags: Option<String>,
-    metric: Option<String>,
-    range: Option<String>,
-    page: Option<u32>,
-    size: Option<u32>,
+    tags: ReadSignal<Option<String>>,
+    metric: ReadSignal<Option<String>>,
+    range: ReadSignal<Option<String>>,
+    page: ReadSignal<Option<u32>>,
+    size: ReadSignal<Option<u32>>,
 ) -> Element {
-    let active_tags = use_signal(|| parse_tags_query(tags.as_deref()));
-    let filter_type = use_signal(|| parse_filter_type(range.as_deref(), metric.as_deref()));
-    let sort_type = use_signal(|| parse_sort_type(metric.as_deref()));
-    let page_size = use_signal(|| normalize_page_size(size.unwrap_or(50)));
-    let current_page = use_signal(|| page.unwrap_or(1).max(1));
+    let active_tags = use_memo(move || parse_tags_query(tags().as_deref()));
+    let filter_type = use_memo(move || parse_filter_type(range().as_deref(), metric().as_deref()));
+    let sort_type = use_memo(move || parse_sort_type(metric().as_deref()));
+    let page_size = use_memo(move || normalize_page_size(size().unwrap_or(50)));
+    let current_page = use_memo(move || page().unwrap_or(1).max(1));
+    let active_tags: ReadSignal<Vec<String>> = active_tags.into();
+    let filter_type: ReadSignal<FilterType> = filter_type.into();
+    let sort_type: ReadSignal<SortType> = sort_type.into();
+    let page_size: ReadSignal<u32> = page_size.into();
+    let current_page: ReadSignal<u32> = current_page.into();
     let summary = use_signal(ListSummary::empty);
     let last_success = use_signal(|| None::<RepoListCachedPage>);
 

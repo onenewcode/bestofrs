@@ -12,7 +12,7 @@ use super::{
 
 #[component]
 pub(super) fn RepoListHandler() -> Element {
-    let mut ctx = use_context::<RepoListContext>();
+    let ctx = use_context::<RepoListContext>();
     let navigator = use_navigator();
 
     rsx! {
@@ -31,9 +31,16 @@ pub(super) fn RepoListHandler() -> Element {
                     placeholder: "filter",
                     on_value_change: move |next: Option<FilterType>| {
                         if let Some(next_filter) = next {
-                            ctx.filter_type.set(next_filter);
-                            ctx.current_page.set(1);
-                            navigator.push(repo_list_route_from_ctx(ctx, 1, (ctx.page_size)()));
+                            let next_sort = (ctx.sort_type)();
+                            let (metric_q, range_q) =
+                                super::query_params_from_filter_sort(next_filter, next_sort);
+                            navigator.push(crate::root::Route::RepoListView {
+                                tags: super::active_tags_to_query(&(ctx.active_tags)()),
+                                metric: metric_q,
+                                range: range_q,
+                                page: Some(1),
+                                size: Some((ctx.page_size)()),
+                            });
                         }
                     },
                     SelectTrigger {
@@ -81,8 +88,6 @@ pub(super) fn RepoListHandler() -> Element {
                     on_value_change: move |v: Option<u32>| {
                         if let Some(v) = v {
                             let next_size = normalize_page_size(v);
-                            ctx.page_size.set(next_size);
-                            ctx.current_page.set(1);
                             navigator.replace(repo_list_route_from_ctx(ctx, 1, next_size));
                         }
                     },
@@ -123,12 +128,20 @@ pub(super) fn RepoListHandler() -> Element {
                     placeholder: "sort",
                     on_value_change: move |next: Option<SortType>| {
                         if let Some(next_sort) = next {
-                            ctx.sort_type.set(next_sort);
-                            if next_sort == SortType::AddTime {
-                                ctx.filter_type.set(FilterType::Total);
-                            }
-                            ctx.current_page.set(1);
-                            navigator.push(repo_list_route_from_ctx(ctx, 1, (ctx.page_size)()));
+                            let next_filter = if next_sort == SortType::AddTime {
+                                FilterType::Total
+                            } else {
+                                (ctx.filter_type)()
+                            };
+                            let (metric_q, range_q) =
+                                super::query_params_from_filter_sort(next_filter, next_sort);
+                            navigator.push(crate::root::Route::RepoListView {
+                                tags: super::active_tags_to_query(&(ctx.active_tags)()),
+                                metric: metric_q,
+                                range: range_q,
+                                page: Some(1),
+                                size: Some((ctx.page_size)()),
+                            });
                         }
                     },
                     SelectTrigger { aria_label: "Select sort", style: "min-width: 10rem;", SelectValue {} }

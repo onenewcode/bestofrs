@@ -4,15 +4,15 @@ use std::collections::BTreeSet;
 use crate::IO::repos::list_repo_tag_facets;
 
 use super::{
-    append_tag_query, parse_tags_query, query_params_from_filter_sort, remove_tag_query,
-    RepoListContext, TagAdviceItem,
+    append_tag_query, query_params_from_filter_sort, remove_tag_query, RepoListContext,
+    TagAdviceItem,
 };
 
 pub(super) mod skeleton;
 
 #[component]
 pub(super) fn RepoListTags() -> Element {
-    let mut ctx = use_context::<RepoListContext>();
+    let ctx = use_context::<RepoListContext>();
     let navigator = use_navigator();
     let facets = use_server_future(move || list_repo_tag_facets((ctx.active_tags)(), Some(20)))?;
 
@@ -43,8 +43,6 @@ pub(super) fn RepoListTags() -> Element {
                                         let tag = tag.clone();
                                         move |_| {
                                             let next_tags = remove_tag_query(&(ctx.active_tags)(), &tag);
-                                            ctx.active_tags.set(parse_tags_query(next_tags.as_deref()));
-                                            ctx.current_page.set(1);
                                             let (metric_q, range_q) = query_params_from_filter_sort(
                                                 (ctx.filter_type)(),
                                                 (ctx.sort_type)(),
@@ -72,8 +70,6 @@ pub(super) fn RepoListTags() -> Element {
                                     onclick: {
                                         move |_| {
                                             let query = append_tag_query(&(ctx.active_tags)(), &advice.key);
-                                            ctx.active_tags.set(parse_tags_query(Some(&query)));
-                                            ctx.current_page.set(1);
                                             let (metric_q, range_q) = query_params_from_filter_sort(
                                                 (ctx.filter_type)(),
                                                 (ctx.sort_type)(),

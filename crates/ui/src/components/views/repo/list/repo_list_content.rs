@@ -15,7 +15,7 @@ pub(super) fn RepoListContent(
     current_page: u32,
     hero_type: RepoListHeroType,
 ) -> Element {
-    let mut ctx = use_context::<RepoListContext>();
+    let ctx = use_context::<RepoListContext>();
     let navigator = use_navigator();
     let list_key = repo_list_memory_key(ctx);
     let memory = REPO_LIST_MEMORY.peek().clone();
@@ -114,7 +114,6 @@ pub(super) fn RepoListContent(
                         current_page,
                         total_pages,
                         on_page_change: move |p| {
-                            ctx.current_page.set(p);
                             navigator.replace(repo_list_route_from_ctx(ctx, p, (ctx.page_size)()));
                         },
                     }
