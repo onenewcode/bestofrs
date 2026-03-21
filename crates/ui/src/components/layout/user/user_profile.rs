@@ -25,17 +25,18 @@ pub fn UserProfile() -> Element {
 
                 rsx! {
                     DropdownMenu {
-                        DropdownMenuTrigger {
-                            style: "padding:0; background:transparent; box-shadow:none; display:flex; align-items:center; justify-content:center;",
-                            Avatar { size: AvatarImageSize::Small,
+
+                        DropdownMenuTrigger { style: "padding:0; border-radius:9999px; background:transparent; box-shadow:none; display:flex; align-items:center; justify-content:center;",
+                            Avatar {
+                                size: AvatarImageSize::Small,
+                                style: "border:none; border-radius:9999px;",
                                 if let Some(url) = me.avatar_url {
                                     AvatarImage { src: url, alt: me.login }
                                 }
                                 AvatarFallback { "{fallback}" }
                             }
                         }
-                        DropdownMenuContent {
-                            style: "left:auto; right:0; min-width:10rem;",
+                        DropdownMenuContent { style: "left:auto; right:0; min-width:10rem;",
                             DropdownMenuItem::<String> {
                                 index: 0usize,
                                 value: "logout",
@@ -47,8 +48,10 @@ pub fn UserProfile() -> Element {
                                         navigator.replace("/");
                                     });
                                 },
-                                LogOutIcon { width: 16, height: 16 }
-                                span { "Logout" }
+                                span { class: "inline-flex gap-2 items-center",
+                                    LogOutIcon { width: 16, height: 16 }
+                                    span { "Logout" }
+                                }
                             }
                         }
                     }

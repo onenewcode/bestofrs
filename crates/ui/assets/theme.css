@@ -58,7 +58,7 @@
 }
 
 :root[data-grid-theme="blue"] {
-  --grid-accent: #1aa6a6;
+  --grid-accent: #2f6fd4;
   --focused-border-color: var(--grid-accent);
   --secondary-color-2: var(--dark, color-mix(in oklab, var(--grid-accent) 48%, #e6e6e6)) var(--light, color-mix(in oklab, var(--grid-accent) 72%, #0d0d0d));
   --secondary-color-1: var(--dark, color-mix(in oklab, var(--grid-accent) 56%, #fafafa)) var(--light, color-mix(in oklab, var(--grid-accent) 82%, #000000));

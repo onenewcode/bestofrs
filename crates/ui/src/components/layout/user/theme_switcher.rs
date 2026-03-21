@@ -17,7 +17,7 @@ pub fn ThemeSwitcher() -> Element {
 
     rsx! {
         button {
-            class: "inline-flex items-center justify-center rounded-md border border-primary-6 bg-primary-1 p-2 text-secondary-5 transition-colors hover:bg-primary-3 hover:text-secondary-4",
+            class: "inline-flex h-[1.6rem] w-[1.6rem] items-center justify-center rounded-full bg-transparent p-0 text-secondary-5 shadow-none transition-colors hover:text-secondary-4",
             onclick: move |_| {
                 toggle_theme();
                 is_dark.set(!is_dark());

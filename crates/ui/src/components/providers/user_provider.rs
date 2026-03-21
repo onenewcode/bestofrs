@@ -18,7 +18,7 @@ pub fn UserProvider(state: UserState, children: Element) -> Element {
     use_context_provider(|| user_state);
 
     use_effect(move || {
-        if user_state() != state {
+        if matches!(user_state(), UserState::Loading) && user_state() != state {
             user_state.set(state.clone());
         }
     });

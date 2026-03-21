@@ -11,7 +11,7 @@ const GRID_THEMES: [(&str, &str); 7] = [
     ("yellow", "#d4b100"),
     ("green", "#2fa84f"),
     ("cyan", "#1aa6a6"),
-    ("blue", "#1aa6a6"),
+    ("blue", "#2f6fd4"),
     ("purple", "#8756c9"),
 ];
 
@@ -23,8 +23,7 @@ pub fn ColorSwitcher() -> Element {
                 aria_label: "Select grid theme",
                 style: "padding:0; width:1.6rem; height:1.6rem; border-radius:9999px; background:transparent; box-shadow:none; display:flex; align-items:center; justify-content:center;",
                 span {
-                    class: "block h-3 w-3 rounded-full",
-                    style: "background-color: var(--grid-accent);",
+                    class: "block h-3 w-3 rounded-full bg-grid-accent",
                 }
             }
             DropdownMenuContent {
