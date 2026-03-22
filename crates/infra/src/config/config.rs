@@ -7,6 +7,8 @@ pub struct Config {
     pub server: ServerConfig,
     pub database: DatabaseConfig,
     #[serde(default)]
+    pub backup: BackupConfig,
+    #[serde(default)]
     pub redis: RedisConfig,
     #[serde(default)]
     pub auth: AuthConfig,
@@ -37,6 +39,26 @@ pub struct ServerConfig {
 #[derive(Debug, Clone, Deserialize)]
 pub struct DatabaseConfig {
     pub url: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct BackupConfig {
+    #[serde(default = "default_backup_dir")]
+    pub dir: String,
+    #[serde(default = "default_backup_retain_last")]
+    pub retain_last: usize,
+    #[serde(default)]
+    pub allow_restore: bool,
+}
+
+impl Default for BackupConfig {
+    fn default() -> Self {
+        Self {
+            dir: default_backup_dir(),
+            retain_last: default_backup_retain_last(),
+            allow_restore: false,
+        }
+    }
 }
 #[derive(Debug, Clone, Deserialize)]
 pub struct RedisConfig {
@@ -78,6 +100,14 @@ impl Default for AuthConfig {
 
 fn default_session_ttl_seconds() -> u64 {
     60 * 60 * 24 * 7
+}
+
+fn default_backup_dir() -> String {
+    "./backups".to_string()
+}
+
+fn default_backup_retain_last() -> usize {
+    20
 }
 
 fn default_site_url() -> String {

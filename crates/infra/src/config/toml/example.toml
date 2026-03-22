@@ -5,6 +5,12 @@ github_token = ""
 
 [database]
 url = "sqlite://bestofrs.db"
+
+[backup]
+dir = "./backups"
+retain_last = 20
+allow_restore = false
+
 [redis]
 url = ""
 

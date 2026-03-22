@@ -4,9 +4,9 @@ use adapters::persistence;
 use app::app_error::{AppError, AppResult};
 use app::auth::{AuthUserCache, OAuth2AuthorizationCodePkcePort, OAuth2ResourceOwnerPort};
 use app::prelude::{
-    AuthCommandHandler, IngestDailySnapshots, ProjectCommandHandler, ProjectEventHandler,
-    ProjectQueryHandler, RepoCommandHandler, RepoQueryHandler, SnapshotCommandHandler,
-    SnapshotEventHandler, SnapshotQueryHandler,
+    AuthCommandHandler, BackupCommandHandler, BackupQueryHandler, IngestDailySnapshots,
+    ProjectCommandHandler, ProjectEventHandler, ProjectQueryHandler, RepoCommandHandler,
+    RepoQueryHandler, SnapshotCommandHandler, SnapshotEventHandler, SnapshotQueryHandler,
 };
 
 use crate::config::Config as AppConfig;
@@ -34,6 +34,11 @@ pub struct AuthState {
     pub command: AuthCommandHandler,
 }
 
+pub struct BackupState {
+    pub query: BackupQueryHandler,
+    pub command: BackupCommandHandler,
+}
+
 pub struct AppContainer {
     pub config: AppConfig,
 
@@ -41,6 +46,7 @@ pub struct AppContainer {
     pub user_cache: Arc<dyn AuthUserCache>,
 
     pub auth: AuthState,
+    pub backup: BackupState,
 
     pub project: ProjectState,
     pub repo: RepoState,
@@ -57,7 +63,9 @@ pub type AppState = AppContainer;
 pub async fn init_app_container() -> AppResult<AppContainer> {
     let config = AppConfig::load().map_err(AppError::internal)?;
 
-    let repos = persistence::build_repos_by_url(&config.database.url).await?;
+    let runtime =
+        persistence::build_runtime_by_url(&config.database.url, &config.backup.dir).await?;
+    let repos = runtime.repos;
 
     let github = Arc::new(GithubClient::new(Some(config.server.github_token.clone()))?);
 
@@ -108,6 +116,16 @@ pub async fn init_app_container() -> AppResult<AppContainer> {
         command: AuthCommandHandler::new(oauth, resource_owner, role_policy, user_cache.clone()),
     };
 
+    let backup_port = runtime.backup;
+    let backup = BackupState {
+        query: BackupQueryHandler::new(backup_port.clone()),
+        command: BackupCommandHandler::new(
+            backup_port,
+            config.backup.allow_restore,
+            config.backup.retain_last,
+        ),
+    };
+
     let clock = Arc::new(SystemClock);
 
     let ingest_daily_snapshots = IngestDailySnapshots::new(
@@ -124,6 +142,7 @@ pub async fn init_app_container() -> AppResult<AppContainer> {
         redis_pool,
         user_cache,
         auth,
+        backup,
         project,
         repo,
         snapshot,

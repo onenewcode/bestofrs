@@ -1,4 +1,5 @@
 pub use crate::app_error::{AppError, AppResult};
+pub use crate::backup::{BackupCommandHandler, BackupEntry, BackupQueryHandler, DatabaseBackupPort};
 pub use crate::auth::{
     AuthCommandHandler, AuthUserCache, OAuth2AuthorizationCodePkcePort,
     OAuth2ResourceOwnerPort, RolePolicy,

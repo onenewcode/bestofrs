@@ -1,4 +1,5 @@
 pub mod app_error;
+pub mod backup;
 pub mod common;
 
 pub mod auth;
