@@ -30,7 +30,7 @@ pub fn HeaderNav(#[props(default = false)] vertical: bool) -> Element {
                     page: None,
                     size: None,
                 },
-                "REPO"
+                "REPOS"
             }
             Link { class: "{nav_link_class}", to: Route::TagListView {}, "TAGS" }
             Link { class: "{nav_link_class}", to: Route::AboutView {}, "ABOUT" }

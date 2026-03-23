@@ -24,9 +24,9 @@ pub fn Footer() -> Element {
                 }
             }
             div { class: "relative z-10 flex h-full min-h-[340px] flex-col px-6 py-8 md:px-10",
-                div { class: "grid flex-1 grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-12",
-                    section { class: "space-y-3 lg:col-span-5",
-                        div { class: "flex items-center gap-1 text-grid-accent",
+                div { class: "grid flex-1 grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4",
+                    section { class: "space-y-1 text-center lg:col-span-2 lg:text-left",
+                        div { class: "flex flex-col items-center gap-1 text-grid-accent lg:flex-row lg:items-center lg:gap-1",
                             BORSFerrisIcon { width: 68.0 }
                             h3 { class: "text-3xl font-extrabold",
                                 span { style: "color: #f28c1b;", "B" }
@@ -41,53 +41,54 @@ pub fn Footer() -> Element {
                                 span { style: "color: #e8473c;", "S" }
                             }
                         }
-                        p { class: "max-w-sm text-sm leading-relaxed text-secondary-5",
+                        p { class: "mx-auto max-w-sm text-sm leading-relaxed text-secondary-5 lg:mx-0",
                             "Collect cool things of the Rust ecosystem."
                         }
                     }
-                    nav {
-                        class: "space-y-3 md:col-span-1 lg:col-span-4",
-                        aria_label: "Footer Index",
-                        h5 { class: "font-mono text-xs font-bold uppercase tracking-widest text-secondary-4",
-                            "Index"
+                    div { class: "grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-2",
+                        nav {
+                            class: "space-y-3",
+                            aria_label: "Footer Index",
+                            h5 { class: "font-mono text-xs font-bold uppercase tracking-widest text-secondary-4",
+                                "Index"
+                            }
+                            div { class: "space-y-2 text-sm text-secondary-5",
+                                Link {
+                                    class: "block hover:text-secondary-3 hover:underline",
+                                    to: Route::HomeView {},
+                                    "Home"
+                                }
+                                Link {
+                                    class: "block hover:text-secondary-3 hover:underline",
+                                    to: Route::RepoListView {
+                                        tags: None,
+                                        metric: None,
+                                        range: None,
+                                        page: None,
+                                        size: None,
+                                    },
+                                    "Repos"
+                                }
+                                Link {
+                                    class: "block hover:text-secondary-3 hover:underline",
+                                    to: Route::TagListView {},
+                                    "Tag"
+                                }
+                                Link {
+                                    class: "block hover:text-secondary-3 hover:underline",
+                                    to: Route::AboutView {},
+                                    "About"
+                                }
+                            }
                         }
-                        div { class: "space-y-2 text-sm text-secondary-5",
-                            Link {
-                                class: "block hover:text-secondary-3 hover:underline",
-                                to: Route::HomeView {},
-                                "Home"
+                        section { class: "space-y-3",
+                            h5 { class: "font-mono text-xs font-bold uppercase tracking-widest text-secondary-4",
+                                "System"
                             }
-                            Link {
-                                class: "block hover:text-secondary-3 hover:underline",
-                                to: Route::RepoListView {
-                                    tags: None,
-                                    metric: None,
-                                    range: None,
-                                    page: None,
-                                    size: None,
-                                },
-                                "Repo"
+                            div { class: "flex items-center gap-2 text-xs font-mono text-secondary-5",
+                                div { class: "h-1.5 w-1.5 rounded-full bg-secondary-success" }
+                                span { "Operational" }
                             }
-                            Link {
-                                class: "block hover:text-secondary-3 hover:underline",
-                                to: Route::TagListView {},
-                                "Tag"
-                            }
-                            Link {
-                                class: "block hover:text-secondary-3 hover:underline",
-                                to: Route::AboutView {},
-                                "About"
-                            }
-
-                        }
-                    }
-                    section { class: "space-y-3 md:col-span-1 lg:col-span-3",
-                        h5 { class: "font-mono text-xs font-bold uppercase tracking-widest text-secondary-4",
-                            "System"
-                        }
-                        div { class: "flex items-center gap-2 text-xs font-mono text-secondary-5",
-                            div { class: "h-1.5 w-1.5 rounded-full bg-secondary-success" }
-                            span { "Operational" }
                         }
                     }
                 }

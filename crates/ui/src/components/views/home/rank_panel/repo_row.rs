@@ -39,14 +39,14 @@ pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
     let tag_more_style =
         format!("color: color-mix(in oklab, {accent_color} 76%, var(--secondary-color-4));");
     let card_class =
-        "rank-card bg-primary border-l-4 border-y border-r border-primary-6 shadow-sm transition-all duration-300 flex items-center p-3 group relative rounded-2xl h-[86px]";
+        "rank-card relative flex items-start rounded-xl border-l-4 border-y border-r border-primary-6 bg-primary p-2 shadow-sm transition-all duration-300 group md:h-[86px] md:items-center md:rounded-2xl md:p-3";
     let detail = rsx! {
         div { class: "{card_class}", style: "{card_style}",
-            div { class: "rank-card-number w-10 flex-shrink-0 font-mono font-bold transition-colors text-xl", style: "{rank_no_style}",
+            div { class: "rank-card-number w-6 flex-shrink-0 font-mono text-sm font-bold transition-colors md:w-10 md:text-xl", style: "{rank_no_style}",
                 "{(props.idx + 1).to_string()}"
             }
-            div { class: "relative mr-6",
-                div { class: "rank-card-avatar w-14 h-14 overflow-hidden rounded-full border bg-primary grayscale transition-all duration-500 group-hover:grayscale-0", style: "{avatar_style}",
+            div { class: "relative mr-2 hidden md:block md:mr-6",
+                div { class: "rank-card-avatar h-10 w-10 overflow-hidden rounded-full border bg-primary grayscale transition-all duration-500 group-hover:grayscale-0 sm:h-12 sm:w-12 md:h-14 md:w-14", style: "{avatar_style}",
                     RepoAvatar {
                         repo_id: props.repo.id.clone(),
                         avatar_urls: vec![props.repo.avatar_url.clone()],
@@ -56,14 +56,14 @@ pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
                     }
                 }
             }
-            div { class: "flex-grow min-w-0 mr-6",
-                h4 { class: "rank-card-title font-black text-sm font-sans uppercase tracking-tight text-secondary-2 transition-colors line-clamp-1",
+            div { class: "mr-2 min-w-0 flex-grow md:mr-6",
+                h4 { class: "rank-card-title line-clamp-1 font-sans text-[11px] font-black uppercase tracking-tight text-secondary-2 transition-colors sm:text-xs md:text-sm",
                     "{props.repo.name}"
                 }
-                p { class: "text-[11px] text-secondary-5 font-serif italic line-clamp-1 mt-0",
+                p { class: "mt-0 line-clamp-2 font-serif text-[10px] italic text-secondary-5 md:line-clamp-1 md:text-[11px]",
                     "{props.repo.description}"
                 }
-                div { class: "mt-1.5 flex flex-wrap items-center gap-1 min-h-[18px]",
+                div { class: "mt-1.5 hidden min-h-[18px] flex-wrap items-center gap-1 sm:flex",
                     for tag in tag_items {
                         HoverCard {
                             key: "{tag.value}",
@@ -98,14 +98,16 @@ pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
                     }
                 }
             }
-            div { class: "flex flex-col items-end gap-1 flex-shrink-0",
-                div { class: "text-sm font-mono font-bold text-secondary-2 flex items-center gap-1.5",
-                    "{stat_text}"
+            div { class: "flex flex-shrink-0 flex-col items-end gap-1",
+                div { class: "flex max-w-[82px] items-center gap-1 font-mono text-[10px] font-bold text-secondary-2 sm:max-w-[110px] sm:gap-1.5 sm:text-xs md:max-w-none md:text-sm",
+                    span { class: "block max-w-[62px] truncate sm:max-w-[84px] md:max-w-none",
+                        "{stat_text}"
+                    }
                     span { class: "rank-card-icon inline-flex items-center", style: "{stat_icon_style}",
                         {stat_icon_list(props.active_tab)}
                     }
                 }
-                div { class: "rank-card-tail w-4 h-[1px] bg-primary-6 group-hover:w-8 transition-all duration-500" }
+                div { class: "rank-card-tail h-[1px] w-3 bg-primary-6 transition-all duration-500 group-hover:w-6 md:w-4 md:group-hover:w-8" }
             }
             div { class: "absolute inset-0 bg-screentone opacity-[0.01] pointer-events-none" }
         }

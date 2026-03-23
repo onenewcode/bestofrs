@@ -5,7 +5,7 @@ use crate::components::icons::{ArrowRightIcon, StarIcon};
 #[component]
 pub(super) fn HomeActionSection() -> Element {
     rsx! {
-        div { class: "w-full max-w-7xl px-8 mb-24 relative z-10",
+        div { class: "relative z-10 mb-24 w-full max-w-7xl px-3 sm:px-4 md:px-8",
             div { class: "border-t border-primary-6 pt-16 flex flex-col md:flex-row md:items-center md:justify-between gap-8",
                 div { class: "space-y-3",
                     div { class: "flex items-center gap-3",
@@ -20,7 +20,7 @@ pub(super) fn HomeActionSection() -> Element {
                         "If Best of RS is useful to you, star the project or help us add more great repositories."
                     }
                 }
-                div { class: "flex flex-wrap items-center gap-5",
+                div { class: "mt-10 flex w-full flex-wrap items-center justify-center gap-5 md:mt-0 md:w-auto",
                     a {
                         href: "https://github.com/zhiyanzhaijie/bestofrs",
                         target: "_blank",

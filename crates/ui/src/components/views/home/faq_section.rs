@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 #[component]
 pub(super) fn HomeFaqSection() -> Element {
     rsx! {
-        div { class: "w-full max-w-7xl px-8 mb-32 relative z-10",
+        div { class: "w-full max-w-7xl px-2 md:px-8 mb-32 relative z-10",
             div { class: "pt-20",
                 div { class: "flex items-center gap-3 mb-8",
                     div { class: "w-8 h-[1px] bg-secondary-6" }

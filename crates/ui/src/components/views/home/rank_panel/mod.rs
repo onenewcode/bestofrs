@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 
+use crate::components::common::IOCell;
 use crate::components::icons::{
     ArrowRightIcon, CalendarDaysIcon, CircleDotIcon, GitForkIcon, RustDEVIcon, StarIcon,
 };
-use crate::components::{common::IOCell, icons::RustGearIcon};
 use crate::impls::datetime::format_utc_ymd_hm;
 use crate::root::Route;
 use crate::types::repos::RepoDto;
@@ -32,6 +32,10 @@ pub(super) fn stat_icon_tab(tab: RankType) -> Element {
 
 pub(super) fn stat_icon_list(tab: RankType) -> Element {
     stat_icon_with_size(tab, 12)
+}
+
+pub(super) fn stat_icon_mobile_tab(tab: RankType) -> Element {
+    stat_icon_with_size(tab, 20)
 }
 
 fn rank_range_query(range: TimeRange) -> &'static str {
@@ -88,20 +92,20 @@ pub(super) fn HomeRankPanel() -> Element {
     let mut time_range = use_signal(|| TimeRange::Daily);
 
     rsx! {
-        div { class: "bg-primary border border-2 border-x-4 border-primary-6 shadow-2xl rounded-[3.5rem] flex flex-col lg:flex-row min-h-[600px] transition-colors duration-300 relative z-10",
-            div { class: "w-full lg:w-[260px] flex flex-col bg-primary border-r border-primary-6 self-stretch p-4",
-                div { class: "p-4 mb-2 flex items-center gap-2",
-                    RustDEVIcon {  width: 48.0, height: 48.0 }
+        div { class: "relative z-10 flex min-h-0 flex-col overflow-visible rounded-3xl border-2 border-primary-6 bg-primary shadow-2xl transition-colors duration-300 md:rounded-[3rem] lg:min-h-[600px] lg:flex-row lg:rounded-[3.5rem] lg:border-x-4",
+            div { class: "flex w-full flex-col self-stretch border-b border-primary-6 bg-primary p-3 md:p-4 lg:w-[260px] lg:flex-none lg:border-b-0 lg:border-r",
+                div { class: "mb-2 flex items-center justify-center gap-2 p-2 text-center md:p-4",
+                    RustDEVIcon {  width: 40.0, height: 40.0 }
                     div {
-                        h3 { class: "text-2xl font-black font-sans uppercase tracking-tighter text-secondary-1",
+                        h3 { class: "font-sans text-xl font-black uppercase tracking-tighter text-secondary-1 md:text-2xl",
                             "Ranking"
                         }
-                        p { class: "text-[10px] font-mono text-secondary-6 uppercase tracking-widest mt-1 font-bold",
+                        p { class: "mt-1 text-[9px] font-bold font-mono uppercase tracking-widest text-secondary-6 md:text-[10px]",
                             "in metric"
                         }
                     }
                 }
-                div { class: "flex flex-col flex-grow gap-2 overflow-hidden",
+                div { class: "grid flex-grow grid-cols-4 gap-2 overflow-visible md:flex md:flex-col",
                     for tab in [RankType::Star, RankType::Fork, RankType::Issue, RankType::Recent] {
                         HomeRankTabItem {
                             tab,
@@ -110,45 +114,49 @@ pub(super) fn HomeRankPanel() -> Element {
                         }
                     }
                 }
-                div { class: "mt-auto p-6 border-t border-primary-6",
+                div { class: "mt-2 hidden border-t border-primary-6 p-2 md:mt-auto md:block md:p-6",
                     div { class: "flex items-center gap-2 text-[8px] font-mono text-secondary-5 uppercase tracking-widest",
-                        div { class: "w-2 h-2 bg-secondary-6 rounded-full animate-pulse" }
+                        div { class: "h-2 w-2 rounded-full bg-secondary-6 animate-pulse" }
                         "Active"
                     }
                 }
             }
-            div { class: "w-full lg:flex-grow px-5 md:px-6 bg-primary-1/60 flex flex-col self-stretch mx-4 my-6 rounded-[2.5rem]",
-                div { class: "flex flex-col xl:flex-row items-start xl:items-center justify-between mb-6 pb-8 border-b-2 border-primary-6 gap-4",
-                    div { class: "flex flex-wrap items-center gap-6",
+            div { class: "mx-2 my-3 flex min-w-0 flex-1 flex-col self-stretch rounded-2xl bg-primary-1/60 px-3 py-3 md:mx-4 md:my-5 md:rounded-[2.2rem] md:px-5 lg:my-6 lg:rounded-[2.5rem] lg:px-6",
+                div { class: "mb-4 flex flex-col items-stretch gap-3 border-b-2 border-primary-6 pb-5 md:mb-6 md:items-start md:gap-4 md:pb-8 xl:flex-row xl:items-center xl:justify-between",
+                    div { class: "w-full md:flex md:flex-wrap md:items-center md:gap-6",
                         if active_tab() != RankType::Recent {
-                            for range in [TimeRange::Daily, TimeRange::Weekly, TimeRange::Monthly] {
-                                HomeTimeRangeButton {
-                                    range,
-                                    active: time_range() == range,
-                                    onclick: move |_| time_range.set(range),
+                            div { class: "grid w-full grid-cols-3 gap-2 md:flex md:flex-wrap md:items-center md:gap-4",
+                                for range in [TimeRange::Daily, TimeRange::Weekly, TimeRange::Monthly] {
+                                    HomeTimeRangeButton {
+                                        range,
+                                        active: time_range() == range,
+                                        onclick: move |_| time_range.set(range),
+                                    }
                                 }
                             }
                         } else {
                             div { class: "relative group",
-                                div { class: "absolute inset-0 rounded-full bg-primary-1 border-2 border-primary-6 translate-x-[10px] translate-y-[10px]" }
-                                div { class: "relative px-8 py-3 rounded-full text-sm font-black font-sans uppercase tracking-[0.2em] italic bg-secondary-2 text-primary border-4 border-secondary-2 translate-x-[3.82px] translate-y-[3.82px] shadow-[0_0_20px_color-mix(in_oklab,var(--grid-accent)_24%,transparent)]",
+                                div { class: "absolute inset-0 translate-x-[6px] translate-y-[6px] rounded-md border border-primary-6 bg-primary-1 md:translate-x-[10px] md:translate-y-[10px] md:rounded-full md:border-2" }
+                                div { class: "relative translate-x-[2px] translate-y-[2px] rounded-md border-2 border-secondary-2 bg-secondary-2 px-3 py-1.5 font-sans text-[10px] font-black italic uppercase tracking-[0.1em] text-primary shadow-[0_0_14px_color-mix(in_oklab,var(--grid-accent)_20%,transparent)] md:translate-x-[3.82px] md:translate-y-[3.82px] md:rounded-full md:border-4 md:px-8 md:py-3 md:text-sm md:tracking-[0.2em] md:shadow-[0_0_20px_color-mix(in_oklab,var(--grid-accent)_24%,transparent)]",
                                     "Latest Inserted"
                                 }
                             }
                         }
                     }
-                    Link {
-                        to: Route::RepoListView {
-                            tags: None,
-                            metric: Some(rank_metric_query(active_tab()).to_string()),
-                            range: Some(rank_range_query(time_range()).to_string()),
-                            page: None,
-                            size: None,
-                        },
-                        class: "relative group",
-                        div { class: "absolute inset-0 rounded-full bg-primary-1 border-2 border-primary-6 translate-x-[10px] translate-y-[10px] transition-all duration-300 group-hover:border-focused-border" }
-                        div { class: "relative flex items-center gap-3 px-8 py-3 rounded-full bg-primary border-4 border-secondary-2 text-secondary-2 group-hover:bg-secondary-2 group-hover:text-primary group-hover:translate-x-[3.82px] group-hover:translate-y-[3.82px] transition-all duration-300 ease-out",
-                            ArrowRightIcon {  }
+                    div { class: "w-full md:w-auto",
+                        Link {
+                            to: Route::RepoListView {
+                                tags: None,
+                                metric: Some(rank_metric_query(active_tab()).to_string()),
+                                range: Some(rank_range_query(time_range()).to_string()),
+                                page: None,
+                                size: None,
+                            },
+                            class: "relative group block w-full md:inline-block md:w-auto",
+                            div { class: "absolute inset-0 translate-x-[8px] translate-y-[8px] rounded-full border-2 border-primary-6 bg-primary-1 transition-all duration-300 group-hover:border-focused-border md:translate-x-[10px] md:translate-y-[10px]" }
+                            div { class: "relative flex w-full items-center justify-center gap-2 rounded-full border-4 border-secondary-2 bg-primary px-4 py-2 text-secondary-2 transition-all duration-300 ease-out group-hover:bg-secondary-2 group-hover:text-primary group-hover:translate-x-[3.82px] group-hover:translate-y-[3.82px] md:w-auto md:gap-3 md:px-8 md:py-3",
+                                ArrowRightIcon {  }
+                            }
                         }
                     }
                 }
