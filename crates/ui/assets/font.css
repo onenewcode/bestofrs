@@ -3,7 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("/assets/fonts/iAWriterMonoS-Regular.woff2") format("woff2");
+  src: url("/assets/iAWriterMonoS-Regular.woff2") format("woff2");
 }
 
 @font-face {
@@ -11,7 +11,7 @@
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url("/assets/fonts/iAWriterMonoS-Italic.woff2") format("woff2");
+  src: url("/assets/iAWriterMonoS-Italic.woff2") format("woff2");
 }
 
 @font-face {
@@ -19,7 +19,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("/assets/fonts/iAWriterMonoS-Bold.woff2") format("woff2");
+  src: url("/assets/iAWriterMonoS-Bold.woff2") format("woff2");
 }
 
 @font-face {
@@ -27,7 +27,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("/assets/fonts/iAWriterQuattroS-Regular.woff2") format("woff2");
+  src: url("/assets/iAWriterQuattroS-Regular.woff2") format("woff2");
 }
 
 @font-face {
@@ -35,7 +35,7 @@
   font-style: italic;
   font-weight: 400;
   font-display: swap;
-  src: url("/assets/fonts/iAWriterQuattroS-Italic.woff2") format("woff2");
+  src: url("/assets/iAWriterQuattroS-Italic.woff2") format("woff2");
 }
 
 @font-face {
@@ -43,7 +43,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("/assets/fonts/iAWriterQuattroS-Bold.woff2") format("woff2");
+  src: url("/assets/iAWriterQuattroS-Bold.woff2") format("woff2");
 }
 
 :root,
