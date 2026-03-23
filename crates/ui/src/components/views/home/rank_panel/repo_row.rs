@@ -2,7 +2,9 @@ use crate::components::common::RepoAvatar;
 use crate::components::common::TagContent;
 use crate::components::ui::avatar::AvatarImageSize;
 use crate::components::ui::hover_card::{HoverCard, HoverCardContent, HoverCardTrigger};
+use crate::root::Route;
 use dioxus::prelude::*;
+use dioxus_primitives::ContentSide;
 
 use super::{
     parse_repo_route, rainbow_color, row_border_style, stat_icon_list, stat_value, HomeRankRepo,
@@ -18,41 +20,37 @@ pub(super) struct HomeRankRepoRowProps {
 
 #[component]
 pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
-    let route = parse_repo_route(&props.repo.id, props.active_tab);
+    let route = parse_repo_route(&props.repo.id, props.active_tab).unwrap_or(Route::HomeView {});
+    let navigator = use_navigator();
     let stat_text = stat_value(&props.repo, props.active_tab);
     let accent_color = rainbow_color(props.idx);
     let tag_items = props.repo.tags.iter().take(3).cloned().collect::<Vec<_>>();
     let has_tag_items = !tag_items.is_empty();
     let more_tags = props.repo.tags.len().saturating_sub(3);
-    let border_left_style = row_border_style(props.idx);
-    let card_style = format!("{border_left_style} --rank-accent: {accent_color};");
-    let rank_no_style =
-        format!("color: color-mix(in oklab, {accent_color} 46%, var(--secondary-color-6));");
-    let avatar_style =
-        format!("border-color: color-mix(in oklab, {accent_color} 56%, var(--primary-color-6));");
-    let stat_icon_style =
-        format!("color: color-mix(in oklab, {accent_color} 84%, var(--secondary-color-2));");
-    let tag_chip_style = format!(
-        "border-color: color-mix(in oklab, {accent_color} 34%, var(--primary-color-6));\
-         background: color-mix(in oklab, {accent_color} 10%, var(--primary-color));"
-    );
-    let tag_more_style =
-        format!("color: color-mix(in oklab, {accent_color} 76%, var(--secondary-color-4));");
-    let card_class =
-        "rank-card relative flex items-start rounded-xl border-l-4 border-y border-r border-primary-6 bg-primary p-2 shadow-sm transition-all duration-300 group md:h-[86px] md:items-center md:rounded-2xl md:p-3";
-    let detail = rsx! {
-        div { class: "{card_class}", style: "{card_style}",
-            div { class: "rank-card-number w-6 flex-shrink-0 font-mono text-sm font-bold transition-colors md:w-10 md:text-xl", style: "{rank_no_style}",
+
+    rsx! {
+        div {
+            class: "rank-card relative flex items-start rounded-xl border-l-4 border-y border-r border-primary-6 bg-primary p-2 shadow-sm transition-all duration-300 group md:h-[86px] md:items-center md:rounded-2xl md:p-3",
+            style: "{row_border_style(props.idx)} --rank-accent: {accent_color};",
+            onclick: move |_| {
+                navigator.push(route.clone());
+            },
+            div {
+                class: "rank-card-number w-6 flex-shrink-0 font-mono text-sm font-bold transition-colors md:w-10 md:text-xl",
+                style: "color: color-mix(in oklab, {accent_color} 46%, var(--secondary-color-6));",
                 "{(props.idx + 1).to_string()}"
             }
             div { class: "relative mr-2 hidden md:block md:mr-6",
-                div { class: "rank-card-avatar h-10 w-10 overflow-hidden rounded-full border bg-primary grayscale transition-all duration-500 group-hover:grayscale-0 sm:h-12 sm:w-12 md:h-14 md:w-14", style: "{avatar_style}",
+                div {
+                    class: "rank-card-avatar h-10 w-10 overflow-hidden rounded-full border bg-primary grayscale transition-all duration-500 group-hover:grayscale-0 sm:h-12 sm:w-12 md:h-14 md:w-14",
+                    style: "border-color: color-mix(in oklab, {accent_color} 56%, var(--primary-color-6));",
                     RepoAvatar {
                         repo_id: props.repo.id.clone(),
                         avatar_urls: vec![props.repo.avatar_url.clone()],
                         size: AvatarImageSize::Custom,
                         class: "h-full w-full border-none bg-transparent".to_string(),
-                        fallback_class: "flex h-full w-full items-center justify-center border-none bg-primary-2 text-[10px] font-bold text-secondary-4".to_string(),
+                        fallback_class: "flex h-full w-full items-center justify-center border-none bg-primary-2 text-[10px] font-bold text-secondary-4"
+                            .to_string(),
                     }
                 }
             }
@@ -65,29 +63,35 @@ pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
                 }
                 div { class: "mt-1.5 hidden min-h-[18px] flex-wrap items-center gap-1 sm:flex",
                     for tag in tag_items {
-                        HoverCard {
-                            key: "{tag.value}",
-                            div {
-                                onclick: move |evt| evt.stop_propagation(),
-                                HoverCardTrigger {
-                                    span {
-                                        class: "rank-card-tag inline-flex items-center rounded-full border px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wide text-secondary-4",
-                                        style: "{tag_chip_style}",
-                                        "{tag.label}"
-                                    }
+                        HoverCard { key: "{tag.value}",
+                            HoverCardTrigger {
+                                button {
+                                    r#type: "button",
+                                    class: "rank-card-tag inline-flex items-center rounded-full border px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wide text-secondary-4",
+                                    style: "border-color: color-mix(in oklab, {accent_color} 34%, var(--primary-color-6)); background: color-mix(in oklab, {accent_color} 10%, var(--primary-color));",
+                                    onclick: move |evt| {
+                                        evt.stop_propagation();
+                                        evt.prevent_default();
+                                    },
+                                    "{tag.label}"
                                 }
                             }
-                            HoverCardContent {
-                                side: dioxus_primitives::ContentSide::Bottom,
+                            HoverCardContent { side: ContentSide::Bottom,
                                 div {
-                                    onclick: move |evt| evt.stop_propagation(),
+                                    class: "w-full",
+                                    onclick: move |evt| {
+                                        evt.stop_propagation();
+                                        evt.prevent_default();
+                                    },
                                     TagContent { value: tag.value }
                                 }
                             }
                         }
                     }
                     if more_tags > 0 {
-                        span { class: "text-[10px] font-mono uppercase tracking-wide", style: "{tag_more_style}",
+                        span {
+                            class: "text-[10px] font-mono uppercase tracking-wide",
+                            style: "color: color-mix(in oklab, {accent_color} 76%, var(--secondary-color-4));",
                             "+{more_tags}"
                         }
                     }
@@ -103,7 +107,9 @@ pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
                     span { class: "block max-w-[62px] truncate sm:max-w-[84px] md:max-w-none",
                         "{stat_text}"
                     }
-                    span { class: "rank-card-icon inline-flex items-center", style: "{stat_icon_style}",
+                    span {
+                        class: "rank-card-icon inline-flex items-center",
+                        style: "color: color-mix(in oklab, {accent_color} 84%, var(--secondary-color-2));",
                         {stat_icon_list(props.active_tab)}
                     }
                 }
@@ -111,12 +117,5 @@ pub(super) fn HomeRankRepoRow(props: HomeRankRepoRowProps) -> Element {
             }
             div { class: "absolute inset-0 bg-screentone opacity-[0.01] pointer-events-none" }
         }
-    };
-    if let Some(route) = route {
-        rsx! {
-            Link { to: route, class: "contents", {detail} }
-        }
-    } else {
-        rsx! { {detail} }
     }
 }
