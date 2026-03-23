@@ -31,7 +31,8 @@ pub fn UserLayout() -> Element {
                                 FuzzySearch {}
                                 Button {
                                     variant: ButtonVariant::Outline,
-                                    class: "button inline-flex h-9 w-9 items-center justify-center !rounded-md border-primary-6 !px-0",
+                                    class: "button inline-flex h-9 items-center justify-center",
+                                    style: "border-radius: 0.5rem;",
                                     aria_label: "Open mobile menu",
                                     onclick: move |_| mobile_menu_open.set(true),
                                     MenuIcon { width: 18, height: 18 }
@@ -49,19 +50,25 @@ pub fn UserLayout() -> Element {
                                     SheetTitle { "Navigation menu" }
                                     SheetDescription { "Mobile navigation menu" }
                                 }
-                                div { class: "flex h-full min-h-0 flex-col gap-4 px-4 py-4",
-                                    Link {
-                                        class: "flex items-center gap-2 border border-transparent px-1 text-secondary-4 transition-all hover:border-primary-6 hover:bg-primary-1",
-                                        to: Route::HomeView {},
-                                        BestOfRSIcon { height: 34.0 }
+                                div { class: "flex h-[100dvh] min-h-0 flex-col px-4 py-4",
+                                    div { class: "shrink-0",
+                                        Link {
+                                            class: "flex items-center gap-2 border border-transparent px-1 text-secondary-4 transition-all hover:border-primary-6 hover:bg-primary-1",
+                                            to: Route::HomeView {},
+                                            BestOfRSIcon { height: 34.0 }
+                                        }
                                     }
-                                    HeaderNav { vertical: true }
-                                    div { class: "h-px w-full bg-primary-6" }
-                                    div { class: "flex items-center justify-between gap-3",
-                                        UserProfile {}
-                                        div { class: "flex items-center gap-3",
-                                            ColorSwitcher {}
-                                            ThemeSwitcher {}
+                                    div { class: "min-h-0 flex-1 overflow-y-auto py-3",
+                                        HeaderNav { vertical: true }
+                                    }
+                                    div { class: "shrink-0",
+                                        div { class: "h-px w-full bg-primary-6" }
+                                        div { class: "flex items-center justify-between gap-3 pt-3",
+                                            UserProfile {}
+                                            div { class: "flex items-center gap-3",
+                                                ColorSwitcher {}
+                                                ThemeSwitcher {}
+                                            }
                                         }
                                     }
                                 }

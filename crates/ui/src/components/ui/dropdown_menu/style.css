@@ -103,3 +103,11 @@
     var(--light, var(--primary-color-4));
   color: var(--secondary-color-1);
 }
+
+@media (max-width: 767px) {
+  .dropdown-menu-content {
+    top: auto;
+    bottom: calc(100% + 4px);
+    margin-top: 0;
+  }
+}

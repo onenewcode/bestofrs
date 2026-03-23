@@ -191,7 +191,6 @@ pub fn FuzzySearch() -> Element {
     };
 
     let mut search = use_action({
-        let page = page;
         move |key: String| async move {
             if key.trim().is_empty() {
                 return Ok(empty_result(page));
@@ -261,13 +260,14 @@ pub fn FuzzySearch() -> Element {
             Button {
                 id: search_trigger_id,
                 variant: ButtonVariant::Outline,
-                class: "button inline-flex h-10 w-full items-center justify-center !rounded-lg border-primary-6 !px-2",
+                class: "button inline-flex h-9 w-9 items-center justify-center md:h-10 md:w-auto",
+                style: "border-radius: 0.5rem; padding: 0; border-color: var(--primary-color-6);",
                 onclick: move |_| {
                     open_dialog();
                 },
-                span { class: "inline-flex w-full items-center justify-center gap-2",
+                span { class: "inline-flex items-center justify-center gap-2 py-1 md:py-2 px-2",
                     SearchIcon { width: 16, height: 16 }
-                    span { class: "inline-flex items-center px-2 py-1 rounded-md gap-1 bg-secondary-6/40",
+                    span { class: "hidden items-center gap-1 rounded-md bg-secondary-6/40 px-2 py-1 inline-flex",
                         CommandIcon { width: 16, height: 16 }
                         "K"
                     }
@@ -287,6 +287,7 @@ pub fn FuzzySearch() -> Element {
             DialogContent { style: "top: 15%; transform: translate(-50%, 0); height: min(80vh, 34rem); max-height: min(80vh, 34rem); overflow: hidden;",
                 Input {
                     class: "input w-full",
+                    style: "border-radius: 0.5rem; border-color: var(--primary-color-6);",
                     oninput: move |e: FormEvent| on_draft_change(e.value()),
                     onkeydown: move |e: KeyboardEvent| {
                         if e.key() == Key::Enter {

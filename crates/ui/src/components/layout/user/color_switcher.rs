@@ -23,7 +23,7 @@ pub fn ColorSwitcher() -> Element {
                 aria_label: "Select grid theme",
                 style: "padding:0; width:1.6rem; height:1.6rem; border-radius:9999px; background:transparent; box-shadow:none; display:flex; align-items:center; justify-content:center;",
                 span {
-                    class: "block h-3 w-3 rounded-full bg-grid-accent",
+                    class: "block h-4 w-4 rounded-full bg-grid-accent",
                 }
             }
             DropdownMenuContent {
