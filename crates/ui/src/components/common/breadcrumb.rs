@@ -96,6 +96,13 @@ fn build_crumbs(route: &Route) -> Vec<Crumb> {
                 to: None,
             },
         ],
+        Route::NotFoundView { .. } => vec![
+            home_crumb(),
+            Crumb {
+                label: "404".to_string(),
+                to: None,
+            },
+        ],
     }
 }
 

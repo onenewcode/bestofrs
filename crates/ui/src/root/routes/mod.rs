@@ -2,6 +2,7 @@ mod about;
 mod admin;
 mod home;
 mod login;
+mod not_found;
 mod repo;
 mod tag;
 
@@ -11,6 +12,7 @@ use admin::{AdminBackupView, AdminJobView, AdminProjectsView, AdminTagsView};
 use dioxus::prelude::*;
 use home::HomeView;
 use login::LoginView;
+use not_found::NotFoundView;
 use repo::{RepoDetailView, RepoListView};
 use tag::TagListView;
 
@@ -55,7 +57,11 @@ pub enum Route {
             #[route("/login")]
             LoginView {},
             #[route("/about")]
-            AboutView {}
+            AboutView {},
+            #[route("/:..segments")]
+            NotFoundView {
+                segments: Vec<String>,
+            }
 }
 
 impl Route {
@@ -68,5 +74,9 @@ impl Route {
                 | Route::AdminBackupView {}
                 | Route::LoginView {}
         )
+    }
+
+    pub fn is_no_index(&self) -> bool {
+        self.is_auth() || matches!(self, Route::NotFoundView { .. })
     }
 }

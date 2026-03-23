@@ -15,7 +15,7 @@ pub async fn get_sitemap() -> ServerFnResult<Response> {
     let site_url = state.0.config.web.site_url.as_str();
     let all_routes = Route::static_routes();
     for route in all_routes {
-        if route.is_auth() {
+        if route.is_no_index() {
             continue;
         }
 
