@@ -725,7 +725,7 @@ pub fn DioxusIcon(
         svg {
             width: "{width}",
             height: "{height}",
-            id: "svg",
+            id: "dioxus",
             version: "1.1",
             view_box: "0 0 32 31.999997",
             xmlns: "http://www.w3.org/2000/svg",
@@ -740,7 +740,6 @@ pub fn DioxusIcon(
                     style: "display:inline",
                     transform: "translate(-34.8584,-125.7831)",
                     g {
-                        transform: "translate(3110,1550)",
                         id: "g9116-7-0",
                         style: "display:inline",
                         transform: "translate(24,5.016704)",
