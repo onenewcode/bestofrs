@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 use dioxus_sdk_time::use_debounce;
 use dioxus_use_js::use_js;
 
@@ -83,8 +84,8 @@ pub(super) fn FuzzySearchResultList(
             default_value: "repos".to_string(),
             on_value_change: move |value| active_tab.set(Some(value)),
             TabList {
-                TabTrigger { value: "repos".to_string(), index: 0usize, "Repos ({repos.len()})" }
-                TabTrigger { value: "tags".to_string(), index: 1usize, "Tags ({tags.len()})" }
+                TabTrigger { value: "repos".to_string(), index: 0usize, {t!("layout_user_fuzzy_search_tab_repos", count: repos.len())} }
+                TabTrigger { value: "tags".to_string(), index: 1usize, {t!("layout_user_fuzzy_search_tab_tags", count: tags.len())} }
             }
             TabContent {
                 value: "repos".to_string(),
@@ -297,9 +298,9 @@ pub fn FuzzySearch() -> Element {
                             close_dialog();
                         }
                     },
-                    placeholder: "Search Projects and Tags...",
+                    placeholder: t!("layout_user_fuzzy_search_input_placeholder"),
                     value: draft,
-                    aria_label: "Search",
+                    aria_label: t!("layout_user_fuzzy_search_input_aria_label"),
                     children: rsx! {},
                 }
 

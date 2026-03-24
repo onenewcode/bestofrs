@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::skeleton::Skeleton;
 use crate::components::{common::TypingText, icons::BORSFerrisIcon};
@@ -11,9 +12,9 @@ pub(super) fn FuzzySearchIdleFallback() -> Element {
     rsx! {
         div { class: "inset-0 p-8 w-full h-full text-grid-accent flex flex-col items-center justify-center gap-3",
             BORSFerrisIcon { width:240.0 }
-            h3 { class: "text-base font-semibold text-secondary-2 text-center", "Hi, Ferris here!" }
+            h3 { class: "text-base font-semibold text-secondary-2 text-center", {t!("layout_user_fuzzy_search_fallback_hi_ferris")} }
             div { class: "w-full max-w-md text-left text-sm text-secondary-5",
-                TypingText { text: "Type a keyword and I'll find matching repos and tags".to_string(), active: true }
+                TypingText { text: t!("layout_user_fuzzy_search_fallback_typing").to_string(), active: true }
             }
         }
     }

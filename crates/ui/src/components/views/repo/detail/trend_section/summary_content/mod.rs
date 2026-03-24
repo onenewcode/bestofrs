@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::icons::RustGearIcon;
 use crate::IO::repos::list_repo_deltas_summary;
@@ -28,9 +29,18 @@ pub(crate) fn TrendSummary(metric: Signal<String>) -> Element {
                 _ => summary.stars,
             };
             let summary_rows = vec![
-                ("Daily".to_string(), metric_summary.daily),
-                ("Weekly".to_string(), metric_summary.weekly),
-                ("Monthly".to_string(), metric_summary.monthly),
+                (
+                    t!("view_repo_detail_trend_timeframe_daily").to_string(),
+                    metric_summary.daily,
+                ),
+                (
+                    t!("view_repo_detail_trend_timeframe_weekly").to_string(),
+                    metric_summary.weekly,
+                ),
+                (
+                    t!("view_repo_detail_trend_timeframe_monthly").to_string(),
+                    metric_summary.monthly,
+                ),
             ];
 
             rsx! {

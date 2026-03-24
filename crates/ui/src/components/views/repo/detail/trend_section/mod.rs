@@ -5,6 +5,7 @@ pub(super) mod summary_content;
 use crate::components::common::IOCell;
 use crate::components::tabs::{TabContent, TabList, TabTrigger, Tabs, TabsVariant};
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 use serde_json::Value;
 
 use delta_content::skeleton::DeltaContentSkeleton;
@@ -87,9 +88,11 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
         section { class: "space-y-6",
             div { class: "space-y-4",
                 h2 { class: "text-5xl leading-[0.8] font-black tracking-tighter text-secondary-2 uppercase md:text-7xl",
-                    "Trend"
+                    "trend"
                     br {}
-                    span { class: "text-transparent [-webkit-text-stroke:2px_var(--primary-color-6)]", "Analysis" }
+                    span { class: "text-transparent [-webkit-text-stroke:2px_var(--primary-color-6)]",
+                        "analyze"
+                    }
                 }
                 div { class: "mb-8 flex flex-wrap justify-center gap-2",
                     for item in ["stars", "forks", "issues"] {
@@ -120,8 +123,16 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                 default_value: "delta".to_string(),
                 on_value_change: move |value| active_tab.set(Some(value)),
                 TabList {
-                    TabTrigger { value: "delta".to_string(), index: 0usize, "DELTAS" }
-                    TabTrigger { value: "snapshot".to_string(), index: 1usize, "SNAPSHOT" }
+                    TabTrigger {
+                        value: "delta".to_string(),
+                        index: 0usize,
+                        {t!("view_repo_detail_trend_tab_deltas")}
+                    }
+                    TabTrigger {
+                        value: "snapshot".to_string(),
+                        index: 1usize,
+                        {t!("view_repo_detail_trend_tab_snapshot")}
+                    }
                 }
                 TabContent {
                     value: "delta".to_string(),
@@ -137,7 +148,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
                                 onclick: move |_| delta_timeframe.set("weekly".to_string()),
-                                "Weekly"
+                                {t!("view_repo_detail_trend_timeframe_weekly")}
                             }
                             button {
                                 class: "px-3 py-1 text-[10px] font-mono font-bold tracking-widest uppercase hover:cursor-pointer",
@@ -147,7 +158,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
                                 onclick: move |_| delta_timeframe.set("monthly".to_string()),
-                                "Monthly"
+                                {t!("view_repo_detail_trend_timeframe_monthly")}
                             }
                         }
                     }
@@ -174,7 +185,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
                                 onclick: move |_| snapshot_timeframe.set("monthly".to_string()),
-                                "Monthly"
+                                {t!("view_repo_detail_trend_timeframe_monthly")}
                             }
                             button {
                                 class: "px-3 py-1 text-[10px] font-mono font-bold tracking-widest uppercase hover:cursor-pointer",
@@ -184,7 +195,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
                                 onclick: move |_| snapshot_timeframe.set("yearly".to_string()),
-                                "Yearly"
+                                {t!("view_repo_detail_trend_timeframe_yearly")}
                             }
                         }
                     }

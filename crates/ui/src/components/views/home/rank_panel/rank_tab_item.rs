@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use super::{rank_desc, rank_title, stat_icon_mobile_tab, stat_icon_tab, RankType};
 
@@ -12,6 +13,7 @@ pub(super) struct HomeRankTabItemProps {
 #[component]
 pub(super) fn HomeRankTabItem(props: HomeRankTabItemProps) -> Element {
     let is_active = props.active_tab == props.tab;
+    let metric = rank_title(props.tab);
     rsx! {
         div {
             class: "relative flex min-w-0 flex-grow flex-col rounded-xl transition-all duration-500 md:rounded-r-2xl",
@@ -21,7 +23,7 @@ pub(super) fn HomeRankTabItem(props: HomeRankTabItemProps) -> Element {
             }
             button {
                 onclick: move |e| props.on_select.call(e),
-                aria_label: "Select {rank_title(props.tab)} ranking tab",
+                aria_label: t!("view_home_rank_panel_tab_aria_label", metric: metric.clone()),
                 class: "relative z-10 flex w-full items-center justify-center px-2 py-3 text-left group hover:cursor-pointer md:justify-between md:px-6 md:py-5",
                 div { class: "flex min-w-0 items-center justify-center gap-1.5 md:justify-start md:gap-2",
                     span {
@@ -29,7 +31,7 @@ pub(super) fn HomeRankTabItem(props: HomeRankTabItemProps) -> Element {
                         class: if is_active { "text-secondary-2" } else { "text-secondary-5 group-hover:text-secondary-2" },
                         span { class: "inline-flex items-center md:hidden", {stat_icon_mobile_tab(props.tab)} }
                         span { class: "hidden items-center md:inline-flex", {stat_icon_tab(props.tab)} }
-                        span { class: "hidden md:inline", "{rank_title(props.tab)}" }
+                        span { class: "hidden md:inline", "{metric}" }
                     }
                 }
                 span {

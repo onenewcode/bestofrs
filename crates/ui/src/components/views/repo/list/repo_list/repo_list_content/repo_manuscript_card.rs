@@ -7,6 +7,7 @@ use crate::components::ui::hover_card::{HoverCard, HoverCardContent, HoverCardTr
 use crate::root::Route;
 use crate::types::repos::RepoDto;
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 use dioxus_primitives::ContentSide;
 
 #[component]
@@ -122,7 +123,7 @@ pub(super) fn RepoManuscriptCard(repo: RepoDto, on_open: Option<EventHandler<Str
             }
             div { class: "flex min-w-0 flex-grow flex-col justify-between p-3 md:p-4",
                 p { class: "mb-2 line-clamp-2 text-xs leading-relaxed text-secondary-4 md:mb-3 md:text-sm",
-                    "{description.clone().unwrap_or_else(|| \"No description\".to_string())}"
+                    "{description.clone().unwrap_or_else(|| t!(\"view_repo_list_content_no_description\").to_string())}"
                 }
                 div { class: "flex flex-wrap justify-start gap-x-2 gap-y-2",
                     for tag in tags.clone().into_iter() {

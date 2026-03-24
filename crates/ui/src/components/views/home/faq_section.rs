@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 #[component]
 pub(super) fn HomeFaqSection() -> Element {
@@ -10,25 +11,25 @@ pub(super) fn HomeFaqSection() -> Element {
                     span { class: "font-mono text-[10px] tracking-[0.5em] uppercase text-secondary-6 font-bold", "FAQ" }
                 }
                 h3 { class: "text-4xl md:text-5xl font-black font-sans uppercase tracking-tighter italic text-secondary-1 leading-none mb-14",
-                    "Frequently Asked"
+                    {t!("view_home_faq_title_prefix")}
                     br {}
-                    span { class: "text-secondary-6 not-italic", "Questions" }
+                    span { class: "text-secondary-6 not-italic", {t!("view_home_faq_title_suffix")} }
                 }
                 div { class: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16",
                     HomeFaqItem {
                         index: 1,
-                        question: "How are projects ranked?",
-                        answer: "Projects are ranked based on their GitHub growth on dimension like Star, Fork and Issue, over the selected period (daily, weekly, monthly). This highlights what's currently trending in the Rust community.",
+                        question: t!("view_home_faq_q1_question").to_string(),
+                        answer: t!("view_home_faq_q1_answer").to_string(),
                     }
                     HomeFaqItem {
                         index: 2,
-                        question: "How to add a project?",
-                        answer: "If you know a great Rust project that's missing, use the recommend link in the archive pages. We curate the list to ensure high quality and relevance.",
+                        question: t!("view_home_faq_q2_question").to_string(),
+                        answer: t!("view_home_faq_q2_answer").to_string(),
                     }
                     HomeFaqItem {
                         index: 3,
-                        question: "Is this official?",
-                        answer: "Best of Rust is a community-driven project inspired by Best of JS. It is not an official Rust Foundation project.",
+                        question: t!("view_home_faq_q3_question").to_string(),
+                        answer: t!("view_home_faq_q3_answer").to_string(),
                     }
                 }
             }
@@ -39,8 +40,8 @@ pub(super) fn HomeFaqSection() -> Element {
 #[derive(Props, Clone, PartialEq)]
 struct HomeFaqItemProps {
     index: usize,
-    question: &'static str,
-    answer: &'static str,
+    question: String,
+    answer: String,
 }
 
 #[component]

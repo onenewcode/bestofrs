@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::common::RepoAvatar;
 use crate::components::icons::TagsIcon;
@@ -41,18 +42,18 @@ pub fn TagContent(value: String, #[props(default = 5)] top_n: u32) -> Element {
                         }
                     }
                     p { class: "mt-1 text-[10px] font-mono text-secondary-5",
-                        "{tag.description.clone().unwrap_or_else(|| \"No description\".to_string())}"
+                        "{tag.description.clone().unwrap_or_else(|| t!(\"common_tag_content_no_description\").to_string())}"
                     }
                 }
                 div { class: "my-3 flex min-h-0 flex-1 flex-col px-2 py-3",
                     div { class: "mb-2 flex items-center justify-between text-[10px] font-mono text-secondary-5",
-                        span { "TOP REPOS" }
+                        span { {t!("common_tag_content_top_repos")} }
                         span { "{tag.repos_total}" }
                     }
                     ul { class: "min-h-0 flex-1 space-y-1 overflow-y-auto",
                         if tag.top_repos.is_empty() {
                             li { class: "px-2 py-2 text-xs text-secondary-5",
-                                "No repos"
+                                {t!("common_tag_content_no_repos")}
                             }
                         } else {
                             for repo in tag.top_repos.into_iter() {
@@ -90,13 +91,13 @@ pub fn TagContent(value: String, #[props(default = 5)] top_n: u32) -> Element {
                                 size: None,
                             });
                     },
-                    "View All"
+                    {t!("common_tag_content_view_all")}
                 }
             }
         },
         Some(None) => rsx! {
             div { class: "flex min-h-72 w-80 items-center justify-center text-sm text-secondary-6",
-                "Tag Not Found"
+                {t!("common_tag_content_tag_not_found")}
             }
         },
         None => rsx! {

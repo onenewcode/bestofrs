@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use super::{TagListCachedPage, TagListContext, TagListSummary, TagRouteItem};
 use crate::components::common::CommonPagination;
@@ -104,9 +105,9 @@ fn TagListContent(
         if items.is_empty() {
             div { class: "flex min-h-[220px] flex-col items-center justify-center border border-dashed border-primary-6 bg-primary-1 text-center",
                 span { class: "mb-3 font-mono text-sm tracking-widest text-secondary-6",
-                    "NO_DATA"
+                    {t!("view_tag_list_no_data")}
                 }
-                span { class: "text-sm text-secondary-6", "No tags found" }
+                span { class: "text-sm text-secondary-6", {t!("view_tag_list_no_tags_found")} }
             }
         } else {
             div {

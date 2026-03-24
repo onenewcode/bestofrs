@@ -34,7 +34,6 @@ async fn main() {
     )
     .await;
 
-    let user_cache = container.user_cache.clone();
     let web_config = ConfigContext {
         site_url: container.config.web.site_url.clone(),
     };
@@ -43,7 +42,6 @@ async fn main() {
     let router = axum::Router::new()
         .serve_dioxus_application(serve_cfg, ui::root::App)
         .layer(axum::Extension(app_state.clone()))
-        .layer(ui::impls::auth::auth_layer(app_state.clone(), user_cache))
         .layer(session_setup.layer);
 
     let listener = tokio::net::TcpListener::bind(server_addr)

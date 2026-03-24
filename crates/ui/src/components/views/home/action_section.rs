@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::icons::{ArrowRightIcon, StarIcon};
 
@@ -13,11 +14,12 @@ pub(super) fn HomeActionSection() -> Element {
                         span { class: "font-mono text-[10px] tracking-[0.5em] uppercase text-secondary-6 font-bold", "Action" }
                     }
                     h4 { class: "text-3xl md:text-4xl font-black font-sans uppercase tracking-tighter italic text-secondary-1 leading-none",
-                        "Support "
+                        {t!("view_home_action_support_prefix")}
+                        " "
                         span { class: "text-secondary-6 not-italic", "\"Best Of RS\"" }
                     }
                     p { class: "text-sm text-secondary-4 font-sans italic leading-relaxed max-w-2xl",
-                        "If Best of RS is useful to you, star the project or help us add more great repositories."
+                        {t!("view_home_action_description")}
                     }
                 }
                 div { class: "mt-10 flex w-full flex-wrap items-center justify-center gap-5 md:mt-0 md:w-auto",

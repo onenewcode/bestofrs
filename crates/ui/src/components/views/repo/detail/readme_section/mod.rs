@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::IO::repos::get_repo_readme;
 use crate::components::common::CommonMarkdown;
@@ -20,7 +21,7 @@ pub(crate) fn ReadmeSection() -> Element {
                     "Read"
                     span { class: "text-transparent [-webkit-text-stroke:2px_var(--primary-color-6)]", "me" }
                 }
-                p { class: "text-sm text-secondary-5", "Rendered from GitHub README" }
+                p { class: "text-sm text-secondary-5", {t!("view_repo_detail_readme_rendered_from_github")} }
             }
 
             match readme_fut() {
@@ -33,7 +34,11 @@ pub(crate) fn ReadmeSection() -> Element {
                         }
                     }
                 },
-                Some(Ok(None)) => rsx! { div { class: "text-sm text-secondary-5", "README not found" } },
+                Some(Ok(None)) => rsx! {
+                    div { class: "text-sm text-secondary-5",
+                        {t!("view_repo_detail_readme_not_found")}
+                    }
+                },
                 Some(Err(e)) => Err(e)?,
                 None => rsx! { skeleton::ReadmeSectionSkeleton {} },
             }

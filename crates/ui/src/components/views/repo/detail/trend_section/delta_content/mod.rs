@@ -2,6 +2,7 @@ use super::{apply_metric_visibility, TrendContext};
 use crate::{types::snapshot_deltas::SnapshotDeltaDto, IO::repos::list_repo_deltas_in_duration};
 use app::prelude::{DurationRange, Page};
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use super::super::{
     build_delta_chart_config, chart_dom_id, short_date_label, ChartJsCanvas, RepoDetailContext,
@@ -86,7 +87,7 @@ fn DeltaChartContent(page: Page<SnapshotDeltaDto>) -> Element {
     rsx! {
         div { class: "flex h-full flex-col gap-2 md:gap-2",
             if page.items.is_empty() {
-                div { class: "text-sm text-secondary-5", "No delta data" }
+                div { class: "text-sm text-secondary-5", {t!("view_repo_detail_trend_no_delta_data")} }
             } else {
                 div { class: "min-h-0 flex-1 md:border md:border-primary-6 md:bg-primary-1 md:p-3",
                     ChartJsCanvas {

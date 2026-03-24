@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::root::layouts::{UserContext, UserState};
 use crate::root::Route;
@@ -20,7 +21,7 @@ pub fn HeaderNav(#[props(default = false)] vertical: bool) -> Element {
 
     rsx! {
         nav { class: "{nav_class}",
-            Link { class: "{nav_link_class}", to: Route::HomeView {}, "HOME" }
+            Link { class: "{nav_link_class}", to: Route::HomeView {}, {t!("layout_user_header_nav_home")} }
             Link {
                 class: "{nav_link_class}",
                 to: Route::RepoListView {
@@ -30,12 +31,12 @@ pub fn HeaderNav(#[props(default = false)] vertical: bool) -> Element {
                     page: None,
                     size: None,
                 },
-                "REPOS"
+                {t!("layout_user_header_nav_repos")}
             }
-            Link { class: "{nav_link_class}", to: Route::TagListView {}, "TAGS" }
-            Link { class: "{nav_link_class}", to: Route::AboutView {}, "ABOUT" }
+            Link { class: "{nav_link_class}", to: Route::TagListView {}, {t!("layout_user_header_nav_tags")} }
+            Link { class: "{nav_link_class}", to: Route::AboutView {}, {t!("layout_user_header_nav_about")} }
             if show_admin {
-                Link { class: "{nav_link_class}", to: Route::AdminProjectsView {}, "ADMIN" }
+                Link { class: "{nav_link_class}", to: Route::AdminProjectsView {}, {t!("layout_user_header_nav_admin")} }
             }
         }
     }

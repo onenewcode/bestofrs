@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::common::IOCell;
 use crate::components::icons::{
@@ -101,7 +102,7 @@ pub(super) fn HomeRankPanel() -> Element {
                             "Ranking"
                         }
                         p { class: "mt-1 text-[9px] font-bold font-mono uppercase tracking-widest text-secondary-6 md:text-[10px]",
-                            "in metric"
+                            "in metri"
                         }
                     }
                 }
@@ -117,7 +118,7 @@ pub(super) fn HomeRankPanel() -> Element {
                 div { class: "mt-2 hidden border-t border-primary-6 p-2 md:mt-auto md:block md:p-6",
                     div { class: "flex items-center gap-2 text-[8px] font-mono text-secondary-5 uppercase tracking-widest",
                         div { class: "h-2 w-2 rounded-full bg-secondary-6 animate-pulse" }
-                        "Active"
+                        {t!("view_home_rank_panel_status_active")}
                     }
                 }
             }
@@ -138,7 +139,7 @@ pub(super) fn HomeRankPanel() -> Element {
                             div { class: "relative group",
                                 div { class: "absolute inset-0 translate-x-[6px] translate-y-[6px] rounded-md border border-primary-6 bg-primary-1 md:translate-x-[10px] md:translate-y-[10px] md:rounded-full md:border-2" }
                                 div { class: "relative translate-x-[2px] translate-y-[2px] rounded-md border-2 border-secondary-2 bg-secondary-2 px-3 py-1.5 font-sans text-[10px] font-black italic uppercase tracking-[0.1em] text-primary shadow-[0_0_14px_color-mix(in_oklab,var(--grid-accent)_20%,transparent)] md:translate-x-[3.82px] md:translate-y-[3.82px] md:rounded-full md:border-4 md:px-8 md:py-3 md:text-sm md:tracking-[0.2em] md:shadow-[0_0_20px_color-mix(in_oklab,var(--grid-accent)_24%,transparent)]",
-                                    "Latest Inserted"
+                                    {t!("view_home_rank_panel_recent_badge")}
                                 }
                             }
                         }
@@ -176,7 +177,7 @@ pub(super) fn map_rank_repo(repo: RepoDto) -> HomeRankRepo {
     let description = repo
         .description
         .clone()
-        .unwrap_or_else(|| "No description".to_string());
+        .unwrap_or_else(|| t!("view_home_rank_panel_no_description").to_string());
     let avatar_url = repo
         .avatar_url
         .clone()
@@ -234,35 +235,29 @@ pub(super) fn parse_repo_route(repo_id: &str, metric_tab: RankType) -> Option<Ro
     })
 }
 
-pub(super) fn rank_title(tab: RankType) -> &'static str {
+pub(super) fn rank_title(tab: RankType) -> String {
     match tab {
-        RankType::Star => "stars",
-        RankType::Fork => "forks",
-        RankType::Issue => "issues",
-        RankType::Recent => "Recent",
+        RankType::Star => "star".to_string(),
+        RankType::Fork => "fork".to_string(),
+        RankType::Issue => "issue".to_string(),
+        RankType::Recent => t!("view_home_rank_panel_metric_recent").to_string(),
     }
 }
 
-pub(super) fn rank_desc(tab: RankType) -> &'static str {
+pub(super) fn rank_desc(tab: RankType) -> String {
     match tab {
-        RankType::Star => "High-signal consensus. The gold standard for Rust ecosystem visibility.",
-        RankType::Fork => {
-            "High-extensibility codebases. The foundation for downstream scaling and growth."
-        }
-        RankType::Issue => {
-            "Active feedback loops. High-velocity iteration and real-time problem solving."
-        }
-        RankType::Recent => {
-            "Latest registry snapshots. Recently indexed entries in the Best of RS archive."
-        }
+        RankType::Star => t!("view_home_rank_panel_desc_star").to_string(),
+        RankType::Fork => t!("view_home_rank_panel_desc_fork").to_string(),
+        RankType::Issue => t!("view_home_rank_panel_desc_issue").to_string(),
+        RankType::Recent => t!("view_home_rank_panel_desc_recent").to_string(),
     }
 }
 
-pub(super) fn time_range_text(range: TimeRange) -> &'static str {
+pub(super) fn time_range_text(range: TimeRange) -> String {
     match range {
-        TimeRange::Daily => "daily",
-        TimeRange::Weekly => "weekly",
-        TimeRange::Monthly => "monthly",
+        TimeRange::Daily => t!("view_home_rank_panel_range_daily").to_string(),
+        TimeRange::Weekly => t!("view_home_rank_panel_range_weekly").to_string(),
+        TimeRange::Monthly => t!("view_home_rank_panel_range_monthly").to_string(),
     }
 }
 

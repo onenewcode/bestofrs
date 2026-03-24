@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::root::Route;
 
@@ -10,14 +11,14 @@ struct Crumb {
 
 fn home_crumb() -> Crumb {
     Crumb {
-        label: "HOME".to_string(),
+        label: t!("common_breadcrumb_home").to_string(),
         to: Some(Route::HomeView {}),
     }
 }
 
 fn repo_crumb() -> Crumb {
     Crumb {
-        label: "REPO".to_string(),
+        label: t!("common_breadcrumb_repo").to_string(),
         to: Some(Route::RepoListView {
             tags: None,
             metric: None,
@@ -30,7 +31,7 @@ fn repo_crumb() -> Crumb {
 
 fn admin_crumb() -> Crumb {
     Crumb {
-        label: "ADMIN".to_string(),
+        label: t!("common_breadcrumb_admin").to_string(),
         to: Some(Route::AdminProjectsView {}),
     }
 }
@@ -50,56 +51,56 @@ fn build_crumbs(route: &Route) -> Vec<Crumb> {
         Route::TagListView {} => vec![
             home_crumb(),
             Crumb {
-                label: "TAGS".to_string(),
+                label: t!("common_breadcrumb_tags").to_string(),
                 to: None,
             },
         ],
         Route::AboutView {} => vec![
             home_crumb(),
             Crumb {
-                label: "ABOUT".to_string(),
+                label: t!("common_breadcrumb_about").to_string(),
                 to: None,
             },
         ],
         Route::LoginView {} => vec![
             home_crumb(),
             Crumb {
-                label: "LOGIN".to_string(),
+                label: t!("common_breadcrumb_login").to_string(),
                 to: None,
             },
         ],
         Route::AdminProjectsView {} => vec![
             admin_crumb(),
             Crumb {
-                label: "PROJECTS".to_string(),
+                label: t!("common_breadcrumb_projects").to_string(),
                 to: None,
             },
         ],
         Route::AdminTagsView {} => vec![
             admin_crumb(),
             Crumb {
-                label: "TAGS".to_string(),
+                label: t!("common_breadcrumb_tags").to_string(),
                 to: None,
             },
         ],
         Route::AdminJobView {} => vec![
             admin_crumb(),
             Crumb {
-                label: "JOB".to_string(),
+                label: t!("common_breadcrumb_job").to_string(),
                 to: None,
             },
         ],
         Route::AdminBackupView {} => vec![
             admin_crumb(),
             Crumb {
-                label: "BACKUP".to_string(),
+                label: t!("common_breadcrumb_backup").to_string(),
                 to: None,
             },
         ],
         Route::NotFoundView { .. } => vec![
             home_crumb(),
             Crumb {
-                label: "404".to_string(),
+                label: t!("common_breadcrumb_404").to_string(),
                 to: None,
             },
         ],
@@ -118,7 +119,7 @@ pub fn CommonBreadcrumb(
 
     rsx! {
         nav {
-            aria_label: "Breadcrumb",
+            aria_label: t!("common_breadcrumb_aria_label"),
             class: "flex items-center",
             class: if compact { "text-xs" } else { "text-sm" },
             class: "{class}",

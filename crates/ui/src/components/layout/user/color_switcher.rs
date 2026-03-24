@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::dropdown_menu::{
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -20,7 +21,7 @@ pub fn ColorSwitcher() -> Element {
     rsx! {
         DropdownMenu {
             DropdownMenuTrigger {
-                aria_label: "Select grid theme",
+                aria_label: t!("layout_user_color_switcher_select_theme"),
                 style: "padding:0; width:1.6rem; height:1.6rem; border-radius:9999px; background:transparent; box-shadow:none; display:flex; align-items:center; justify-content:center;",
                 span {
                     class: "block h-4 w-4 rounded-full bg-grid-accent",
@@ -34,7 +35,7 @@ pub fn ColorSwitcher() -> Element {
                             key: "{theme}",
                             index: idx,
                             value: theme.to_string(),
-                            aria_label: "Set grid theme {theme}",
+                            aria_label: t!("layout_user_color_switcher_set_theme", theme: *theme),
                             on_select: move |value: String| {
                                 set_grid_theme(value.as_str());
                             },

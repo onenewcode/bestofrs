@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::common::{
     GradientDirection, GridBackground, GridLineType, GridPadding, GridPattern, GridType,
@@ -40,7 +41,12 @@ pub(crate) fn MetaSection() -> Element {
         .as_ref()
         .and_then(|r| r.description.clone())
         .unwrap_or_else(|| {
-            format!("Track stars, forks, issues, and community health trends for {owner}/{name}.")
+            t!(
+                "view_repo_detail_meta_seo_description_fallback",
+                owner: owner.clone(),
+                name: name.clone()
+            )
+            .to_string()
         });
 
     let seo_keywords = repo_data
@@ -122,7 +128,7 @@ pub(crate) fn MetaSection() -> Element {
 
                             if let Some(date) = repo_data.as_ref().and_then(|r| r.last_fetched_at.clone()) {
                                 div { class: "font-mono text-[9px] tracking-widest text-secondary-6 uppercase md:text-[10px]",
-                                    "last updated // {format_utc_ymd_hms(&date)}"
+                                    "{t!(\"view_repo_detail_meta_last_updated_prefix\")} // {format_utc_ymd_hms(&date)}"
                                 }
                             }
 
@@ -210,7 +216,7 @@ pub(crate) fn MetaSection() -> Element {
                         line_type: GridLineType::None,
                         div { class: "flex flex-col gap-4 md:gap-6",
                             div { class: "font-mono text-[10px] font-bold tracking-widest text-secondary-5 uppercase md:text-xs",
-                                "Links & Tags"
+                                {t!("view_repo_detail_meta_links_and_tags")}
                             }
                             div { class: "flex flex-col gap-3 md:gap-5",
                                 a {

@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 use std::collections::BTreeMap;
 
 use super::{apply_metric_visibility, TrendContext};
@@ -154,7 +155,7 @@ fn SnapshotChartContent(page: Page<SnapshotDto>) -> Element {
     rsx! {
         div { class: "flex h-full flex-col gap-2",
             if page.items.is_empty() {
-                div { class: "text-sm text-secondary-5", "No snapshot data" }
+                div { class: "text-sm text-secondary-5", {t!("view_repo_detail_trend_no_snapshot_data")} }
             } else {
                 div { class: "min-h-0 flex-1 md:border md:border-primary-6 md:bg-primary-1 md:p-3",
                     ChartJsCanvas {

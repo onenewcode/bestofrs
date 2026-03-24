@@ -1,5 +1,6 @@
 use crate::components::common::{SEOHead, SEOProp};
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 use std::collections::BTreeSet;
 
 use crate::components::common::{
@@ -174,24 +175,6 @@ pub(super) fn parse_sort_type(metric: Option<&str>) -> SortType {
     }
 }
 
-pub(super) fn filter_label(filter: FilterType) -> &'static str {
-    match filter {
-        FilterType::Total => "Total",
-        FilterType::Daily => "Daily",
-        FilterType::Weekly => "Weekly",
-        FilterType::Monthly => "Monthly",
-    }
-}
-
-pub(super) fn sort_label(sort: SortType) -> &'static str {
-    match sort {
-        SortType::Star => "Stars",
-        SortType::Fork => "Forks",
-        SortType::Issue => "Issues",
-        SortType::AddTime => "Create Time",
-    }
-}
-
 pub(super) fn sort_metric(sort: SortType) -> RepoRankMetric {
     match sort {
         SortType::Star => RepoRankMetric::Star,
@@ -306,9 +289,9 @@ pub fn RepoList(
     rsx! {
         SEOHead {
             data: SEOProp {
-                title: "Project Trends".into(),
-                description: "A ranking panel show curated Rust repositories and compare stars, forks, issues, and recent movement with daily snapshots.".into(),
-                keywords: "best of rs, rust repository list, rust ranking, rust metrics, github rust projects, rust ecosystem trends".into(),
+                title: t!("view_repo_list_seo_title").to_string(),
+                description: t!("view_repo_list_seo_description").to_string(),
+                keywords: t!("view_repo_list_seo_keywords").to_string(),
                 canonical_url: "/repo".into(),
                 og_type: "website".into(),
                 ..Default::default()

@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::icons::MenuIcon;
 
@@ -21,7 +22,7 @@ pub(super) fn TagRouteMenu() -> Element {
                 }
                 button {
                     r#type: "button",
-                    aria_label: "Toggle tag quick navigation",
+                    aria_label: t!("view_tag_tab_menu_toggle_aria_label"),
                     class: if hovered { "mb-2 inline-flex h-9 w-9 items-center justify-center text-grid-accent transition-colors md:hidden" } else { "mb-2 inline-flex h-9 w-9 items-center justify-center text-secondary-6 transition-colors md:hidden" },
                     onclick: move |_| ctx.menu_hovered.set(!hovered),
                     MenuIcon { width: 16, height: 16 }

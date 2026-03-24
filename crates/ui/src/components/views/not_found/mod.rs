@@ -4,6 +4,7 @@ use crate::components::common::{
 };
 use crate::components::icons::BORSFerrisIcon;
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 #[component]
 pub fn NotFound() -> Element {
@@ -27,7 +28,7 @@ pub fn NotFound() -> Element {
                             }
                         }
                         div { class: "w-full max-w-[30rem] text-center text-sm md:text-base",
-                            h1 { class: "text-primary-error", "Page Not Found." }
+                            h1 { class: "text-primary-error", {t!("view_not_found_title")} }
                         }
                     }
                 }

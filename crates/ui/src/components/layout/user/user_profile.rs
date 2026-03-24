@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::avatar::{Avatar, AvatarFallback, AvatarImage, AvatarImageSize};
 use crate::components::dropdown_menu::{
@@ -25,7 +26,6 @@ pub fn UserProfile() -> Element {
 
                 rsx! {
                     DropdownMenu {
-
                         DropdownMenuTrigger { style: "padding:0; border-radius:9999px; background:transparent; box-shadow:none; display:flex; align-items:center; justify-content:center;",
                             Avatar {
                                 size: AvatarImageSize::Small,
@@ -50,7 +50,7 @@ pub fn UserProfile() -> Element {
                                 },
                                 span { class: "inline-flex gap-2 items-center",
                                     LogOutIcon { width: 16, height: 16 }
-                                    span { "Logout" }
+                                    span { {t!("layout_user_user_profile_logout")} }
                                 }
                             }
                         }

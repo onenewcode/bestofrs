@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use super::gearmap::GearMap;
 use crate::{
@@ -42,21 +43,21 @@ pub fn Footer() -> Element {
                             }
                         }
                         p { class: "mx-auto max-w-sm text-sm leading-relaxed text-secondary-5 lg:mx-0",
-                            "Collect cool things of the Rust ecosystem."
+                            {t!("layout_user_footer_slogan")}
                         }
                     }
                     div { class: "grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-2",
                         nav {
                             class: "space-y-3",
-                            aria_label: "Footer Index",
+                            aria_label: t!("layout_user_footer_nav_aria_label"),
                             h5 { class: "font-mono text-xs font-bold uppercase tracking-widest text-secondary-4",
-                                "Index"
+                                {t!("layout_user_footer_nav_title")}
                             }
                             div { class: "space-y-2 text-sm text-secondary-5",
                                 Link {
                                     class: "block hover:text-secondary-3 hover:underline",
                                     to: Route::HomeView {},
-                                    "Home"
+                                    {t!("layout_user_footer_nav_home")}
                                 }
                                 Link {
                                     class: "block hover:text-secondary-3 hover:underline",
@@ -67,27 +68,27 @@ pub fn Footer() -> Element {
                                         page: None,
                                         size: None,
                                     },
-                                    "Repos"
+                                    {t!("layout_user_footer_nav_repos")}
                                 }
                                 Link {
                                     class: "block hover:text-secondary-3 hover:underline",
                                     to: Route::TagListView {},
-                                    "Tag"
+                                    {t!("layout_user_footer_nav_tag")}
                                 }
                                 Link {
                                     class: "block hover:text-secondary-3 hover:underline",
                                     to: Route::AboutView {},
-                                    "About"
+                                    {t!("layout_user_footer_nav_about")}
                                 }
                             }
                         }
                         section { class: "space-y-3",
                             h5 { class: "font-mono text-xs font-bold uppercase tracking-widest text-secondary-4",
-                                "System"
+                                {t!("layout_user_footer_system_title")}
                             }
                             div { class: "flex items-center gap-2 text-xs font-mono text-secondary-5",
                                 div { class: "h-1.5 w-1.5 rounded-full bg-secondary-success" }
-                                span { "Operational" }
+                                span { {t!("layout_user_footer_system_operational")} }
                             }
                         }
                     }

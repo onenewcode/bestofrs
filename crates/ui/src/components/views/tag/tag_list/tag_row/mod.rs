@@ -1,5 +1,6 @@
 use crate::components::icons::FishingHookIcon;
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::root::Route;
 use crate::types::tags::TagListItemDto;
@@ -24,7 +25,7 @@ pub(super) fn TagRow(
     let description = tag
         .description
         .clone()
-        .unwrap_or_else(|| "System classification pending.".to_string());
+        .unwrap_or_else(|| t!("view_tag_list_tag_row_pending_description").to_string());
 
     let rank = (current_page.saturating_sub(1) as usize) * page_size as usize + index + 1;
     let rank_text = format!("{:03}", rank);
@@ -55,7 +56,7 @@ pub(super) fn TagRow(
                         div { class: "flex items-stretch gap-5 self-stretch md:gap-10",
                             div { class: "flex h-full flex-col",
                                 span { class: "text-[10px] font-mono uppercase tracking-widest text-secondary-6",
-                                    "Rank"
+                                    {t!("view_tag_list_tag_row_rank")}
                                 }
                                 div { class: "flex flex-1 items-center",
                                     span { class: "text-2xl font-mono font-bold text-secondary-4 md:text-3xl", "{rank_text}" }
@@ -64,7 +65,7 @@ pub(super) fn TagRow(
                             div { class: "h-full w-px bg-primary-6" }
                             div { class: "flex h-full flex-col",
                                 span { class: "text-[10px] font-mono uppercase tracking-widest text-secondary-6",
-                                    "Count"
+                                    {t!("view_tag_list_tag_row_count")}
                                 }
                                 div { class: "flex flex-1 items-center",
                                     span { class: "text-2xl font-mono font-bold text-secondary-1 md:text-3xl", "{population}" }
@@ -105,7 +106,9 @@ pub(super) fn TagRow(
                                 size: None,
                             },
                             FishingHookIcon { width: 44, height: 44 }
-                            span { class: "text-[10px] font-mono uppercase tracking-[0.22em]", "View Repos" }
+                            span { class: "text-[10px] font-mono uppercase tracking-[0.22em]",
+                                {t!("view_tag_list_tag_row_view_repos")}
+                            }
                         }
                     }
                 }

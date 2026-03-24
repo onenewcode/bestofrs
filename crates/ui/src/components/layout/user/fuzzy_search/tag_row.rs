@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::icons::TagsIcon;
 use crate::types::tags::TagDto;
@@ -19,7 +20,7 @@ pub(super) fn TagRow(props: TagRowProps) -> Element {
         .tag
         .description
         .clone()
-        .unwrap_or("No description yet".to_string());
+        .unwrap_or_else(|| t!("layout_user_fuzzy_search_no_description").to_string());
     let repos_total = props.tag.repos_total.unwrap_or(0);
 
     rsx! {

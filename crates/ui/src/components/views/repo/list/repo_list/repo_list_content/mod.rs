@@ -1,6 +1,7 @@
 mod repo_manuscript_card;
 
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::common::CommonPagination;
 
@@ -60,13 +61,15 @@ pub(super) fn RepoListContent(
             if rendered_items.is_empty() {
                 div { class: "flex min-h-[320px] flex-col items-center justify-center border border-dashed border-primary-6 bg-primary text-center",
                     span { class: "mb-3 font-mono text-sm tracking-widest text-secondary-5",
-                        "NO_DATA"
+                        {t!("view_repo_list_content_no_data")}
                     }
                     if hero_type == RepoListHeroType::AllProjects {
-                        span { class: "text-sm text-secondary-5", "No repos found" }
+                        span { class: "text-sm text-secondary-5",
+                            {t!("view_repo_list_content_no_repos_found")}
+                        }
                     } else {
                         span { class: "text-sm text-secondary-5",
-                            "No repos for selected tag set"
+                            {t!("view_repo_list_content_no_repos_for_selected_tags")}
                         }
                     }
                 }

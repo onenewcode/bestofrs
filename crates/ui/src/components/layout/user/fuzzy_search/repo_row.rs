@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::icons::GithubIcon;
 use crate::root::Route;
@@ -19,7 +20,7 @@ pub(super) fn RepoRow(props: RepoRowProps) -> Element {
         .repo
         .description
         .clone()
-        .unwrap_or("No description yet".to_string());
+        .unwrap_or_else(|| t!("layout_user_fuzzy_search_no_description").to_string());
     let route = props.route.clone();
 
     rsx! {

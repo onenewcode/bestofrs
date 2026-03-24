@@ -3,7 +3,9 @@ mod routes;
 pub mod theme;
 
 use dioxus::prelude::*;
+use dioxus_i18n::prelude::*;
 pub use routes::Route;
+use crate::impls::i18n::build_i18n_config;
 
 pub const FAVICON: Asset = asset!("/assets/favicon.ico");
 pub const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
@@ -49,6 +51,8 @@ const CHART_JS_CDN: &str = "https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/cha
 
 #[component]
 pub fn App() -> Element {
+    let _i18n = use_init_i18n(build_i18n_config);
+
     rsx! {
         document::Link {
             rel: "preload",

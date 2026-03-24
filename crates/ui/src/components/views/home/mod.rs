@@ -3,6 +3,7 @@ use crate::components::common::{
     GridWrapper, SEOHead, SEOProp,
 };
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use action_section::HomeActionSection;
 use faq_section::HomeFaqSection;
@@ -22,11 +23,9 @@ pub fn Home() -> Element {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }
         SEOHead {
             data: SEOProp {
-                title: "Daily Trends".into(),
-                description: "Discover awesome Rust open source projects with daily tracked stars, forks, issues, and ecosystem momentum."
-                    .into(),
-                keywords: "best of rs, rust projects, rust open source, github, rust trends, rust ranking, community health"
-                    .into(),
+                title: t!("view_home_seo_title").to_string(),
+                description: t!("view_home_seo_description").to_string(),
+                keywords: t!("view_home_seo_keywords").to_string(),
                 canonical_url: "/".into(),
                 og_type: "website".into(),
                 ..Default::default()
@@ -64,7 +63,7 @@ pub fn Home() -> Element {
                         div { class: "flex items-center gap-2 mb-4 sm:mb-6 md:mb-8",
                             div { class: "w-8 sm:w-10 md:w-12 h-[1px] bg-secondary-6" }
                             span { class: "font-mono text-[9px] sm:text-[10px] tracking-[0.35em] sm:tracking-[0.5em] uppercase text-secondary-6 font-bold",
-                                "For Rustacean"
+                                {t!("view_home_hero_for_rustacean")}
                             }
                         }
                         h1 { class: "text-5xl sm:text-6xl md:text-[120px] font-black font-sans leading-[0.8] tracking-tighter uppercase mb-5 sm:mb-7 md:mb-10 italic text-secondary-1",
@@ -73,7 +72,7 @@ pub fn Home() -> Element {
                             span { class: "text-secondary-6 not-italic", "Rust" }
                         }
                         h2 { class: "text-base sm:text-lg md:text-2xl text-secondary-4 font-sans italic leading-relaxed max-w-xl mb-6 sm:mb-8 md:mb-12",
-                            "The curated archive of Rust's finest. Tracking community health and project velocity, one snapshot at a time."
+                            {t!("view_home_hero_subtitle")}
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::icons;
 use crate::root::theme::toggle_theme;
@@ -22,7 +23,7 @@ pub fn ThemeSwitcher() -> Element {
                 toggle_theme();
                 is_dark.set(!is_dark());
             },
-            aria_label: "Toggle theme",
+            aria_label: t!("layout_user_theme_switcher_toggle"),
             if is_dark() {
                 icons::MoonIcon { size: 18 }
             } else {

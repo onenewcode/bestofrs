@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::select::{
     Select, SelectGroup, SelectGroupLabel, SelectItemIndicator, SelectList, SelectOption,
@@ -15,10 +16,10 @@ pub(super) fn TagMetaHandler() -> Element {
         div { class: "flex flex-col items-center text-center gap-4",
             div { class: "max-w-3xl",
                 h1 { class: "text-3xl md:text-6xl font-black font-sans uppercase tracking-tight text-secondary-2 mb-2",
-                    "All Tags"
+                    {t!("view_tag_meta_all_tags")}
                 }
                 h2 { class: "text-secondary-3 text-sm md:text-base leading-relaxed font-mono italic font-normal",
-                    "A comprehensive tag index of the Rust ecosystem."
+                    {t!("view_tag_meta_subtitle")}
                 }
             }
             div { class: "flex items-center gap-4 justify-center",
@@ -33,7 +34,7 @@ pub(super) fn TagMetaHandler() -> Element {
                 div { class: "flex items-center",
                     Select::<u32> {
                         value: Some((ctx.page_size)()),
-                        placeholder: "page size",
+                        placeholder: t!("view_tag_meta_page_size_placeholder"),
                         on_value_change: move |v: Option<u32>| {
                             if let Some(v) = v {
                                 if v != (ctx.page_size)() {
@@ -43,13 +44,13 @@ pub(super) fn TagMetaHandler() -> Element {
                             }
                         },
                         SelectTrigger {
-                            aria_label: "Select page size",
+                            aria_label: t!("view_tag_meta_page_size_aria_label"),
                             style: "min-width: 7rem;",
                             SelectValue {}
                         }
-                        SelectList { aria_label: "Page size options",
+                        SelectList { aria_label: t!("view_tag_meta_page_size_options_aria_label"),
                             SelectGroup {
-                                SelectGroupLabel { "Page size" }
+                                SelectGroupLabel { {t!("view_tag_meta_page_size_group_label")} }
                                 SelectOption::<u32> {
                                     index: 0usize,
                                     value: 10u32,

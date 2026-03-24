@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_i18n::t;
 
 use crate::components::common::{
     GradientDirection, GridBackground, GridPadding, GridPattern, GridType, GridWrapper, IOCell,
@@ -78,10 +79,9 @@ pub fn TagList() -> Element {
     rsx! {
         SEOHead {
             data: SEOProp {
-                title: "Tag Trends".into(),
-                description: "Explore a comprehensive tag index of the Rust ecosystem and discover curated projects by category on Best of RS."
-                    .into(),
-                keywords: "best of rs, rust tags, rust categories, rust group rank".into(),
+                title: t!("view_tag_seo_title").to_string(),
+                description: t!("view_tag_seo_description").to_string(),
+                keywords: t!("view_tag_seo_keywords").to_string(),
                 canonical_url: "/tag".into(),
                 og_type: "website".into(),
                 ..Default::default()
