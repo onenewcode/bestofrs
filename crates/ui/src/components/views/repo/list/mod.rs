@@ -45,6 +45,11 @@ pub(super) struct RepoListCachedPage {
     hero_type: RepoListHeroType,
 }
 
+#[derive(Clone, PartialEq, Eq)]
+pub(super) struct RepoListTagsCachedState {
+    advice_tags: Vec<TagAdviceItem>,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum FilterType {
     Total,
@@ -126,6 +131,7 @@ pub(super) struct RepoListContext {
     current_page: ReadSignal<u32>,
     summary: Signal<ListSummary>,
     last_success: Signal<Option<RepoListCachedPage>>,
+    last_success_tags: Signal<Option<RepoListTagsCachedState>>,
 }
 
 pub(super) fn parse_tags_query(tags: Option<&str>) -> Vec<String> {
@@ -252,7 +258,7 @@ mod repo_list_tags;
 mod repo_meta;
 use repo_list::{skeleton::RepoListCachedFallback, RepoListIO};
 use repo_list_handler::RepoListHandler;
-use repo_list_tags::{skeleton::RepoListTagsSkeleton, RepoListTags};
+use repo_list_tags::{skeleton::RepoListTagsCachedFallback, RepoListTags};
 use repo_meta::RepoMeta;
 
 #[component]
@@ -275,6 +281,7 @@ pub fn RepoList(
     let current_page: ReadSignal<u32> = current_page.into();
     let summary = use_signal(ListSummary::empty);
     let last_success = use_signal(|| None::<RepoListCachedPage>);
+    let last_success_tags = use_signal(|| None::<RepoListTagsCachedState>);
 
     use_context_provider(|| RepoListContext {
         active_tags,
@@ -284,6 +291,7 @@ pub fn RepoList(
         current_page,
         summary,
         last_success,
+        last_success_tags,
     });
 
     rsx! {
@@ -310,7 +318,7 @@ pub fn RepoList(
                     RepoMeta {}
                     div { class: "flex flex-col gap-6 pt-6",
                         IOCell {
-                            loading_fallback: rsx! { RepoListTagsSkeleton {} },
+                            loading_fallback: rsx! { RepoListTagsCachedFallback {} },
                             RepoListTags {}
                         }
                         RepoListHandler {}
