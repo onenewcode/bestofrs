@@ -31,6 +31,7 @@ pub(super) fn build_trend_chart_config(
     issues_series: Vec<i64>,
     watchers_series: Vec<i64>,
 ) -> Value {
+    let single_point = labels.len() <= 1;
     json!({
         "type": "line",
         "data": {
@@ -84,6 +85,7 @@ pub(super) fn build_trend_chart_config(
             },
             "scales": {
                 "x": {
+                    "offset": single_point,
                     "ticks": {
                         "autoSkip": true,
                         "maxTicksLimit": 12,
@@ -160,25 +162,27 @@ pub(super) fn build_delta_chart_config(
     })
 }
 
+const CHART_JS_CDN: &str = "https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js";
+
 #[component]
 pub(super) fn ChartJsCanvas(
-    id: ReadSignal<String>,
+    id: String,
     config: ReadSignal<Value>,
-    active: ReadSignal<bool>,
+    active: bool,
     #[props(default = String::from(""))] class: String,
 ) -> Element {
-    use_effect(move || {
-        let id = id();
-        let config = config();
-        let active = active();
+    use_effect(use_reactive!(|id, config, active| {
+        let config_value = config();
+        let chart_id = id.clone();
         spawn(async move {
-            let _ = upsert_chart::<()>(id, config, active).await;
+            let _ = upsert_chart::<()>(chart_id, config_value, active).await;
         });
-    });
+    }));
 
     rsx! {
+        document::Script { src: CHART_JS_CDN, defer: true }
         div { class: "h-72 w-full md:h-80 md:border md:border-primary-6 md:bg-primary-1 md:p-3 {class}",
-            canvas { class: "w-full h-full", id: "{id()}" }
+            canvas { class: "w-full h-full", id }
         }
     }
 }

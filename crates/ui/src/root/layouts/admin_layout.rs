@@ -10,28 +10,21 @@ use crate::components::sidebar::{
     SidebarMenuItem, SidebarProvider, SidebarRail, SidebarTrigger, SidebarVariant,
 };
 use crate::components::skeleton::Skeleton;
-use crate::root::layouts::{UserContext, UserState};
+use crate::components::providers::PreferenceContext;
 use crate::root::Route;
 
 #[component]
 pub fn AdminLayout() -> Element {
     let navigator = use_navigator();
     let route = use_route::<Route>();
-    let user_state = use_context::<UserContext>();
-
-    let user_info = match &*user_state.read() {
-        UserState::Loading => {
-            return rsx! {
-                Skeleton { class: "skeleton w-screen h-screen" }
-            }
-        }
-        UserState::User(user) if user.role == "Admin" => Some(user.clone()),
-        _ => None,
-    };
+    let preference = use_context::<PreferenceContext>();
+    let user_info = preference()
+        .user
+        .filter(|user| user.role == "Admin");
 
     let Some(user_info) = user_info else {
         navigator.replace(Route::HomeView {});
-        return rsx! {};
+        return rsx! { Skeleton { class: "skeleton w-screen h-screen" } };
     };
 
     let is_projects = matches!(route, Route::AdminProjectsView {});

@@ -7,13 +7,17 @@ mod server {
     use crate::impls::i18n::{parse_language, DEFAULT_LANGUAGE};
     use crate::impls::session::AppSession;
     use crate::impls::session::consts::{
-        SESSION_PREFERENCE_LOCALE_KEY, SESSION_PREFERENCE_PRIVACY_KEY, SESSION_PREFERENCE_THEME_KEY,
+        SESSION_PREFERENCE_GRID_THEME_KEY, SESSION_PREFERENCE_LOCALE_KEY,
+        SESSION_PREFERENCE_PRIVACY_KEY, SESSION_PREFERENCE_THEME_KEY,
     };
+
+    const DEFAULT_GRID_THEME: &str = "green";
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub enum PreferenceField {
         Locale,
         Theme,
+        GridTheme,
         Privacy,
     }
 
@@ -22,6 +26,7 @@ mod server {
             match self {
                 Self::Locale => SESSION_PREFERENCE_LOCALE_KEY,
                 Self::Theme => SESSION_PREFERENCE_THEME_KEY,
+                Self::GridTheme => SESSION_PREFERENCE_GRID_THEME_KEY,
                 Self::Privacy => SESSION_PREFERENCE_PRIVACY_KEY,
             }
         }
@@ -87,6 +92,7 @@ mod server {
         if let Some(locale) = seed.inferred_locale.as_deref() {
             seed_if_absent(session, PreferenceField::Locale, locale);
         }
+        seed_if_absent(session, PreferenceField::GridTheme, DEFAULT_GRID_THEME);
     }
 
     pub fn resolve_locale(session: &AppSession, seed: &PreferenceSeed) -> String {
@@ -97,6 +103,36 @@ mod server {
     pub fn update_locale(session: &AppSession, raw_locale: &str) {
         let locale = parse_language(raw_locale).to_string();
         set(session, PreferenceField::Locale, &locale);
+    }
+
+    pub fn resolve_theme(session: &AppSession) -> Option<String> {
+        get(session, PreferenceField::Theme)
+    }
+
+    pub fn update_theme(session: &AppSession, theme: &str) {
+        set(session, PreferenceField::Theme, theme);
+    }
+
+    pub fn resolve_grid_theme(session: &AppSession) -> String {
+        let theme = get(session, PreferenceField::GridTheme).unwrap_or_else(|| DEFAULT_GRID_THEME.to_string());
+        normalize_grid_theme(&theme).to_string()
+    }
+
+    pub fn update_grid_theme(session: &AppSession, grid_theme: &str) {
+        set(session, PreferenceField::GridTheme, normalize_grid_theme(grid_theme));
+    }
+
+    fn normalize_grid_theme(raw: &str) -> &'static str {
+        match raw {
+            "red" => "red",
+            "orange" => "orange",
+            "yellow" => "yellow",
+            "green" => "green",
+            "cyan" => "cyan",
+            "blue" => "blue",
+            "purple" => "purple",
+            _ => DEFAULT_GRID_THEME,
+        }
     }
 
     fn infer_locale(raw: Option<&str>) -> Option<String> {
@@ -128,6 +164,8 @@ mod client {
     use crate::impls::i18n::DEFAULT_LANGUAGE;
     use crate::impls::session::AppSession;
 
+    const DEFAULT_GRID_THEME: &str = "green";
+
     #[derive(Clone, Debug, Default)]
     pub struct PreferenceSeed;
 
@@ -135,6 +173,7 @@ mod client {
     pub enum PreferenceField {
         Locale,
         Theme,
+        GridTheme,
         Privacy,
     }
 
@@ -151,6 +190,18 @@ mod client {
     }
 
     pub fn update_locale(_session: &AppSession, _raw_locale: &str) {}
+
+    pub fn resolve_theme(_session: &AppSession) -> Option<String> {
+        None
+    }
+
+    pub fn update_theme(_session: &AppSession, _theme: &str) {}
+
+    pub fn resolve_grid_theme(_session: &AppSession) -> String {
+        DEFAULT_GRID_THEME.to_string()
+    }
+
+    pub fn update_grid_theme(_session: &AppSession, _grid_theme: &str) {}
 }
 
 #[cfg(not(feature = "server"))]

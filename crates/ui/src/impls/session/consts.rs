@@ -9,4 +9,5 @@ pub const SESSION_AUTH_USER_KEY: &str = "session.auth.user";
 
 pub const SESSION_PREFERENCE_LOCALE_KEY: &str = "session.preference.locale";
 pub const SESSION_PREFERENCE_THEME_KEY: &str = "session.preference.theme";
+pub const SESSION_PREFERENCE_GRID_THEME_KEY: &str = "session.preference.grid_theme";
 pub const SESSION_PREFERENCE_PRIVACY_KEY: &str = "session.preference.privacy";

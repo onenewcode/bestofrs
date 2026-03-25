@@ -147,6 +147,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                 } else {
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
+                                disabled: delta_timeframe() == "weekly",
                                 onclick: move |_| delta_timeframe.set("weekly".to_string()),
                                 {t!("view_repo_detail_trend_timeframe_weekly")}
                             }
@@ -157,6 +158,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                 } else {
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
+                                disabled: delta_timeframe() == "monthly",
                                 onclick: move |_| delta_timeframe.set("monthly".to_string()),
                                 {t!("view_repo_detail_trend_timeframe_monthly")}
                             }
@@ -184,6 +186,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                 } else {
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
+                                disabled: snapshot_timeframe() == "monthly",
                                 onclick: move |_| snapshot_timeframe.set("monthly".to_string()),
                                 {t!("view_repo_detail_trend_timeframe_monthly")}
                             }
@@ -194,6 +197,7 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
                                 } else {
                                     "border border-primary-6 bg-primary text-secondary-4 hover:bg-primary-1"
                                 },
+                                disabled: snapshot_timeframe() == "yearly",
                                 onclick: move |_| snapshot_timeframe.set("yearly".to_string()),
                                 {t!("view_repo_detail_trend_timeframe_yearly")}
                             }

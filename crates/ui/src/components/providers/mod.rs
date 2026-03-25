@@ -1,4 +1,4 @@
 mod config_provider;
-mod user_provider;
+mod preference_provider;
 pub use config_provider::{ConfigContext, ConfigProvider};
-pub use user_provider::{UserContext, UserProvider, UserState};
+pub use preference_provider::{PreferenceContext, PreferenceProvider};

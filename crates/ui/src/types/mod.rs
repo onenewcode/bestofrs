@@ -1,4 +1,5 @@
 pub mod auth;
+pub mod preference;
 pub mod projects;
 pub mod repos;
 pub mod search;

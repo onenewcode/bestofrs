@@ -1,13 +1,13 @@
 use dioxus::prelude::*;
 use dioxus_i18n::t;
 
-use crate::root::layouts::{UserContext, UserState};
+use crate::components::providers::PreferenceContext;
 use crate::root::Route;
 
 #[component]
 pub fn HeaderNav(#[props(default = false)] vertical: bool) -> Element {
-    let user_state = use_context::<UserContext>();
-    let show_admin = matches!(user_state(), UserState::User(me) if me.role == "Admin");
+    let preference = use_context::<PreferenceContext>();
+    let show_admin = matches!(preference().user.as_ref(), Some(me) if me.role == "Admin");
     let nav_class = if vertical {
         "flex flex-col items-stretch gap-1 text-sm"
     } else {
