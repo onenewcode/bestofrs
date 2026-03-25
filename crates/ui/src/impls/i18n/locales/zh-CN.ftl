@@ -160,3 +160,7 @@ common_tag_content_top_repos = TOP REPOS
 common_tag_content_no_repos = 暂无仓库
 common_tag_content_view_all = 查看全部
 common_tag_content_tag_not_found = 标签不存在
+
+view_about_seo_title = 关于
+view_about_seo_description = Best of RS 是一个 Rust 生态精选追踪站，持续跟踪 stars、forks、contributors、issues 与趋势快照，帮助用户和维护者理解项目动能。
+view_about_seo_keywords = best of rs, about best of rs, rust ecosystem, rust open source tracking, rust project trends, github rust metrics

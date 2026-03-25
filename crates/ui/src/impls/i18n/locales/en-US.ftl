@@ -160,3 +160,7 @@ common_tag_content_top_repos = TOP REPOS
 common_tag_content_no_repos = No repos
 common_tag_content_view_all = View All
 common_tag_content_tag_not_found = Tag Not Found
+
+view_about_seo_title = About
+view_about_seo_description = Best of RS is a curated Rust ecosystem tracker that follows stars, forks, contributors, issues, and trend snapshots to help users and maintainers understand project momentum.
+view_about_seo_keywords = best of rs, about best of rs, rust ecosystem, rust open source tracking, rust project trends, github rust metrics
