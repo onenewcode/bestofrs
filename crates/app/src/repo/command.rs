@@ -3,8 +3,8 @@ use std::sync::Arc;
 use std::{collections::HashMap, collections::HashSet};
 
 use domain::{Repo, RepoId, Tag, TagLabel, TagValue};
-use crate::app_error::{AppError, AppResult};
-use crate::repo::{RepoRepo, RepoTagRepo, UNTAG_LABEL, UNTAG_VALUE};
+use crate::app_error::AppResult;
+use crate::repo::{RepoRepo, RepoTagRepo};
 
 #[derive(Clone)]
 pub struct RepoCommandHandler {
@@ -120,11 +120,6 @@ impl RepoCommandHandler {
             value: TagValue::new(tag.value),
             description: None,
         };
-        if Self::is_virtual_untag(&tag) {
-            return Err(AppError::Domain(
-                "UNTAG is virtual and cannot be created".to_string(),
-            ));
-        }
         self.repo_tags.upsert_tag(&tag).await
     }
 
@@ -139,11 +134,6 @@ impl RepoCommandHandler {
             value: TagValue::new(value),
             description,
         };
-        if Self::is_virtual_untag(&tag) {
-            return Err(AppError::Domain(
-                "UNTAG is virtual and cannot be updated".to_string(),
-            ));
-        }
         self.repo_tags.update_tag(&tag).await
     }
 
@@ -153,11 +143,6 @@ impl RepoCommandHandler {
             value: TagValue::new(tag.value),
             description: None,
         };
-        if Self::is_virtual_untag(&tag) {
-            return Err(AppError::Domain(
-                "UNTAG is virtual and cannot be deleted".to_string(),
-            ));
-        }
         self.repo_tags.delete_tag(&tag).await
     }
 
@@ -229,11 +214,6 @@ impl RepoCommandHandler {
             value: TagValue::new(cmd.tag.value),
             description: None,
         };
-        if Self::is_virtual_untag(&target_tag) {
-            return Err(AppError::Domain(
-                "UNTAG is virtual and cannot be updated".to_string(),
-            ));
-        }
 
         let mut dedup = HashSet::new();
         let mut repo_ids = Vec::new();
@@ -296,19 +276,11 @@ impl RepoCommandHandler {
         let mut dedup = HashSet::new();
         let mut out = Vec::new();
         for tag in tags {
-            if Self::is_virtual_untag(&tag) {
-                continue;
-            }
             let key = format!("{}:{}", tag.label.as_str(), tag.value.as_str());
             if dedup.insert(key) {
                 out.push(tag);
             }
         }
         out
-    }
-
-    fn is_virtual_untag(tag: &Tag) -> bool {
-        tag.label.as_str().eq_ignore_ascii_case(UNTAG_LABEL)
-            && tag.value.as_str().eq_ignore_ascii_case(UNTAG_VALUE)
     }
 }

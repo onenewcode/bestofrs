@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use app::app_error::AppResult;
 use app::common::pagination::{Page, Pagination};
-use app::repo::{build_avatar_urls, RepoTagFacet, RepoTagListItem, RepoTagRepo, RepoTagTopRepo, UNTAG_LABEL, UNTAG_VALUE};
+use app::repo::{build_avatar_urls, RepoTagFacet, RepoTagListItem, RepoTagRepo, RepoTagTopRepo};
 use async_trait::async_trait;
 use domain::{RepoId, Tag, TagLabel, TagValue};
 use sqlx::{QueryBuilder, Sqlite};
@@ -310,11 +310,7 @@ impl RepoTagRepo for SqliteRepoTagRepo {
     ) -> AppResult<Page<RepoTagListItem>> {
         let limit = page.limit();
         let offset = page.offset();
-        let total: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM tags WHERE NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))",
-        )
-        .bind(UNTAG_LABEL)
-        .bind(UNTAG_VALUE)
+        let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tags")
         .fetch_one(&self.pool)
         .await
         .map_err(db_err)?;
@@ -323,13 +319,10 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             r#"
             SELECT id, label, value, description
             FROM tags
-            WHERE NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
             ORDER BY label, value
             LIMIT ? OFFSET ?
             "#,
         )
-        .bind(UNTAG_LABEL)
-        .bind(UNTAG_VALUE)
         .bind(limit as i64)
         .bind(offset as i64)
         .fetch_all(&self.pool)
@@ -412,11 +405,7 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             separated.push_bind(value);
         }
         separated.push_unseparated(")");
-        builder.push(" AND NOT (LOWER(label) = LOWER(");
-        builder.push_bind(UNTAG_LABEL);
-        builder.push(") AND LOWER(value) = LOWER(");
-        builder.push_bind(UNTAG_VALUE);
-        builder.push(")) ORDER BY label, value");
+        builder.push(" ORDER BY label, value");
         let tag_rows: Vec<TagRow> = builder
             .build_query_as()
             .fetch_all(&self.pool)
@@ -532,11 +521,7 @@ impl RepoTagRepo for SqliteRepoTagRepo {
     async fn list_tags(&self, page: Pagination) -> AppResult<Page<Tag>> {
         let limit = page.limit();
         let offset = page.offset();
-        let total: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM tags WHERE NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))",
-        )
-        .bind(UNTAG_LABEL)
-        .bind(UNTAG_VALUE)
+        let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tags")
         .fetch_one(&self.pool)
         .await
         .map_err(db_err)?;
@@ -545,13 +530,10 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             r#"
             SELECT label, value, description
             FROM tags
-            WHERE NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
             ORDER BY label, value
             LIMIT ? OFFSET ?
             "#,
         )
-        .bind(UNTAG_LABEL)
-        .bind(UNTAG_VALUE)
         .bind(limit as i64)
         .bind(offset as i64)
         .fetch_all(&self.pool)
@@ -576,14 +558,11 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         let total: i64 = sqlx::query_scalar(
             r#"
             SELECT COUNT(*) FROM tags
-            WHERE (label LIKE ? OR value LIKE ?)
-              AND NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
+            WHERE label LIKE ? OR value LIKE ?
             "#,
         )
         .bind(&key)
         .bind(&key)
-        .bind(UNTAG_LABEL)
-        .bind(UNTAG_VALUE)
         .fetch_one(&self.pool)
         .await
         .map_err(db_err)?;
@@ -592,16 +571,13 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             r#"
             SELECT label, value, description
             FROM tags
-            WHERE (label LIKE ? OR value LIKE ?)
-              AND NOT (LOWER(label) = LOWER(?) AND LOWER(value) = LOWER(?))
+            WHERE label LIKE ? OR value LIKE ?
             ORDER BY label, value
             LIMIT ? OFFSET ?
             "#,
         )
         .bind(&key)
         .bind(&key)
-        .bind(UNTAG_LABEL)
-        .bind(UNTAG_VALUE)
         .bind(limit as i64)
         .bind(offset as i64)
         .fetch_all(&self.pool)
@@ -666,12 +642,8 @@ impl RepoTagRepo for SqliteRepoTagRepo {
                 "SELECT t.value, COUNT(DISTINCT m.repo_id) AS cnt \
                  FROM repo_tag_map m \
                  JOIN tags t ON t.id = m.tag_id \
-                 WHERE NOT (LOWER(t.label) = LOWER(",
+                 GROUP BY t.value ORDER BY cnt DESC, t.value ASC",
             );
-            builder.push_bind(UNTAG_LABEL);
-            builder.push(") AND LOWER(t.value) = LOWER(");
-            builder.push_bind(UNTAG_VALUE);
-            builder.push(")) GROUP BY t.value ORDER BY cnt DESC, t.value ASC");
         } else {
             builder = QueryBuilder::new(
                 "WITH matched_repos AS (\
@@ -695,12 +667,8 @@ impl RepoTagRepo for SqliteRepoTagRepo {
                  FROM repo_tag_map m \
                  JOIN tags t ON t.id = m.tag_id \
                  JOIN matched_repos mr ON mr.repo_id = m.repo_id \
-                 WHERE NOT (LOWER(t.label) = LOWER(",
+                 WHERE t.value NOT IN (",
             );
-            builder.push_bind(UNTAG_LABEL);
-            builder.push(") AND LOWER(t.value) = LOWER(");
-            builder.push_bind(UNTAG_VALUE);
-            builder.push(")) AND t.value NOT IN (");
             let mut first = true;
             for value in active_values {
                 if !first {
