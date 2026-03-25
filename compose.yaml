@@ -1,11 +1,12 @@
 name: bestofrs
 services:
   web:
-    image: bestofrs:local
+    image: your-dev-docker-images
     restart: always
     ports:
       - "3000:3000"
     environment:
-      APP_ENV: development
+      APP_ENV: your-actual-env-related-to-infra-config-toml
     volumes:
       - ./crates/infra/src/config/toml/development.toml:/app/crates/infra/src/config/toml/development.toml:ro
+      - ./backups:/app/backups

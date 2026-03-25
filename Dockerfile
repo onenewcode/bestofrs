@@ -1,5 +1,7 @@
-FROM rust:1 AS chef
-RUN cargo install cargo-chef
+FROM rust:1-bookworm AS chef
+
+RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+RUN cargo binstall cargo-chef dioxus-cli@0.7.2 --no-confirm
 WORKDIR /app
 
 FROM chef AS planner
@@ -9,16 +11,28 @@ RUN cargo chef prepare --recipe-path recipe.json
 FROM chef AS builder
 COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
-
-RUN curl -L --proto '=https' --tlsv1.2 -sSf https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz | tar -xzf - -C /usr/local/cargo/bin
-RUN cargo binstall dioxus-cli --root /.cargo -y --force
-ENV PATH="/.cargo/bin:$PATH"
 COPY . .
 
 RUN dx build --package ui --release --fullstack --force-sequential
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
+# For Prod PG_dump
+ARG PG_MAJOR=16
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    ca-certificates curl gnupg \
+    && install -d /usr/share/keyrings \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+    | gpg --dearmor -o /usr/share/keyrings/pgdg.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" \
+    > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+    postgresql-client-${PG_MAJOR} \
+    && apt-get purge -y --auto-remove curl gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/target/dx/ui/release/web/ui ./ui
 COPY --from=builder /app/target/dx/ui/release/web/public ./public
 ENTRYPOINT ["./ui"]
