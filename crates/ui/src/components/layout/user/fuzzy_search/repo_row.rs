@@ -24,9 +24,9 @@ pub(super) fn RepoRow(props: RepoRowProps) -> Element {
     let route = props.route.clone();
 
     rsx! {
-        li { class: "cursor-pointer rounded-md hover:bg-primary-3",
+        li { class: "rounded-md hover:bg-primary-3",
             button {
-                class: "w-full text-left rounded-md px-3 py-2 text-sm transition-colors",
+                class: "w-full text-left rounded-md px-3 py-2 text-sm hover:cursor-pointer transition-colors",
                 onclick: move |_| {
                     props.on_select.call(route.clone());
                 },

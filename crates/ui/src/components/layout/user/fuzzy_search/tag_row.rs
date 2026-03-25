@@ -25,9 +25,9 @@ pub(super) fn TagRow(props: TagRowProps) -> Element {
 
     rsx! {
         li {
-            class: "flex items-center hover:cursor-pointer",
+            class: "flex items-center",
             button {
-                class: "w-full text-left rounded-md px-3 py-2 text-sm hover:bg-primary-3 transition-colors",
+                class: "w-full text-left rounded-md px-3 py-2 text-sm hover:bg-primary-3 hover:cursor-pointer transition-colors",
                 onclick: move |_| {
                     props.on_select.call((on_label.clone(), on_value.clone()));
                 },
