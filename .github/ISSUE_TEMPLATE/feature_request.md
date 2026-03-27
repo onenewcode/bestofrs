@@ -1,6 +1,7 @@
 ---
 name: Feature Request
 about: Suggest an idea to improve Best Of Rust
+title: "[Feature] - Your Summary Plz"
 labels: enhancement
 ---
 
