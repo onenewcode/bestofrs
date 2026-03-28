@@ -43,6 +43,30 @@ impl GithubClient {
 
         String::from_utf8(decoded).map_err(AppError::upstream)
     }
+
+    fn into_repo_info(repo: GithubRepoResponse) -> GithubRepoInfo {
+        GithubRepoInfo {
+            id: repo.id,
+            full_name: repo.full_name,
+            description: repo
+                .description
+                .map(|v| v.trim().to_string())
+                .filter(|v| !v.is_empty()),
+            homepage: repo
+                .homepage
+                .map(|v| v.trim().to_string())
+                .filter(|v| !v.is_empty()),
+            owner_avatar_url: repo
+                .owner
+                .avatar_url
+                .map(|v| v.trim().to_string())
+                .filter(|v| !v.is_empty()),
+            stargazers_count: repo.stargazers_count,
+            forks_count: repo.forks_count,
+            open_issues_count: repo.open_issues_count,
+            subscribers_count: repo.subscribers_count,
+        }
+    }
 }
 
 #[derive(Debug, Clone, serde::Deserialize)]
@@ -85,27 +109,22 @@ impl GithubGateway for GithubClient {
             .map_err(AppError::upstream)?;
         let repo: GithubRepoResponse = resp.json().await.map_err(AppError::upstream)?;
 
-        Ok(GithubRepoInfo {
-            id: repo.id,
-            full_name: repo.full_name,
-            description: repo
-                .description
-                .map(|v| v.trim().to_string())
-                .filter(|v| !v.is_empty()),
-            homepage: repo
-                .homepage
-                .map(|v| v.trim().to_string())
-                .filter(|v| !v.is_empty()),
-            owner_avatar_url: repo
-                .owner
-                .avatar_url
-                .map(|v| v.trim().to_string())
-                .filter(|v| !v.is_empty()),
-            stargazers_count: repo.stargazers_count,
-            forks_count: repo.forks_count,
-            open_issues_count: repo.open_issues_count,
-            subscribers_count: repo.subscribers_count,
-        })
+        Ok(Self::into_repo_info(repo))
+    }
+
+    async fn fetch_repo_by_github_id(&self, github_repo_id: i64) -> AppResult<GithubRepoInfo> {
+        let url = format!("https://api.github.com/repositories/{github_repo_id}");
+
+        let resp = self
+            .authorized_get(url)
+            .send()
+            .await
+            .map_err(AppError::upstream)?
+            .error_for_status()
+            .map_err(AppError::upstream)?;
+        let repo: GithubRepoResponse = resp.json().await.map_err(AppError::upstream)?;
+
+        Ok(Self::into_repo_info(repo))
     }
 
     async fn fetch_readme(&self, full_name: &str) -> AppResult<Option<GithubReadme>> {

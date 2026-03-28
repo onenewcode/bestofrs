@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use crate::app_error::AppResult;
 
 use crate::common::pagination::{Page, Pagination};
-use crate::repo::RepoSearchResult;
+use crate::repo::{RepoGithubLookupKey, RepoSearchResult};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RepoRankMetric {
     Star,
@@ -42,6 +42,7 @@ pub trait RepoRepo: Send + Sync {
     async fn upsert_many(&self, repos: &[Repo]) -> AppResult<()>;
     async fn get(&self, id: &RepoId) -> AppResult<Option<Repo>>;
     async fn find_existing_ids(&self, ids: &[RepoId]) -> AppResult<Vec<RepoId>>;
+    async fn list_by_ids(&self, ids: &[RepoId]) -> AppResult<Vec<Repo>>;
     async fn list(&self, page: Pagination) -> AppResult<Page<Repo>>;
     async fn list_ranked(&self, query: RepoRankQuery, page: Pagination) -> AppResult<Page<Repo>>;
     async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Repo>>;
@@ -86,10 +87,7 @@ pub trait RepoTagRepo: Send + Sync {
     ) -> AppResult<Page<RepoId>>;
     async fn list_tags(&self, page: Pagination) -> AppResult<Page<Tag>>;
     async fn search_tags_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Tag>>;
-    async fn count_repos_by_tags(
-        &self,
-        tags: &[Tag],
-    ) -> AppResult<HashMap<(String, String), u64>>;
+    async fn count_repos_by_tags(&self, tags: &[Tag]) -> AppResult<HashMap<(String, String), u64>>;
     async fn list_tags_with_meta(
         &self,
         page: Pagination,
@@ -136,5 +134,17 @@ pub struct GithubReadme {
 #[async_trait]
 pub trait GithubGateway: Send + Sync {
     async fn fetch_repo(&self, full_name: &str) -> AppResult<GithubRepoInfo>;
+    async fn fetch_repo_by_github_id(&self, github_repo_id: i64) -> AppResult<GithubRepoInfo>;
+    async fn fetch_repo_by_lookup_key(
+        &self,
+        key: &RepoGithubLookupKey,
+    ) -> AppResult<GithubRepoInfo> {
+        match key {
+            RepoGithubLookupKey::GithubRepoId(github_repo_id) => {
+                self.fetch_repo_by_github_id(*github_repo_id).await
+            }
+            RepoGithubLookupKey::RepoFullName(full_name) => self.fetch_repo(full_name).await,
+        }
+    }
     async fn fetch_readme(&self, full_name: &str) -> AppResult<Option<GithubReadme>>;
 }

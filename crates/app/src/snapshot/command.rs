@@ -8,7 +8,10 @@ use domain::{Repo, Snapshot, SnapshotRecorded};
 use crate::app_error::AppResult;
 use crate::common::pagination::Pagination;
 use crate::project::ProjectQueryHandler;
-use crate::repo::{GithubGateway, RepoCommandHandler, RepoRepo};
+use crate::repo::{
+    GithubGateway, RepoCommandHandler, RepoGithubLookupExt,
+    RepoGithubLookupKey, RepoRepo,
+};
 use crate::snapshot::{Clock, SnapshotEventHandler, SnapshotRepo};
 
 #[derive(Clone)]
@@ -117,30 +120,41 @@ impl IngestDailySnapshots {
 
         let today = self.clock.utc_today_ymd();
         let fetched_at = self.clock.utc_now_rfc3339();
+        let projects_total = projects.len();
+
+        let project_ids = projects.iter().map(|p| p.id.clone()).collect::<Vec<_>>();
+        let existing_repos = self.repos.list_by_ids(&project_ids).await?;
+        let fetch_items = projects
+            .into_iter()
+            .map(|project| {
+                let lookup_key = existing_repos
+                    .iter()
+                    .find(|repo| repo.id == project.id)
+                    .map(|repo| repo.github_lookup_key())
+                    .unwrap_or_else(|| RepoGithubLookupKey::from_repo_id(project.id.as_str()));
+                (project, lookup_key)
+            })
+            .collect::<Vec<_>>();
 
         let github = self.github.clone();
-        let fetched_at = fetched_at.clone();
-        let today = today.clone();
-
-        let fetched: Vec<(Repo, Snapshot)> = stream::iter(projects.iter())
-            .map(|p| {
+        let fetched: Vec<(Repo, Snapshot)> = stream::iter(fetch_items.into_iter())
+            .map(|(project, lookup_key)| {
                 let github = github.clone();
                 let fetched_at = fetched_at.clone();
-                let today = today.clone();
                 async move {
-                    let repo = github.fetch_repo(p.id.as_str()).await?;
+                    let repo = github.fetch_repo_by_lookup_key(&lookup_key).await?;
                     let homepage_url = Self::resolve_homepage_url(
                         repo.homepage.as_deref(),
-                        p.url.as_deref(),
+                        project.url.as_deref(),
                     );
                     let avatar_url = Self::resolve_avatar_url(
-                        p.id.as_str(),
-                        p.avatar_url.as_deref(),
+                        project.id.as_str(),
+                        project.avatar_url.as_deref(),
                         repo.owner_avatar_url.as_deref(),
                     );
 
                     let domain_repo = Repo {
-                        id: p.id.clone(),
+                        id: project.id,
                         github_repo_id: Some(repo.id),
                         full_name: Some(repo.full_name),
                         description: repo.description,
@@ -196,7 +210,7 @@ impl IngestDailySnapshots {
         let snapshots_inserted = snapshots.len();
 
         Ok(IngestDailySnapshotsResult {
-            projects: projects.len(),
+            projects: projects_total,
             repos_upserted,
             snapshots_inserted,
         })

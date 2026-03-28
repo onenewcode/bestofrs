@@ -221,6 +221,41 @@ impl RepoRepo for PostgresRepoRepo {
             .collect())
     }
 
+    async fn list_by_ids(&self, ids: &[RepoId]) -> AppResult<Vec<Repo>> {
+        if ids.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let mut qb: QueryBuilder<Postgres> = QueryBuilder::new(
+            r#"
+            SELECT
+              id, github_repo_id, full_name, description,
+              homepage_url, avatar_url,
+              stars, forks, open_issues, watchers,
+              created_at::TEXT AS created_at,
+              last_fetched_at, etag
+            FROM repos
+            WHERE id IN (
+            "#,
+        );
+        let mut separated = qb.separated(", ");
+        for id in ids {
+            separated.push_bind(id.as_str());
+        }
+        qb.push(
+            r#"
+            )
+            "#,
+        );
+
+        let rows: Vec<RepoDb> = qb
+            .build_query_as()
+            .fetch_all(&self.pool)
+            .await
+            .map_err(db_err)?;
+        Ok(rows.into_iter().map(Into::into).collect())
+    }
+
     async fn list(&self, page: Pagination) -> AppResult<Page<Repo>> {
         let limit = page.limit();
         let offset = page.offset();

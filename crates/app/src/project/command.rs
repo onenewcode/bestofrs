@@ -7,7 +7,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::app_error::AppResult;
 use crate::project::{ProjectEventHandler, ProjectRepo};
-use crate::repo::{GithubGateway, RepoRepo, RepoTagRepo};
+use crate::repo::{
+    GithubGateway, RepoGithubLookupKey, RepoRepo, RepoTagRepo,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ImportProjectCommand {
@@ -134,14 +136,16 @@ impl ProjectCommandHandler {
                     async move {
                         let github_repo =
                             github
-                                .fetch_repo(project.id.as_str())
-                                .await
-                                .map_err(|err| {
-                                    format!(
-                                        "invalid repo_id `{}`: github lookup failed: {err}",
-                                        project.id.as_str()
-                                    )
-                                })?;
+                            .fetch_repo_by_lookup_key(
+                                &RepoGithubLookupKey::from_repo_id(project.id.as_str()),
+                            )
+                            .await
+                            .map_err(|err| {
+                                format!(
+                                    "invalid repo_id `{}`: github lookup failed: {err}",
+                                    project.id.as_str()
+                                )
+                            })?;
                         Ok::<(Project, Repo), String>((project.clone(), Repo {
                             id: project.id,
                             github_repo_id: Some(github_repo.id),
