@@ -73,7 +73,8 @@ pub async fn init_app_container() -> AppResult<AppContainer> {
         command: RepoCommandHandler::new(repos.repo.clone(), repos.repo_tag.clone()),
     };
 
-    let project_event_handler = ProjectEventHandler::new(repo.command.clone());
+    let project_event_handler =
+        ProjectEventHandler::new(repo.command.clone(), repos.repo.clone(), github.clone());
     let project = ProjectState {
         query: ProjectQueryHandler::new(repos.project.clone()),
         command: ProjectCommandHandler::new(

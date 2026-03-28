@@ -2,7 +2,7 @@ use futures::{stream, StreamExt};
 use std::collections::{HashMap, HashSet};
 use std::sync::Arc;
 
-use domain::{Project, ProjectCreated, Repo, RepoId, Tag};
+use domain::{Project, ProjectCreated, ProjectUpdated, Repo, RepoId, Tag};
 use serde::{Deserialize, Serialize};
 
 use crate::app_error::AppResult;
@@ -265,6 +265,12 @@ impl ProjectCommandHandler {
         }
         if !projects.is_empty() {
             self.projects.update_many(&projects).await?;
+            let events = projects
+                .iter()
+                .cloned()
+                .map(|project| ProjectUpdated { project })
+                .collect::<Vec<_>>();
+            self.event_handler.handle_projects_updated(&events).await?;
             report.upserted = projects.len();
         }
         Ok(report)
