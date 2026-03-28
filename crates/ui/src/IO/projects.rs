@@ -52,7 +52,6 @@ pub async fn import_projects(
                 url: it.url,
                 avatar_url: it.avatar_url,
                 status: it.status,
-                logo: it.logo,
                 twitter: it.twitter,
                 tags: it.tags,
             })
@@ -92,7 +91,6 @@ pub async fn update_projects(
                 url: it.url,
                 avatar_url: it.avatar_url,
                 status: it.status,
-                logo: it.logo,
                 twitter: it.twitter,
                 tags: None,
             })
@@ -144,7 +142,6 @@ pub async fn import_projects_json(json_text: String) -> ServerFnResult<ImportPro
                 url: None,
                 avatar_url: None,
                 status: None,
-                logo: None,
                 twitter: None,
                 tags: it.tags,
             })

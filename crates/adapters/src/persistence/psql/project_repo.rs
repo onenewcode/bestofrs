@@ -15,7 +15,6 @@ struct ProjectDb {
     url: Option<String>,
     avatar_url: Option<String>,
     status: Option<String>,
-    logo: Option<String>,
     twitter: Option<String>,
 }
 
@@ -29,7 +28,6 @@ impl From<ProjectDb> for Project {
             url: db.url,
             avatar_url: db.avatar_url,
             status: db.status,
-            logo: db.logo,
             twitter: db.twitter,
         }
     }
@@ -64,7 +62,7 @@ impl ProjectRepo for PostgresProjectRepo {
               repo_id,
               name, slug, description,
               url, avatar_url,
-              status, logo, twitter,
+              status, twitter,
               updated_at
             )
             "#,
@@ -78,7 +76,6 @@ impl ProjectRepo for PostgresProjectRepo {
                 .push_bind(&p.url)
                 .push_bind(&p.avatar_url)
                 .push_bind(&p.status)
-                .push_bind(&p.logo)
                 .push_bind(&p.twitter)
                 .push("NOW()");
         });
@@ -105,7 +102,6 @@ impl ProjectRepo for PostgresProjectRepo {
               url = incoming.url,
               avatar_url = incoming.avatar_url,
               status = incoming.status,
-              logo = incoming.logo,
               twitter = incoming.twitter,
               updated_at = NOW()
             FROM (
@@ -120,13 +116,12 @@ impl ProjectRepo for PostgresProjectRepo {
                 .push_bind(&p.url)
                 .push_bind(&p.avatar_url)
                 .push_bind(&p.status)
-                .push_bind(&p.logo)
                 .push_bind(&p.twitter);
         });
 
         update_builder.push(
             r#"
-            ) AS incoming(repo_id, name, slug, description, url, avatar_url, status, logo, twitter)
+            ) AS incoming(repo_id, name, slug, description, url, avatar_url, status, twitter)
             WHERE p.repo_id = incoming.repo_id
               AND NOT EXISTS (
                 SELECT 1
@@ -163,7 +158,6 @@ impl ProjectRepo for PostgresProjectRepo {
               url = incoming.url,
               avatar_url = incoming.avatar_url,
               status = incoming.status,
-              logo = incoming.logo,
               twitter = incoming.twitter,
               updated_at = NOW()
             FROM (
@@ -177,12 +171,11 @@ impl ProjectRepo for PostgresProjectRepo {
                 .push_bind(&p.url)
                 .push_bind(&p.avatar_url)
                 .push_bind(&p.status)
-                .push_bind(&p.logo)
                 .push_bind(&p.twitter);
         });
         update_builder.push(
             r#"
-            ) AS incoming(repo_id, name, slug, description, url, avatar_url, status, logo, twitter)
+            ) AS incoming(repo_id, name, slug, description, url, avatar_url, status, twitter)
             WHERE p.repo_id = incoming.repo_id
               AND NOT EXISTS (
                 SELECT 1
@@ -215,7 +208,7 @@ impl ProjectRepo for PostgresProjectRepo {
               repo_id,
               name, slug, description,
               url, avatar_url,
-              status, logo, twitter
+              status, twitter
             FROM projects
             ORDER BY name ASC
             LIMIT $1 OFFSET $2
@@ -257,7 +250,7 @@ impl ProjectRepo for PostgresProjectRepo {
               repo_id,
               name, slug, description,
               url, avatar_url,
-              status, logo, twitter
+              status, twitter
             FROM projects
             WHERE repo_id ILIKE $1 OR name ILIKE $1 OR slug ILIKE $1 OR description ILIKE $1
             ORDER BY name ASC

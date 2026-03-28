@@ -14,7 +14,6 @@ struct ProjectDb {
     url: Option<String>,
     avatar_url: Option<String>,
     status: Option<String>,
-    logo: Option<String>,
     twitter: Option<String>,
 }
 
@@ -28,7 +27,6 @@ impl From<ProjectDb> for Project {
             url: db.url,
             avatar_url: db.avatar_url,
             status: db.status,
-            logo: db.logo,
             twitter: db.twitter,
         }
     }
@@ -63,7 +61,7 @@ impl ProjectRepo for SqliteProjectRepo {
               repo_id,
               name, slug, description,
               url, avatar_url,
-              status, logo, twitter,
+              status, twitter,
               updated_at
             )
             "#,
@@ -77,7 +75,6 @@ impl ProjectRepo for SqliteProjectRepo {
                 .push_bind(&p.url)
                 .push_bind(&p.avatar_url)
                 .push_bind(&p.status)
-                .push_bind(&p.logo)
                 .push_bind(&p.twitter)
                 .push("datetime('now')");
         });
@@ -96,7 +93,7 @@ impl ProjectRepo for SqliteProjectRepo {
 
         let mut update_builder: QueryBuilder<Sqlite> = QueryBuilder::new(
             r#"
-            WITH incoming(repo_id, name, slug, description, url, avatar_url, status, logo, twitter) AS (
+            WITH incoming(repo_id, name, slug, description, url, avatar_url, status, twitter) AS (
             "#,
         );
 
@@ -108,7 +105,6 @@ impl ProjectRepo for SqliteProjectRepo {
                 .push_bind(&p.url)
                 .push_bind(&p.avatar_url)
                 .push_bind(&p.status)
-                .push_bind(&p.logo)
                 .push_bind(&p.twitter);
         });
 
@@ -123,7 +119,6 @@ impl ProjectRepo for SqliteProjectRepo {
               url = (SELECT i.url FROM incoming i WHERE i.repo_id = projects.repo_id),
               avatar_url = (SELECT i.avatar_url FROM incoming i WHERE i.repo_id = projects.repo_id),
               status = (SELECT i.status FROM incoming i WHERE i.repo_id = projects.repo_id),
-              logo = (SELECT i.logo FROM incoming i WHERE i.repo_id = projects.repo_id),
               twitter = (SELECT i.twitter FROM incoming i WHERE i.repo_id = projects.repo_id),
               updated_at = datetime('now')
             WHERE repo_id IN (
@@ -157,7 +152,7 @@ impl ProjectRepo for SqliteProjectRepo {
         let mut tx = self.pool.begin().await.map_err(db_err)?;
         let mut update_builder: QueryBuilder<Sqlite> = QueryBuilder::new(
             r#"
-            WITH incoming(repo_id, name, slug, description, url, avatar_url, status, logo, twitter) AS (
+            WITH incoming(repo_id, name, slug, description, url, avatar_url, status, twitter) AS (
             "#,
         );
         update_builder.push_values(items, |mut b, p| {
@@ -168,7 +163,6 @@ impl ProjectRepo for SqliteProjectRepo {
                 .push_bind(&p.url)
                 .push_bind(&p.avatar_url)
                 .push_bind(&p.status)
-                .push_bind(&p.logo)
                 .push_bind(&p.twitter);
         });
         update_builder.push(
@@ -182,7 +176,6 @@ impl ProjectRepo for SqliteProjectRepo {
               url = (SELECT i.url FROM incoming i WHERE i.repo_id = projects.repo_id),
               avatar_url = (SELECT i.avatar_url FROM incoming i WHERE i.repo_id = projects.repo_id),
               status = (SELECT i.status FROM incoming i WHERE i.repo_id = projects.repo_id),
-              logo = (SELECT i.logo FROM incoming i WHERE i.repo_id = projects.repo_id),
               twitter = (SELECT i.twitter FROM incoming i WHERE i.repo_id = projects.repo_id),
               updated_at = datetime('now')
             WHERE repo_id IN (
@@ -220,7 +213,7 @@ impl ProjectRepo for SqliteProjectRepo {
               repo_id,
               name, slug, description,
               url, avatar_url,
-              status, logo, twitter
+              status, twitter
             FROM projects
             ORDER BY name ASC
             LIMIT ? OFFSET ?
@@ -265,7 +258,7 @@ impl ProjectRepo for SqliteProjectRepo {
               repo_id,
               name, slug, description,
               url, avatar_url,
-              status, logo, twitter
+              status, twitter
             FROM projects
             WHERE repo_id LIKE ? OR name LIKE ? OR slug LIKE ? OR description LIKE ?
             ORDER BY name ASC

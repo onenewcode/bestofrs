@@ -23,7 +23,6 @@ struct ProjectFormData {
     url: Option<String>,
     avatar_url: Option<String>,
     status: Option<String>,
-    logo: Option<String>,
     twitter: Option<String>,
     selected_tag_values: Vec<String>,
 }
@@ -38,7 +37,6 @@ impl From<&ProjectDto> for ProjectFormData {
             url: project.url.clone(),
             avatar_url: project.avatar_url.clone(),
             status: project.status.clone(),
-            logo: project.logo.clone(),
             twitter: project.twitter.clone(),
             selected_tag_values: Vec::new(),
         }
@@ -70,7 +68,6 @@ impl ProjectFormData {
             url: self.url.clone(),
             avatar_url: self.avatar_url.clone(),
             status: self.status.clone(),
-            logo: self.logo.clone(),
             twitter: self.twitter.clone(),
             tags: if is_add_mode && !self.selected_tag_values.is_empty() {
                 Some(self.selected_tag_values.clone())
@@ -219,17 +216,6 @@ pub(super) fn ProjectTab(props: ProjectTabProps) -> Element {
                 value: data_state.status.clone().unwrap_or_default(),
                 oninput: move |e: FormEvent| data.with_mut(|d| {
                     d.status = if e.value().trim().is_empty() {
-                        None
-                    } else {
-                        Some(e.value())
-                    }
-                }),
-            }
-            Input {
-                placeholder: "logo",
-                value: data_state.logo.clone().unwrap_or_default(),
-                oninput: move |e: FormEvent| data.with_mut(|d| {
-                    d.logo = if e.value().trim().is_empty() {
                         None
                     } else {
                         Some(e.value())

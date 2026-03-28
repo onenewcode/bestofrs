@@ -20,7 +20,6 @@ pub struct ImportProjectCommand {
     pub avatar_url: Option<String>,
 
     pub status: Option<String>,
-    pub logo: Option<String>,
     pub twitter: Option<String>,
     #[serde(default)]
     pub tags: Option<Vec<String>>,
@@ -122,7 +121,6 @@ impl ProjectCommandHandler {
                 url: item.url,
                 avatar_url: item.avatar_url,
                 status: item.status,
-                logo: item.logo,
                 twitter: item.twitter,
             });
         }
@@ -258,7 +256,6 @@ impl ProjectCommandHandler {
                 url: item.url,
                 avatar_url: item.avatar_url,
                 status: item.status,
-                logo: item.logo,
                 twitter: item.twitter,
             });
         }

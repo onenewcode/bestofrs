@@ -11,7 +11,6 @@ pub struct ProjectDto {
     pub url: Option<String>,
     pub avatar_url: Option<String>,
     pub status: Option<String>,
-    pub logo: Option<String>,
     pub twitter: Option<String>,
     #[serde(default)]
     pub tags: Vec<String>,
@@ -30,7 +29,6 @@ impl From<Project> for ProjectDto {
             url: value.url,
             avatar_url: value.avatar_url,
             status: value.status,
-            logo: value.logo,
             twitter: value.twitter,
             tags: Vec::new(),
         }
@@ -49,7 +47,6 @@ pub struct ProjectImportItem {
     pub avatar_url: Option<String>,
 
     pub status: Option<String>,
-    pub logo: Option<String>,
     pub twitter: Option<String>,
     #[serde(default)]
     pub tags: Option<Vec<String>>,

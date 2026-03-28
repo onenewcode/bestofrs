@@ -16,6 +16,5 @@ pub struct Project {
     pub url: Option<String>,
     pub avatar_url: Option<String>,
     pub status: Option<String>,
-    pub logo: Option<String>,
     pub twitter: Option<String>,
 }
