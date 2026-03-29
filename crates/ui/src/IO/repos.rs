@@ -23,7 +23,7 @@ pub async fn list_repos(page: Pagination) -> ServerFnResult<Page<RepoDto>> {
     let repos_page = app_state
         .repo
         .query
-        .list_with_tags(page, None)
+        .list_with_tags(page, None, None, None)
         .await
         .map_err(api_error)?;
 
@@ -38,7 +38,7 @@ pub async fn list_repos_with_query(query: RepoListQuery) -> ServerFnResult<Page<
         app_state
             .repo
             .query
-            .list_with_tags(query.page, Some(tags))
+            .list_with_tags(query.page, Some(tags), query.metric, query.range)
             .await
             .map_err(api_error)?
     } else if query.metric.is_none() && query.range.is_none() {

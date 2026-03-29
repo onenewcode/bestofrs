@@ -16,6 +16,8 @@
   <a href="#contribution">Contribution</a>
   <span> · </span>
   <a href="#license">License</a>
+  <span> · </span>
+  <a href="./DEVELOPMENT.md">Setup & Run</a>
 </p>
 
 <p align="center">

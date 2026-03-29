@@ -282,11 +282,13 @@ impl RepoRepo for SqliteRepoRepo {
             return Ok(page.to_page(items, total as u64));
         }
 
-        let anchor_date: Option<chrono::NaiveDate> =
+        let anchor_date_str: Option<String> =
             sqlx::query_scalar("SELECT MAX(snapshot_date) FROM snapshot_deltas")
-                .fetch_one(&self.pool)
+                .fetch_optional(&self.pool)
                 .await
                 .map_err(db_err)?;
+
+        let anchor_date = anchor_date_str.and_then(|s| chrono::NaiveDate::parse_from_str(&s, "%Y-%m-%d").ok());
 
         let rows: Vec<RepoDb> = if let Some(anchor_date) = anchor_date {
             let window_days = match query.range {
@@ -361,6 +363,150 @@ impl RepoRepo for SqliteRepoRepo {
                 .await
                 .map_err(db_err)?
         };
+
+        let items = rows.into_iter().map(Into::into).collect();
+        Ok(page.to_page(items, total as u64))
+    }
+
+    async fn list_with_filter(&self, tags: &[String], metric: Option<RepoRankMetric>, range: Option<RepoRankTimeRange>, page: Pagination) -> AppResult<Page<Repo>> {
+        let limit = page.limit() as i64;
+        let offset = page.offset() as i64;
+
+        if tags.is_empty() {
+            // If no tags, just route to existing logic
+            if let (Some(m), Some(r)) = (metric, range) {
+                return self.list_ranked(RepoRankQuery { metric: m, range: r }, page).await;
+            } else if let Some(RepoRankMetric::Recent) = metric {
+                return self.list_ranked(RepoRankQuery { metric: RepoRankMetric::Recent, range: RepoRankTimeRange::Daily }, page).await;
+            } else {
+                return self.list(page).await;
+            }
+        }
+
+        // We have tags. Do subquery filtering.
+        let mut count_sql = "SELECT COUNT(DISTINCT r.id) FROM repos r \
+             JOIN repo_tag_map m ON m.repo_id = r.id \
+             JOIN tags t ON t.id = m.tag_id \
+             WHERE t.value IN (".to_string();
+             
+        let placeholders = vec!["?"; tags.len()].join(", ");
+        count_sql.push_str(&placeholders);
+        count_sql.push_str(&format!(") GROUP BY r.id HAVING COUNT(DISTINCT t.value) = {}", tags.len()));
+
+        let final_count_sql = format!("SELECT COUNT(*) FROM ({})", count_sql);
+        
+        let mut query = sqlx::query_scalar::<_, i64>(&final_count_sql);
+        for tag in tags {
+            query = query.bind(tag);
+        }
+
+        let total: i64 = query
+            .fetch_one(&self.pool)
+            .await
+            .map_err(db_err)?;
+
+        if total == 0 {
+            return Ok(page.to_page(Vec::new(), 0));
+        }
+
+        // Main Query
+        let anchor_date_str: Option<String> = if range.is_some() {
+            sqlx::query_scalar("SELECT MAX(snapshot_date) FROM snapshot_deltas")
+                .fetch_optional(&self.pool)
+                .await
+                .map_err(db_err)?
+        } else {
+            None
+        };
+        let anchor_date = anchor_date_str.and_then(|s| chrono::NaiveDate::parse_from_str(&s, "%Y-%m-%d").ok());
+
+        let mut qb: QueryBuilder<Sqlite> = QueryBuilder::new("");
+
+        if let (Some(m), Some(r), Some(anchor_date)) = (metric, range, anchor_date) {
+            let window_days = match r {
+                RepoRankTimeRange::Daily => 1,
+                RepoRankTimeRange::Weekly => 7,
+                RepoRankTimeRange::Monthly => 30,
+            };
+            let range_start = anchor_date - Duration::days((window_days - 1) as i64);
+            let order_expr = match m {
+                RepoRankMetric::Star => "stars",
+                RepoRankMetric::Fork => "forks",
+                RepoRankMetric::Issue => "open_issues",
+                RepoRankMetric::Recent => "r.created_at",
+            };
+            
+            qb.push(r#"
+                SELECT
+                  r.id, r.github_repo_id, r.full_name, r.description,
+                  r.homepage_url, r.avatar_url,
+                  COALESCE(SUM(d.stars_delta), 0) AS stars,
+                  COALESCE(SUM(d.forks_delta), 0) AS forks,
+                  ABS(COALESCE(SUM(d.open_issues_delta), 0)) AS open_issues,
+                  r.watchers, r.created_at, r.last_fetched_at, r.etag
+                FROM repos r
+                JOIN repo_tag_map m ON m.repo_id = r.id
+                JOIN tags t ON t.id = m.tag_id
+                LEFT JOIN snapshot_deltas d
+                  ON d.repo_id = r.id
+                 AND d.snapshot_date >= "#);
+                 
+            qb.push_bind(range_start);
+            qb.push(" AND d.snapshot_date <= ");
+            qb.push_bind(anchor_date);
+            qb.push(" WHERE t.value IN (");
+            
+            let mut separated = qb.separated(", ");
+            for tag in tags { separated.push_bind(tag); }
+            separated.push_unseparated(") ");
+            
+            qb.push(format!(r#"
+                GROUP BY
+                  r.id, r.github_repo_id, r.full_name, r.description,
+                  r.homepage_url, r.avatar_url,
+                  r.watchers, r.created_at, r.last_fetched_at, r.etag
+                HAVING COUNT(DISTINCT t.value) = {}
+                ORDER BY {} DESC, r.stars DESC
+                LIMIT {} OFFSET {}
+                "#, 
+                tags.len(), order_expr, limit, offset));
+        } else {
+            let fallback_order = match metric {
+                Some(RepoRankMetric::Star) | None => "r.stars",
+                Some(RepoRankMetric::Fork) => "r.forks",
+                Some(RepoRankMetric::Issue) => "r.open_issues",
+                Some(RepoRankMetric::Recent) => "r.created_at",
+            };
+            
+            qb.push(r#"
+                SELECT
+                  r.id, r.github_repo_id, r.full_name, r.description,
+                  r.homepage_url, r.avatar_url,
+                  r.stars, r.forks, r.open_issues, r.watchers,
+                  r.created_at, r.last_fetched_at, r.etag
+                FROM repos r
+                JOIN repo_tag_map m ON m.repo_id = r.id
+                JOIN tags t ON t.id = m.tag_id
+                WHERE t.value IN ("#);
+                
+            let mut separated = qb.separated(", ");
+            for tag in tags { separated.push_bind(tag); }
+            separated.push_unseparated(") ");
+            
+            qb.push(format!(r#"
+                GROUP BY r.id
+                HAVING COUNT(DISTINCT t.value) = {}
+                ORDER BY {} DESC, r.stars DESC
+                LIMIT {} OFFSET {}
+                "#, 
+                tags.len(), fallback_order, limit, offset));
+        }
+
+        let rows: Vec<RepoDb> = qb
+            .build_query_as()
+            .fetch_all(&self.pool)
+            .await
+            .map_err(db_err)?;
 
         let items = rows.into_iter().map(Into::into).collect();
         Ok(page.to_page(items, total as u64))

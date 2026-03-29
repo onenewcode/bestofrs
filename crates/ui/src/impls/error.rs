@@ -5,6 +5,7 @@ use dioxus::prelude::{ServerFnError, StatusCode};
 ///
 /// Using dioxus StatusCode to support both `server` and `client` feature.
 pub fn api_error(err: AppError) -> ServerFnError {
+    tracing::error!("API Error: {:?}", err);
     let status = match &err {
         AppError::Domain(_) => StatusCode::BAD_REQUEST,
         AppError::InvalidCredentials => StatusCode::UNAUTHORIZED,

@@ -44,6 +44,7 @@ pub trait RepoRepo: Send + Sync {
     async fn find_existing_ids(&self, ids: &[RepoId]) -> AppResult<Vec<RepoId>>;
     async fn list(&self, page: Pagination) -> AppResult<Page<Repo>>;
     async fn list_ranked(&self, query: RepoRankQuery, page: Pagination) -> AppResult<Page<Repo>>;
+    async fn list_with_filter(&self, tags: &[String], metric: Option<RepoRankMetric>, range: Option<RepoRankTimeRange>, page: Pagination) -> AppResult<Page<Repo>>;
     async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Repo>>;
 }
 
