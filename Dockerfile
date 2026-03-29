@@ -1,7 +1,7 @@
 FROM rust:1-bookworm AS chef
 
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-RUN cargo binstall cargo-chef dioxus-cli@0.7.2 --no-confirm
+RUN cargo binstall cargo-chef dioxus-cli@0.7.4 --no-confirm
 WORKDIR /app
 
 FROM chef AS planner
@@ -13,7 +13,7 @@ COPY --from=planner /app/recipe.json recipe.json
 RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 
-RUN dx build --package ui --release --fullstack --force-sequential
+RUN dx bundle --package ui --release --fullstack --force-sequential
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
@@ -33,6 +33,10 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove curl gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/dx/ui/release/web/ui ./ui
+#
+COPY --from=builder /app/target/dx/ui/release/web/server ./server
 COPY --from=builder /app/target/dx/ui/release/web/public ./public
-ENTRYPOINT ["./ui"]
+# COPY --from=builder /app/target/dx/ui/release/web/ui ./ui
+# COPY --from=builder /app/target/dx/ui/release/web/public ./public
+# ENTRYPOINT ["./ui"]
+ENTRYPOINT ["./server"]
