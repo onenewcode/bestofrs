@@ -12,20 +12,9 @@ pub const FAVICON: Asset = asset!("/assets/favicon.ico");
 pub const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 const FONT_CSS: Asset = asset!("/assets/font.css");
 const DX_COMPONENT_CSS: Asset = asset!("/assets/dx-components-theme.css");
+
 const IA_WRITER_QUATTRO_REGULAR: Asset = asset!(
     "/assets/fonts/iAWriterQuattroS-Regular.woff2",
-    AssetOptions::builder()
-        .with_hash_suffix(false)
-        .into_asset_options()
-);
-const IA_WRITER_QUATTRO_ITALIC: Asset = asset!(
-    "/assets/fonts/iAWriterQuattroS-Italic.woff2",
-    AssetOptions::builder()
-        .with_hash_suffix(false)
-        .into_asset_options()
-);
-const IA_WRITER_QUATTRO_BOLD: Asset = asset!(
-    "/assets/fonts/iAWriterQuattroS-Bold.woff2",
     AssetOptions::builder()
         .with_hash_suffix(false)
         .into_asset_options()
@@ -36,13 +25,26 @@ const IA_WRITER_MONO_REGULAR: Asset = asset!(
         .with_hash_suffix(false)
         .into_asset_options()
 );
-const IA_WRITER_MONO_ITALIC: Asset = asset!(
+// Only defined them for put them into public folder for font.css imported
+const _IA_WRITER_QUATTRO_ITALIC: Asset = asset!(
+    "/assets/fonts/iAWriterQuattroS-Italic.woff2",
+    AssetOptions::builder()
+        .with_hash_suffix(false)
+        .into_asset_options()
+);
+const _IA_WRITER_QUATTRO_BOLD: Asset = asset!(
+    "/assets/fonts/iAWriterQuattroS-Bold.woff2",
+    AssetOptions::builder()
+        .with_hash_suffix(false)
+        .into_asset_options()
+);
+const _IA_WRITER_MONO_ITALIC: Asset = asset!(
     "/assets/fonts/iAWriterMonoS-Italic.woff2",
     AssetOptions::builder()
         .with_hash_suffix(false)
         .into_asset_options()
 );
-const IA_WRITER_MONO_BOLD: Asset = asset!(
+const _IA_WRITER_MONO_BOLD: Asset = asset!(
     "/assets/fonts/iAWriterMonoS-Bold.woff2",
     AssetOptions::builder()
         .with_hash_suffix(false)
