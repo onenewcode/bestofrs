@@ -12,10 +12,10 @@ use crate::components::ui::select::{
     SelectTrigger, SelectValue,
 };
 use crate::components::ui::textarea::Textarea;
-use crate::IO::projects::{import_projects, import_projects_json, update_projects};
-use crate::IO::repos::list_tags_with_meta;
 use crate::types::projects::{ProjectDto, ProjectImportItem};
 use crate::types::tags::TagDto;
+use crate::IO::projects::{import_projects, import_projects_json, update_projects};
+use crate::IO::repos::list_tags_with_meta;
 
 use super::super::context::{ProjectPanelMode, ProjectsContext};
 
@@ -47,7 +47,6 @@ impl Default for ProjectFormData {
         }
     }
 }
-
 impl From<&ProjectDto> for ProjectFormData {
     fn from(project: &ProjectDto) -> Self {
         Self {
@@ -73,7 +72,10 @@ impl ProjectFormData {
     }
 
     fn validate(&self) -> Result<(), String> {
-        if self.repo_id.trim().is_empty() || self.name.trim().is_empty() || self.slug.trim().is_empty() {
+        if self.repo_id.trim().is_empty()
+            || self.name.trim().is_empty()
+            || self.slug.trim().is_empty()
+        {
             return Err("必填字段不能为空（repo_id/name/slug）".to_string());
         }
         Ok(())
@@ -165,11 +167,7 @@ pub(super) fn ProjectTab(props: ProjectTabProps) -> Element {
             if tag_filter_key.is_empty() {
                 return true;
             }
-            let text = format!(
-                "{}:{}",
-                tag.label.to_lowercase(),
-                tag.value.to_lowercase()
-            );
+            let text = format!("{}:{}", tag.label.to_lowercase(), tag.value.to_lowercase());
             text.contains(&tag_filter_key)
         })
         .cloned()
@@ -183,289 +181,330 @@ pub(super) fn ProjectTab(props: ProjectTabProps) -> Element {
     let is_add_mode = matches!(&props.mode, ProjectPanelMode::Add);
 
     rsx! {
-        if let ProjectPanelMode::Edit(ref project) = props.mode {
-            div { class: "rounded-md border border-primary-6 bg-primary px-3 py-2 text-xs text-secondary-5",
-                "editing: {project.repo_id}"
-            }
-        }
-        div { class: "space-y-2",
-            Input {
-                placeholder: "repo_id (owner/name) *",
-                value: data_state.repo_id.clone(),
-                disabled: matches!(&props.mode, ProjectPanelMode::Edit(_)),
-                oninput: move |e: FormEvent| data.with_mut(|d| d.repo_id = e.value()),
-            }
-            Input {
-                placeholder: "name *",
-                value: data_state.name.clone(),
-                oninput: move |e: FormEvent| data.with_mut(|d| d.name = e.value()),
-            }
-            Input {
-                placeholder: "slug *",
-                value: data_state.slug.clone(),
-                oninput: move |e: FormEvent| data.with_mut(|d| d.slug = e.value()),
-            }
-            Textarea {
-                placeholder: "description",
-                value: data_state.description.clone(),
-                oninput: move |e: FormEvent| data.with_mut(|d| d.description = e.value()),
-            }
-            Input {
-                placeholder: "url",
-                value: data_state.url.clone().unwrap_or_default(),
-                oninput: move |e: FormEvent| data.with_mut(|d| {
-                    d.url = if e.value().trim().is_empty() {
-                        None
-                    } else {
-                        Some(e.value())
-                    }
-                }),
-            }
-            Input {
-                placeholder: "avatar_url",
-                value: data_state.avatar_url.clone().unwrap_or_default(),
-                oninput: move |e: FormEvent| data.with_mut(|d| {
-                    d.avatar_url = if e.value().trim().is_empty() {
-                        None
-                    } else {
-                        Some(e.value())
-                    }
-                }),
-            }
-            Select::<ProjectStatus> {
-                class: "select w-full",
-                value: Some(data_state.status),
-                placeholder: "status",
-                on_value_change: move |next: Option<ProjectStatus>| {
-                    if let Some(next) = next {
-                        data.with_mut(|d| d.status = next);
-                    }
-                },
-                SelectTrigger {
-                    class: "select-trigger w-full px-3 py-2 text-sm",
-                    aria_label: "project status",
-                    SelectValue {}
-                }
-                SelectList { aria_label: "project status options",
-                    SelectGroup {
-                        SelectGroupLabel { "status" }
-                        SelectOption::<ProjectStatus> {
-                            index: 0usize,
-                            value: ProjectStatus::Active,
-                            text_value: Some("Active".to_string()),
-                            "Active"
-                            SelectItemIndicator {}
-                        }
-                        SelectOption::<ProjectStatus> {
-                            index: 1usize,
-                            value: ProjectStatus::Disabled,
-                            text_value: Some("Disabled".to_string()),
-                            "Disabled"
-                            SelectItemIndicator {}
-                        }
-                        SelectOption::<ProjectStatus> {
-                            index: 2usize,
-                            value: ProjectStatus::Unknown,
-                            text_value: Some("Unknown".to_string()),
-                            "Unknown"
-                            SelectItemIndicator {}
-                        }
+        div { class: "flex h-full min-h-0 flex-col",
+            div { class: "min-h-0 flex-1 space-y-3 overflow-y-auto pr-1",
+                if let ProjectPanelMode::Edit(ref project) = props.mode {
+                    div { class: "rounded-md bg-primary-1 px-3 py-2 text-xs text-secondary-5",
+                        "editing: {project.repo_id}"
                     }
                 }
-            }
-            Input {
-                placeholder: "twitter",
-                value: data_state.twitter.clone().unwrap_or_default(),
-                oninput: move |e: FormEvent| data.with_mut(|d| {
-                    d.twitter = if e.value().trim().is_empty() {
-                        None
-                    } else {
-                        Some(e.value())
-                    }
-                }),
-            }
-            if is_add_mode {
-                div { class: "space-y-2 rounded-md border border-primary-6 bg-primary p-2",
+                div { class: "space-y-2",
                     Input {
-                        placeholder: "搜索 tags(label/value)",
-                        value: ui_state.tag_query.clone(),
-                        oninput: move |e: FormEvent| ui.with_mut(|u| u.tag_query = e.value()),
+                        placeholder: "repo_id (owner/name) *",
+                        value: data_state.repo_id.clone(),
+                        disabled: matches!(&props.mode, ProjectPanelMode::Edit(_)),
+                        oninput: move |e: FormEvent| data.with_mut(|d| d.repo_id = e.value()),
                     }
-                    div { class: "flex items-center justify-between gap-2",
-                        div { class: "text-xs text-secondary-5", "已选 {selected_tag_count} 项" }
-                        Button {
-                            class: "rounded-md border border-primary-6 bg-primary-1 px-2 py-1 text-xs hover:bg-primary-3",
-                            onclick: move |_| data.with_mut(|d| d.selected_tag_values.clear()),
-                            "清空已选"
+                    Input {
+                        placeholder: "name *",
+                        value: data_state.name.clone(),
+                        oninput: move |e: FormEvent| data.with_mut(|d| d.name = e.value()),
+                    }
+                    Input {
+                        placeholder: "slug *",
+                        value: data_state.slug.clone(),
+                        oninput: move |e: FormEvent| data.with_mut(|d| d.slug = e.value()),
+                    }
+                    Textarea {
+                        placeholder: "description",
+                        value: data_state.description.clone(),
+                        oninput: move |e: FormEvent| data.with_mut(|d| d.description = e.value()),
+                    }
+                    Input {
+                        placeholder: "url",
+                        value: data_state.url.clone().unwrap_or_default(),
+                        oninput: move |e: FormEvent| {
+                            data
+                                .with_mut(|d| {
+                                    d.url = if e.value().trim().is_empty() { None } else { Some(e.value()) }
+                                })
+                        },
+                    }
+                    Input {
+                        placeholder: "avatar_url",
+                        value: data_state.avatar_url.clone().unwrap_or_default(),
+                        oninput: move |e: FormEvent| {
+                            data
+                                .with_mut(|d| {
+                                    d.avatar_url = if e.value().trim().is_empty() {
+                                        None
+                                    } else {
+                                        Some(e.value())
+                                    }
+                                })
+                        },
+                    }
+                    Select::<ProjectStatus> {
+                        class: "select w-full",
+                        value: Some(data_state.status),
+                        placeholder: "status",
+                        on_value_change: move |next: Option<ProjectStatus>| {
+                            if let Some(next) = next {
+                                data.with_mut(|d| d.status = next);
+                            }
+                        },
+                        SelectTrigger {
+                            class: "select-trigger w-full px-3 py-2 text-sm",
+                            aria_label: "project status",
+                            SelectValue {}
+                        }
+                        SelectList { aria_label: "project status options",
+                            SelectGroup {
+                                SelectGroupLabel { "status" }
+                                SelectOption::<ProjectStatus> {
+                                    index: 0usize,
+                                    value: ProjectStatus::Active,
+                                    text_value: Some("Active".to_string()),
+                                    "Active"
+                                    SelectItemIndicator {}
+                                }
+                                SelectOption::<ProjectStatus> {
+                                    index: 1usize,
+                                    value: ProjectStatus::Disabled,
+                                    text_value: Some("Disabled".to_string()),
+                                    "Disabled"
+                                    SelectItemIndicator {}
+                                }
+                                SelectOption::<ProjectStatus> {
+                                    index: 2usize,
+                                    value: ProjectStatus::Unknown,
+                                    text_value: Some("Unknown".to_string()),
+                                    "Unknown"
+                                    SelectItemIndicator {}
+                                }
+                            }
                         }
                     }
-                    div { class: "max-h-[180px] space-y-2 overflow-auto rounded-md border border-primary-6 bg-primary-1 p-2",
-                        for tag in filtered_form_tags.clone() {
-                            label { key: "project-form-tag-{tag.label}:{tag.value}", class: "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 hover:bg-primary-3",
-                                Input {
-                                    r#type: "checkbox",
-                                    checked: data_state.selected_tag_values.contains(&tag.value),
-                                    onchange: {
-                                        let value = tag.value.clone();
-                                        move |_| {
-                                            data.with_mut(|d| {
-                                                if let Some(index) = d.selected_tag_values.iter().position(|x| x == &value) {
-                                                    d.selected_tag_values.remove(index);
-                                                } else {
-                                                    d.selected_tag_values.push(value.clone());
+                    Input {
+                        placeholder: "twitter",
+                        value: data_state.twitter.clone().unwrap_or_default(),
+                        oninput: move |e: FormEvent| {
+                            data
+                                .with_mut(|d| {
+                                    d.twitter = if e.value().trim().is_empty() {
+                                        None
+                                    } else {
+                                        Some(e.value())
+                                    }
+                                })
+                        },
+                    }
+                    if is_add_mode {
+                        div { class: "space-y-2 rounded-md border border-primary-6 bg-primary p-2",
+                            Input {
+                                placeholder: "搜索 tags(label/value)",
+                                value: ui_state.tag_query.clone(),
+                                oninput: move |e: FormEvent| ui.with_mut(|u| u.tag_query = e.value()),
+                            }
+                            div { class: "flex items-center justify-between gap-2",
+                                div { class: "text-xs text-secondary-5",
+                                    "已选 {selected_tag_count} 项"
+                                }
+                                Button {
+                                    class: "rounded-md border border-primary-6 bg-primary-1 px-2 py-1 text-xs hover:bg-primary-3",
+                                    onclick: move |_| data.with_mut(|d| d.selected_tag_values.clear()),
+                                    "清空已选"
+                                }
+                            }
+                            div { class: "max-h-[180px] space-y-2 overflow-auto rounded-md border border-primary-6 bg-primary-1 p-2",
+                                for tag in filtered_form_tags.clone() {
+                                    label {
+                                        key: "project-form-tag-{tag.label}:{tag.value}",
+                                        class: "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 hover:bg-primary-3",
+                                        Input {
+                                            r#type: "checkbox",
+                                            checked: data_state.selected_tag_values.contains(&tag.value),
+                                            onchange: {
+                                                let value = tag.value.clone();
+                                                move |_| {
+                                                    data.with_mut(|d| {
+                                                        if let Some(index) = d
+                                                            .selected_tag_values
+                                                            .iter()
+                                                            .position(|x| x == &value)
+                                                        {
+                                                            d.selected_tag_values.remove(index);
+                                                        } else {
+                                                            d.selected_tag_values.push(value.clone());
+                                                        }
+                                                    });
                                                 }
-                                            });
+                                            },
                                         }
-                                    },
+                                        span { class: "text-xs", "{tag.label}:{tag.value}" }
+                                    }
                                 }
-                                span { class: "text-xs", "{tag.label}:{tag.value}" }
+                            }
+                        }
+                    }
+
+                    if is_add_mode {
+                        section { class: "space-y-2 border border-primary-6 bg-primary p-3",
+                            div { class: "text-xs font-mono text-secondary-5", "JSON IMPORT" }
+                            p { class: "text-xs text-secondary-5",
+                                "支持上传 JSON 文件并批量导入 project。"
+                            }
+                            Input {
+                                r#type: "file",
+                                accept: ".json,application/json",
+                                disabled: json_import_pending || submit_pending,
+                                onchange: move |e: FormEvent| {
+                                    ui.with_mut(|u| u.json_import_message = None);
+                                    let files = e.files();
+                                    let Some(file_data) = files.first().cloned() else {
+                                        ui.with_mut(|u| {
+                                            u.json_import_message = Some("请选择 JSON 文件".to_string());
+                                        });
+                                        return;
+                                    };
+                                    let file_name = file_data.name();
+                                    ui.with_mut(|u| u.json_file_name = file_name.clone());
+                                    spawn(async move {
+                                        match file_data.read_string().await {
+                                            Ok(text) => {
+                                                ui.with_mut(|u| {
+                                                    u.json_file_text = text;
+                                                    u.json_import_message = Some(
+                                                        format!("已加载文件：{file_name}"),
+                                                    );
+                                                });
+                                            }
+                                            Err(err) => {
+                                                ui.with_mut(|u| {
+                                                    u.json_file_text = String::new();
+                                                    u.json_import_message = Some(
+                                                        format!("读取文件失败: {err}"),
+                                                    );
+                                                });
+                                            }
+                                        }
+                                    });
+                                },
+                            }
+                            if !json_file_name.is_empty() {
+                                div { class: "text-xs text-secondary-5",
+                                    "当前文件：{json_file_name}"
+                                }
+                            }
+                            Button {
+                                class: "w-full rounded-md border border-primary-6 bg-primary px-3 py-2 text-sm hover:bg-primary-3 disabled:opacity-50",
+                                disabled: json_import_pending || submit_pending,
+                                onclick: move |_| {
+                                    let content = ui().json_file_text.clone();
+                                    if content.trim().is_empty() {
+                                        ui.with_mut(|u| {
+                                            u.json_import_message = Some(
+                                                "请先选择并加载 JSON 文件".to_string(),
+                                            );
+                                        });
+                                        return;
+                                    }
+                                    ui.with_mut(|u| {
+                                        u.json_import_pending = true;
+                                        u.json_import_message = None;
+                                    });
+                                    spawn(async move {
+                                        match import_projects_json(content).await {
+                                            Ok(res) => {
+                                                ui.with_mut(|u| {
+                                                    u.json_import_message = Some(
+                                                        format!(
+                                                            "导入完成：total={} upserted={} skipped_invalid={} failed_upsert={}",
+                                                            res.total,
+                                                            res.upserted,
+                                                            res.skipped_invalid,
+                                                            res.failed_upsert,
+                                                        ),
+                                                    );
+                                                });
+                                                refresh.with_mut(|v| *v += 1);
+                                            }
+                                            Err(err) => {
+                                                ui.with_mut(|u| u.json_import_message = Some(err.to_string()));
+                                            }
+                                        }
+                                        ui.with_mut(|u| u.json_import_pending = false);
+                                    });
+                                },
+                                "导入 JSON"
+                            }
+                            if json_import_pending {
+                                div { class: "text-xs text-secondary-5", "导入处理中..." }
+                            }
+                            if let Some(msg) = json_import_message {
+                                div { class: "text-sm text-secondary-5 whitespace-pre-wrap",
+                                    "{msg}"
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+            div { class: "mt-3 shrink-0 border-t border-primary-6 pt-3",
+                section { class: "space-y-2 border border-primary-6 bg-primary p-3",
+                    div { class: "text-xs font-mono text-secondary-5", "SINGLE ADD / EDIT" }
+                    Button {
+                        class: "w-full rounded-md border border-secondary-2 bg-secondary-2 px-3 py-2 text-sm font-medium text-primary hover:opacity-90 disabled:opacity-50",
+                        disabled: submit_pending || json_import_pending,
+                        onclick: move |_| {
+                            let is_add = matches!(&props.mode, ProjectPanelMode::Add);
+                            let mut form = data();
+                            if let ProjectPanelMode::Edit(project) = &props.mode {
+                                form.repo_id = project.repo_id.clone();
+                            }
+                            if let Err(err) = form.validate() {
+                                ui.with_mut(|u| u.panel_message = Some(err));
+                                return;
+                            }
 
-        section { class: "space-y-2 border border-primary-6 bg-primary p-3",
-            div { class: "text-xs font-mono text-secondary-5", "SINGLE ADD / EDIT" }
-            Button {
-                class: "w-full rounded-md border border-secondary-2 bg-secondary-2 px-3 py-2 text-sm font-medium text-primary hover:opacity-90 disabled:opacity-50",
-                disabled: submit_pending || json_import_pending,
-                onclick: move |_| {
-                    let is_add = matches!(&props.mode, ProjectPanelMode::Add);
-                    let mut form = data();
-                    if let ProjectPanelMode::Edit(project) = &props.mode {
-                        form.repo_id = project.repo_id.clone();
-                    }
-                    if let Err(err) = form.validate() {
-                        ui.with_mut(|u| u.panel_message = Some(err));
-                        return;
-                    }
-
-                    let item = form.to_import_item(is_add);
-                    ui.with_mut(|u| {
-                        u.submit_pending = true;
-                        u.panel_message = None;
-                    });
-                    spawn(async move {
-                        let result = if is_add {
-                            import_projects(vec![item]).await
+                            let item = form.to_import_item(is_add);
+                            ui.with_mut(|u| {
+                                u.submit_pending = true;
+                                u.panel_message = None;
+                            });
+                            spawn(async move {
+                                let result = if is_add {
+                                    import_projects(vec![item]).await
+                                } else {
+                                    update_projects(vec![item]).await
+                                };
+                                match result {
+                                    Ok(res) => {
+                                        ui.with_mut(|u| {
+                                            u.panel_message = Some(format!(
+                                                "完成：total={} upserted={} skipped_invalid={} failed_upsert={}",
+                                                res.total, res.upserted, res.skipped_invalid, res.failed_upsert,
+                                            ));
+                                        });
+                                        refresh.with_mut(|v| *v += 1);
+                                    }
+                                    Err(err) => {
+                                        ui.with_mut(|u| u.panel_message = Some(err.to_string()));
+                                    }
+                                }
+                                ui.with_mut(|u| u.submit_pending = false);
+                            });
+                        },
+                        if is_add_mode {
+                            span { class: "inline-flex items-center gap-1",
+                                PlusIcon { width: 16, height: 16 }
+                                "Add"
+                            }
                         } else {
-                            update_projects(vec![item]).await
-                        };
-                        match result {
-                            Ok(res) => {
-                                ui.with_mut(|u| {
-                                    u.panel_message = Some(format!(
-                                        "完成：total={} upserted={} skipped_invalid={} failed_upsert={}",
-                                        res.total, res.upserted, res.skipped_invalid, res.failed_upsert
-                                    ));
-                                });
-                                refresh.with_mut(|v| *v += 1);
-                            }
-                            Err(err) => {
-                                ui.with_mut(|u| u.panel_message = Some(err.to_string()));
+                            span { class: "inline-flex items-center gap-1",
+                                SaveIcon { width: 16, height: 16 }
+                                "Save"
                             }
                         }
-                        ui.with_mut(|u| u.submit_pending = false);
-                    });
-                },
-                if is_add_mode {
-                    span { class: "inline-flex items-center gap-1",
-                        PlusIcon { width: 16, height: 16 }
-                        "Add"
                     }
-                } else {
-                    span { class: "inline-flex items-center gap-1",
-                        SaveIcon { width: 16, height: 16 }
-                        "Save"
+                    if submit_pending {
+                        div { class: "text-xs text-secondary-5", "处理中..." }
                     }
-                }
-            }
-            if submit_pending {
-                div { class: "text-xs text-secondary-5", "处理中..." }
-            }
-            if let Some(msg) = panel_message {
-                div { class: "text-sm text-secondary-5 whitespace-pre-wrap", "{msg}" }
-            }
-        }
-
-        if is_add_mode {
-            section { class: "space-y-2 border border-primary-6 bg-primary p-3",
-                div { class: "text-xs font-mono text-secondary-5", "JSON IMPORT" }
-                p { class: "text-xs text-secondary-5", "支持上传 JSON 文件并批量导入 project。" }
-                Input {
-                    r#type: "file",
-                    accept: ".json,application/json",
-                    disabled: json_import_pending || submit_pending,
-                    onchange: move |e: FormEvent| {
-                        ui.with_mut(|u| u.json_import_message = None);
-                        let files = e.files();
-                        let Some(file_data) = files.first().cloned() else {
-                            ui.with_mut(|u| u.json_import_message = Some("请选择 JSON 文件".to_string()));
-                            return;
-                        };
-                        let file_name = file_data.name();
-                        ui.with_mut(|u| u.json_file_name = file_name.clone());
-                        spawn(async move {
-                            match file_data.read_string().await {
-                                Ok(text) => {
-                                    ui.with_mut(|u| {
-                                        u.json_file_text = text;
-                                        u.json_import_message = Some(format!("已加载文件：{file_name}"));
-                                    });
-                                }
-                                Err(err) => {
-                                    ui.with_mut(|u| {
-                                        u.json_file_text = String::new();
-                                        u.json_import_message = Some(format!("读取文件失败: {err}"));
-                                    });
-                                }
-                            }
-                        });
-                    },
-                }
-                if !json_file_name.is_empty() {
-                    div { class: "text-xs text-secondary-5", "当前文件：{json_file_name}" }
-                }
-                Button {
-                    class: "w-full rounded-md border border-primary-6 bg-primary px-3 py-2 text-sm hover:bg-primary-3 disabled:opacity-50",
-                    disabled: json_import_pending || submit_pending,
-                    onclick: move |_| {
-                        let content = ui().json_file_text.clone();
-                        if content.trim().is_empty() {
-                            ui.with_mut(|u| u.json_import_message = Some("请先选择并加载 JSON 文件".to_string()));
-                            return;
+                    if let Some(msg) = panel_message {
+                        div { class: "text-sm text-secondary-5 whitespace-pre-wrap",
+                            "{msg}"
                         }
-                        ui.with_mut(|u| {
-                            u.json_import_pending = true;
-                            u.json_import_message = None;
-                        });
-                        spawn(async move {
-                            match import_projects_json(content).await {
-                                Ok(res) => {
-                                    ui.with_mut(|u| {
-                                        u.json_import_message = Some(format!(
-                                            "导入完成：total={} upserted={} skipped_invalid={} failed_upsert={}",
-                                            res.total, res.upserted, res.skipped_invalid, res.failed_upsert
-                                        ));
-                                    });
-                                    refresh.with_mut(|v| *v += 1);
-                                }
-                                Err(err) => {
-                                    ui.with_mut(|u| u.json_import_message = Some(err.to_string()));
-                                }
-                            }
-                            ui.with_mut(|u| u.json_import_pending = false);
-                        });
-                    },
-                    "导入 JSON"
-                }
-                if json_import_pending {
-                    div { class: "text-xs text-secondary-5", "导入处理中..." }
-                }
-                if let Some(msg) = json_import_message {
-                    div { class: "text-sm text-secondary-5 whitespace-pre-wrap", "{msg}" }
+                    }
                 }
             }
         }

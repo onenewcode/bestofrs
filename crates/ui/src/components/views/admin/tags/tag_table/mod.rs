@@ -29,6 +29,7 @@ fn paginate_items<T: Clone>(items: &[T], current_page: u32, page_size: usize) ->
 #[derive(Props, Clone, PartialEq)]
 pub(super) struct TagTableProps {
     pub panel_open: bool,
+    pub active_id: Option<String>,
     pub on_edit: Callback<TagListItemDto>,
 }
 
@@ -82,8 +83,9 @@ pub(super) fn TagTable(props: TagTableProps) -> Element {
     let total_items = table_items.len() as u32;
 
     rsx! {
+        div { class: "flex h-full min-h-0 flex-col gap-3",
         if total_pages > 1 {
-            div { class: "flex justify-center mb-10",
+            div { class: "shrink-0 flex justify-center",
                 CommonPagination {
                     current_page: page(),
                     total_pages,
@@ -91,65 +93,93 @@ pub(super) fn TagTable(props: TagTableProps) -> Element {
                 }
             }
         }
-        div { class: "overflow-auto rounded-md border border-primary-6 bg-primary-1",
+        div { class: "flex min-h-0 flex-1 flex-col overflow-hidden rounded-md border border-primary-6 bg-primary-1",
 
             div { class: "text-xs text-secondary-5", "{total_items} items" }
-            table { class: "min-w-full text-sm",
-                thead { class: "border-b border-primary-6 bg-primary",
-                    tr {
-                        th { class: "px-3 py-2 text-left font-medium text-secondary-5", "TAG" }
-                        if !props.panel_open {
-                            th { class: "px-3 py-2 text-left font-medium text-secondary-5", "DESCRIPTION" }
+            div { class: "min-h-0 flex-1 overflow-x-auto overflow-y-auto",
+                table { class: "min-w-full text-sm",
+                    thead { class: "border-b border-primary-6 bg-primary",
+                        tr {
+                            th { class: "px-3 py-2 text-left font-medium text-secondary-5", "TAG" }
+                            if !props.panel_open {
+                                th { class: "px-3 py-2 text-left font-medium text-secondary-5", "DESCRIPTION" }
+                            }
+                            th { class: "px-3 py-2 text-right font-medium text-secondary-5", "ACTIONS" }
                         }
-                        th { class: "px-3 py-2 text-right font-medium text-secondary-5", "ACTIONS" }
                     }
-                }
-                tbody {
-                    match tags_page() {
-                        Some(Err(err)) => rsx! {
-                            tr { td { class: "px-3 py-6 text-center text-primary-error", colspan: if props.panel_open { "2" } else { "3" }, "{err}" } }
-                        },
-                        None => rsx! {
-                            tr { td { class: "px-3 py-6 text-center text-secondary-5", colspan: if props.panel_open { "2" } else { "3" }, "Loading..." } }
-                        },
-                        Some(Ok(_)) => {
-                            if paged_items.is_empty() {
-                                rsx! {
-                                    tr { td { class: "px-3 py-6 text-center text-secondary-5", colspan: if props.panel_open { "2" } else { "3" }, "无匹配结果" } }
-                                }
-                            } else {
-                                rsx! {
-                                    for tag in paged_items {
-                                        tr { key: "{tag.label}:{tag.value}", class: "border-b border-primary-6 last:border-b-0",
-                                            td { class: "px-3 py-2 font-mono text-xs", "{tag.label}:{tag.value}" }
-                                            if !props.panel_open {
-                                                td { class: "px-3 py-2 text-secondary-5 max-w-[320px] truncate", "{tag.description.clone().unwrap_or_default()}" }
-                                            }
-                                            td { class: "px-3 py-2",
-                                                div { class: "flex justify-end gap-2",
-                                                    Button {
-                                                        variant: ButtonVariant::Secondary,
-                                                        class: "button rounded-md border border-primary-6 bg-primary p-2 text-xs hover:bg-primary-3 disabled:opacity-50",
-                                                        disabled: action_pending(),
-                                                        onclick: {
-                                                            let t = tag.clone();
-                                                            move |_: MouseEvent| props.on_edit.call(t.clone())
+                    tbody {
+                        match tags_page() {
+                            Some(Err(err)) => rsx! {
+                                tr { td { class: "px-3 py-6 text-center text-primary-error", colspan: if props.panel_open { "2" } else { "3" }, "{err}" } }
+                            },
+                            None => rsx! {
+                                tr { td { class: "px-3 py-6 text-center text-secondary-5", colspan: if props.panel_open { "2" } else { "3" }, "Loading..." } }
+                            },
+                            Some(Ok(_)) => {
+                                if paged_items.is_empty() {
+                                    rsx! {
+                                        tr { td { class: "px-3 py-6 text-center text-secondary-5", colspan: if props.panel_open { "2" } else { "3" }, "无匹配结果" } }
+                                    }
+                                } else {
+                                    rsx! {
+                                        for tag in paged_items {
+                                            {
+                                                let row_id = format!("{}:{}", tag.label, tag.value);
+                                                let is_active = props.active_id.as_deref() == Some(row_id.as_str());
+                                                rsx! {
+                                                    tr {
+                                                        key: "{row_id}",
+                                                        class: if is_active {
+                                                            "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0"
+                                                        } else {
+                                                            "border-b border-primary-6 last:border-b-0"
                                                         },
-                                                        WrenchIcon { width: 14, height: 14 }
-                                                    }
-                                                    if !props.panel_open {
-                                                        Button {
-                                                            variant: ButtonVariant::Destructive,
-                                                            class: "button rounded-md border border-primary-6 bg-primary p-2 text-xs text-primary-error hover:bg-primary-3 disabled:opacity-50",
-                                                            disabled: action_pending(),
-                                                            onclick: {
-                                                                let t = tag.clone();
-                                                                move |_: MouseEvent| {
-                                                                    delete_target_tag.set(Some((t.label.clone(), t.value.clone())));
-                                                                    delete_confirm_open.set(true);
-                                                                }
+                                                        td {
+                                                            class: if is_active {
+                                                                "px-3 py-2 font-mono text-xs font-medium text-primary"
+                                                            } else {
+                                                                "px-3 py-2 font-mono text-xs"
                                                             },
-                                                            TrashIcon { width: 14, height: 14 }
+                                                            "{tag.label}:{tag.value}"
+                                                        }
+                                                        if !props.panel_open {
+                                                            td {
+                                                                class: if is_active {
+                                                                    "px-3 py-2 max-w-[320px] truncate text-primary"
+                                                                } else {
+                                                                    "px-3 py-2 text-secondary-5 max-w-[320px] truncate"
+                                                                },
+                                                                "{tag.description.clone().unwrap_or_default()}"
+                                                            }
+                                                        }
+                                                        td { class: "px-3 py-2",
+                                                            div { class: "flex justify-end gap-2",
+                                                                Button {
+                                                                    variant: ButtonVariant::Secondary,
+                                                                    class: "button rounded-md border border-primary-6 bg-primary p-2 text-xs hover:bg-primary-3 disabled:opacity-50",
+                                                                    disabled: action_pending(),
+                                                                    onclick: {
+                                                                        let t = tag.clone();
+                                                                        move |_: MouseEvent| props.on_edit.call(t.clone())
+                                                                    },
+                                                                    WrenchIcon { width: 14, height: 14 }
+                                                                }
+                                                                if !props.panel_open {
+                                                                    Button {
+                                                                        variant: ButtonVariant::Destructive,
+                                                                        class: "button rounded-md border border-primary-6 bg-primary p-2 text-xs text-primary-error hover:bg-primary-3 disabled:opacity-50",
+                                                                        disabled: action_pending(),
+                                                                        onclick: {
+                                                                            let t = tag.clone();
+                                                                            move |_: MouseEvent| {
+                                                                                delete_target_tag.set(Some((t.label.clone(), t.value.clone())));
+                                                                                delete_confirm_open.set(true);
+                                                                            }
+                                                                        },
+                                                                        TrashIcon { width: 14, height: 14 }
+                                                                    }
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -208,6 +238,7 @@ pub(super) fn TagTable(props: TagTableProps) -> Element {
                     }
                 }
             }
+        }
         }
     }
 }

@@ -23,6 +23,7 @@ use super::context::ProjectsContext;
 #[derive(Props, Clone, PartialEq)]
 pub(super) struct ProjectTableProps {
     pub panel_open: bool,
+    pub active_id: Option<String>,
     pub on_edit: Callback<ProjectDto>,
 }
 
@@ -113,7 +114,7 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
     };
 
     rsx! {
-        div { class: "overflow-auto rounded-md border border-primary-6 bg-primary-1",
+        div { class: "flex h-full min-h-0 flex-col overflow-hidden rounded-md border border-primary-6 bg-primary-1",
             div { class: "flex items-center justify-between gap-3 px-3 py-2",
                 div { class: "text-xs text-secondary-5", "{total_items} items" }
                 label { class: "flex items-center gap-2 text-xs text-secondary-5",
@@ -126,19 +127,20 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                     }
                 }
             }
-            table { class: "min-w-full text-sm",
-                thead { class: "border-b border-primary-6 bg-primary",
-                    tr {
-                        th { class: "px-3 py-2 text-left font-medium text-secondary-5", "Name" }
-                        if !props.panel_open {
-                            th { class: "px-3 py-2 text-left font-medium text-secondary-5", "REPO-ID" }
-                            th { class: "px-3 py-2 text-left font-medium text-secondary-5", "SLUG" }
+            div { class: "min-h-0 flex-1 overflow-x-auto overflow-y-auto",
+                table { class: "min-w-full text-sm",
+                    thead { class: "border-b border-primary-6 bg-primary",
+                        tr {
+                            th { class: "px-3 py-2 text-left font-medium text-secondary-5", "Name" }
+                            if !props.panel_open {
+                                th { class: "px-3 py-2 text-left font-medium text-secondary-5", "REPO-ID" }
+                                th { class: "px-3 py-2 text-left font-medium text-secondary-5", "SLUG" }
+                            }
+                            th { class: "px-3 py-2 text-right font-medium text-secondary-5", "ACTIONS" }
                         }
-                        th { class: "px-3 py-2 text-right font-medium text-secondary-5", "ACTIONS" }
                     }
-                }
-                tbody {
-                    match page_data {
+                    tbody {
+                        match page_data {
                         Some(Err(err)) => rsx! {
                             tr { td { class: "px-3 py-6 text-center text-primary-error", colspan: if props.panel_open { "2" } else { "4" }, "{err}" } }
                         },
@@ -150,11 +152,19 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                             } else {
                                 rsx! {
                                     for item in display_items.clone() {
-                                        tr { key: "{item.id}", class: "border-b border-primary-6 last:border-b-0",
-                                            td { class: "px-3 py-2", "{item.name}" }
+                                        tr {
+                                            key: "{item.id}",
+                                            class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) {
+                                                "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0"
+                                            } else {
+                                                "border-b border-primary-6 last:border-b-0"
+                                            },
+                                            td { class: "px-3 py-2",
+                                                span { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "font-medium" } else { "" }, "{item.name}" }
+                                            }
                                             if !props.panel_open {
-                                                td { class: "px-3 py-2 font-mono text-xs text-secondary-5", "{item.repo_id}" }
-                                                td { class: "px-3 py-2 text-secondary-5", "{item.slug}" }
+                                                td { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "px-3 py-2 font-mono text-xs text-primary" } else { "px-3 py-2 font-mono text-xs text-secondary-5" }, "{item.repo_id}" }
+                                                td { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "px-3 py-2 text-primary" } else { "px-3 py-2 text-secondary-5" }, "{item.slug}" }
                                             }
                                             td { class: "px-3 py-2",
                                                 div { class: "flex justify-end gap-2",
@@ -196,7 +206,7 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                                     }
                                 }
                             }
-                        }
+                        },
                         None => rsx! {
                             if !has_loaded_once() {
                                 tr { td { class: "px-3 py-6 text-center text-secondary-5", colspan: if props.panel_open { "2" } else { "4" }, "Loading..." } }
@@ -204,11 +214,19 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                                 tr { td { class: "px-3 py-6 text-center text-secondary-5", colspan: if props.panel_open { "2" } else { "4" }, if search_on { "无搜索结果" } else { "暂无数据" } } }
                             } else {
                                 for item in display_items.clone() {
-                                    tr { key: "{item.id}", class: "border-b border-primary-6 last:border-b-0",
-                                        td { class: "px-3 py-2", "{item.name}" }
+                                    tr {
+                                        key: "{item.id}",
+                                        class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) {
+                                            "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0"
+                                        } else {
+                                            "border-b border-primary-6 last:border-b-0"
+                                        },
+                                        td { class: "px-3 py-2",
+                                            span { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "font-medium" } else { "" }, "{item.name}" }
+                                        }
                                         if !props.panel_open {
-                                            td { class: "px-3 py-2 font-mono text-xs text-secondary-5", "{item.repo_id}" }
-                                            td { class: "px-3 py-2 text-secondary-5", "{item.slug}" }
+                                            td { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "px-3 py-2 font-mono text-xs text-primary" } else { "px-3 py-2 font-mono text-xs text-secondary-5" }, "{item.repo_id}" }
+                                            td { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "px-3 py-2 text-primary" } else { "px-3 py-2 text-secondary-5" }, "{item.slug}" }
                                         }
                                         td { class: "px-3 py-2",
                                             div { class: "flex justify-end gap-2",
@@ -253,6 +271,7 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                     }
                 }
             }
+        }
         }
         if remove_pending() {
             div { class: "text-xs text-secondary-5", "删除中..." }

@@ -13,7 +13,7 @@ pub fn Job() -> Element {
     let run_nonce_read: ReadSignal<u32> = run_nonce.into();
 
     rsx! {
-        section { class: "space-y-4 border border-secondary-2 bg-primary p-5 shadow-comic-sm",
+        section { class: "h-full min-h-0 w-full overflow-x-hidden overflow-y-auto space-y-4 border border-secondary-2 bg-primary p-5 shadow-comic-sm",
             div { class: "space-y-1",
                 div { class: "font-mono text-xs font-semibold tracking-widest text-secondary-5", "JOBS / SNAPSHOT INGEST" }
                 h2 { class: "text-lg font-semibold tracking-tight text-secondary-3", "Ingest Daily Snapshots" }

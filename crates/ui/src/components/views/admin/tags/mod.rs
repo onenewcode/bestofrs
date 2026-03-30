@@ -22,9 +22,14 @@ pub fn Tags() -> Element {
         refresh,
         search_key,
     });
+    let active_id = if let Some(TagPanelMode::Edit(tag)) = panel_mode() {
+        Some(format!("{}:{}", tag.label, tag.value))
+    } else {
+        None
+    };
 
     rsx! {
-        section { class: "space-y-4 border border-secondary-2 bg-primary p-5 shadow-comic-sm",
+        section { class: "h-full min-h-0 w-full overflow-x-hidden overflow-y-auto space-y-4 border border-secondary-2 bg-primary p-5 shadow-comic-sm",
             GridWrapper {
                 grid_type: GridType::Inner,
                 div { class: "space-y-1 mb-10",
@@ -44,15 +49,18 @@ pub fn Tags() -> Element {
             }
             GridSlashTransition {  }
 
-            div { class: "flex items-start gap-4 overflow-x-auto",
-                div { class: if panel_mode().is_some() { "w-[420px] shrink-0 space-y-3" } else { "min-w-0 flex-1 space-y-3" },
-                    IOCell {
-                        loading_fallback: rsx! {
-                            TagTableSkeleton {}
-                        },
-                        TagTable {
-                            panel_open: panel_mode().is_some(),
-                            on_edit: move |tag| panel_mode.set(Some(TagPanelMode::Edit(tag))),
+            div { class: "flex h-full min-h-full min-w-0 items-stretch gap-4 overflow-x-auto md:overflow-visible",
+                div { class: if panel_mode().is_some() { "h-full w-full md:w-105 shrink-0 flex flex-col gap-3" } else { "h-full min-w-0 flex-1 flex flex-col gap-3" },
+                    div { class: "h-full min-h-0 flex-1",
+                        IOCell {
+                            loading_fallback: rsx! {
+                                TagTableSkeleton {}
+                            },
+                            TagTable {
+                                panel_open: panel_mode().is_some(),
+                                active_id: active_id.clone(),
+                                on_edit: move |tag| panel_mode.set(Some(TagPanelMode::Edit(tag))),
+                            }
                         }
                     }
                 }

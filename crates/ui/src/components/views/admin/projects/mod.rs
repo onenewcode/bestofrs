@@ -27,10 +27,14 @@ pub fn Projects() -> Element {
         edit_panel_tab,
         table_pagination,
     });
+    let active_id = if let Some(ProjectPanelMode::Edit(project)) = panel_mode() {
+        Some(project.repo_id.clone())
+    } else {
+        None
+    };
 
     rsx! {
-        section { class: "space-y-4 border border-secondary-2 bg-primary p-5 shadow-comic-sm",
-
+        section { class: "h-full min-h-0 w-full overflow-x-hidden overflow-y-auto space-y-4 border border-secondary-2 bg-primary p-5 shadow-comic-sm",
             GridWrapper { is_dot_on: true, grid_type: GridType::Inner,
                 div { class: "space-y-1 mb-10",
                     h2 { class: "font-mono text-xs font-semibold tracking-widest text-secondary-5",
@@ -49,10 +53,10 @@ pub fn Projects() -> Element {
 
             GridSlashTransition {}
 
-            div { class: "flex items-start gap-4 overflow-x-auto",
-                div { class: if panel_mode().is_some() { "w-[420px] shrink-0 space-y-3" } else { "min-w-0 flex-1 space-y-3" },
+            div { class: "flex h-full min-h-full min-w-0 items-stretch gap-4 overflow-x-auto md:overflow-visible",
+                div { class: if panel_mode().is_some() { "h-full w-full md:w-105 shrink-0 flex flex-col gap-3" } else { "h-full min-w-0 flex-1 flex flex-col gap-3" },
                     if table_pagination().total_pages > 1 {
-                        div { class: "flex justify-center mb-10",
+                        div { class: "shrink-0 flex justify-center",
                             CommonPagination {
                                 current_page: table_pagination().current_page,
                                 total_pages: table_pagination().total_pages,
@@ -60,13 +64,16 @@ pub fn Projects() -> Element {
                             }
                         }
                     }
-                    IOCell {
-                        loading_fallback: rsx! {
-                            ProjectTableSkeleton {}
-                        },
-                        ProjectTable {
-                            panel_open: panel_mode().is_some(),
-                            on_edit: move |project| panel_mode.set(Some(ProjectPanelMode::Edit(project))),
+                    div { class: "h-full min-h-0 flex-1",
+                        IOCell {
+                            loading_fallback: rsx! {
+                                ProjectTableSkeleton {}
+                            },
+                            ProjectTable {
+                                panel_open: panel_mode().is_some(),
+                                active_id: active_id.clone(),
+                                on_edit: move |project| panel_mode.set(Some(ProjectPanelMode::Edit(project))),
+                            }
                         }
                     }
                 }

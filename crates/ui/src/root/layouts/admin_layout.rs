@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use crate::components::avatar::{Avatar, AvatarFallback, AvatarImage, AvatarImageSize};
 use crate::components::common::CommonBreadcrumb;
 use crate::components::icons::{ArrowLeftIcon, BestOfRSIcon, SaveIcon, ScrollTextIcon, TagsIcon};
+use crate::components::providers::PreferenceContext;
 use crate::components::separator::Separator;
 use crate::components::sidebar::{
     Sidebar, SidebarCollapsible, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel,
@@ -10,7 +11,6 @@ use crate::components::sidebar::{
     SidebarMenuItem, SidebarProvider, SidebarRail, SidebarTrigger, SidebarVariant,
 };
 use crate::components::skeleton::Skeleton;
-use crate::components::providers::PreferenceContext;
 use crate::root::Route;
 
 #[component]
@@ -18,9 +18,7 @@ pub fn AdminLayout() -> Element {
     let navigator = use_navigator();
     let route = use_route::<Route>();
     let preference = use_context::<PreferenceContext>();
-    let user_info = preference()
-        .user
-        .filter(|user| user.role == "Admin");
+    let user_info = preference().user.filter(|user| user.role == "Admin");
 
     let Some(user_info) = user_info else {
         navigator.replace(Route::HomeView {});
@@ -169,8 +167,9 @@ pub fn AdminLayout() -> Element {
                         }
                     }
                 }
-                div { class: "min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4 pt-0 md:p-6 md:pt-0",
-                    CommonBreadcrumb { class: "py-2" }
+
+                CommonBreadcrumb { class: "py-2 px-4 md:px-6" }
+                div { class: "min-h-0 flex-1 overflow-hidden p-4 pt-0 md:p-6 md:pt-0",
                     SuspenseBoundary {
                         fallback: move |_: SuspenseContext| {
                             rsx! {

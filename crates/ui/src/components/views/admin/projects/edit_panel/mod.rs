@@ -24,26 +24,26 @@ pub(super) struct EditPanelProps {
 pub(super) fn EditPanel(props: EditPanelProps) -> Element {
     let mut panel_tab = use_context::<ProjectsContext>().edit_panel_tab;
     let panel_tab_read: ReadSignal<Option<String>> = panel_tab.into();
-    let mut project_tab_busy = use_signal(|| false);
-    let mut repo_tab_busy = use_signal(|| false);
+    let project_tab_busy = use_signal(|| false);
+    let repo_tab_busy = use_signal(|| false);
 
     rsx! {
-        div { class: "min-w-0 flex-1 space-y-3",
-            section { class: "space-y-3 border border-primary-6 bg-primary-1 p-4",
+        div { class: "sticky top-0 h-full min-h-0 min-w-full md:min-w-0 flex-1",
+            section { class: "flex h-full min-h-0 flex-col gap-3 overflow-hidden bg-primary p-4 shadow-comic-sm",
                 div { class: "flex items-center justify-between",
                     div { class: "text-sm font-semibold",
                         if matches!(props.mode, ProjectPanelMode::Add) { "Add Project" } else { "Edit Project" }
                     }
                     Button {
                         variant: ButtonVariant::Ghost,
-                        class: "button rounded-md border border-primary-6 bg-primary px-2 py-1 text-xs hover:bg-primary-3",
+                        class: "button rounded-md bg-primary-1 px-2 py-1 text-xs hover:bg-primary-3",
                         disabled: project_tab_busy() || repo_tab_busy(),
                         onclick: move |_: MouseEvent| props.on_close.call(()),
                         XIcon { width: 16, height: 16 }
                     }
                 }
                 Tabs {
-                    class: "space-y-3".to_string(),
+                    class: "flex min-h-0 flex-1 flex-col gap-3".to_string(),
                     value: panel_tab_read,
                     default_value: "project".to_string(),
                     on_value_change: move |value| panel_tab.set(Some(value)),
@@ -52,6 +52,7 @@ pub(super) fn EditPanel(props: EditPanelProps) -> Element {
                         TabTrigger { value: "repo".to_string(), index: 1usize, "repo" }
                     }
                     TabContent {
+                        class: "min-h-0 flex-1 overflow-hidden".to_string(),
                         value: "project".to_string(),
                         index: 0usize,
                         IOCell {
@@ -63,6 +64,7 @@ pub(super) fn EditPanel(props: EditPanelProps) -> Element {
                         }
                     }
                     TabContent {
+                        class: "min-h-0 flex-1 overflow-hidden".to_string(),
                         value: "repo".to_string(),
                         index: 1usize,
                         IOCell {
