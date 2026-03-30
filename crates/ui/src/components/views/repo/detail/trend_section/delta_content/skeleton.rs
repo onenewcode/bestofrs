@@ -5,10 +5,9 @@ use crate::components::skeleton::Skeleton;
 #[component]
 pub(crate) fn DeltaContentSkeleton() -> Element {
     rsx! {
-        div { class: "flex h-full flex-col gap-2",
-            Skeleton { class: "skeleton h-4 w-28 rounded-sm" }
-            div { class: "min-h-0 flex-1 border border-primary-6 bg-primary p-3",
-                Skeleton { class: "skeleton h-full w-full rounded-sm" }
+        div { class: "flex h-full w-full flex-col gap-2 md:gap-2",
+            div { class: "min-h-0 flex-1 md:border md:border-primary-6 md:bg-primary-1 md:p-3",
+                Skeleton { class: "skeleton h-72 w-full rounded-sm md:h-80" }
             }
         }
     }
