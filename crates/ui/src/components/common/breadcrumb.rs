@@ -97,6 +97,13 @@ fn build_crumbs(route: &Route) -> Vec<Crumb> {
                 to: None,
             },
         ],
+        Route::AdminFinderView {} => vec![
+            admin_crumb(),
+            Crumb {
+                label: t!("common_breadcrumb_finder").to_string(),
+                to: None,
+            },
+        ],
         Route::NotFoundView { .. } => vec![
             home_crumb(),
             Crumb {

@@ -2,7 +2,9 @@ use dioxus::prelude::*;
 
 use crate::components::avatar::{Avatar, AvatarFallback, AvatarImage, AvatarImageSize};
 use crate::components::common::CommonBreadcrumb;
-use crate::components::icons::{ArrowLeftIcon, BestOfRSIcon, SaveIcon, ScrollTextIcon, TagsIcon};
+use crate::components::icons::{
+    ArrowLeftIcon, BestOfRSIcon, SaveIcon, ScrollTextIcon, SearchIcon, TagsIcon,
+};
 use crate::components::providers::PreferenceContext;
 use crate::components::separator::Separator;
 use crate::components::sidebar::{
@@ -29,6 +31,7 @@ pub fn AdminLayout() -> Element {
     let is_tags = matches!(route, Route::AdminTagsView {});
     let is_job = matches!(route, Route::AdminJobView {});
     let is_backup = matches!(route, Route::AdminBackupView {});
+    let is_finder = matches!(route, Route::AdminFinderView {});
 
     rsx! {
         document::Link {
@@ -111,6 +114,22 @@ pub fn AdminLayout() -> Element {
                                             ..attributes,
                                             ScrollTextIcon {}
                                             span { "Job" }
+                                        }
+                                    },
+                                }
+                            }
+                            SidebarMenuItem {
+                                SidebarMenuButton {
+                                    is_active: is_finder,
+                                    tooltip: rsx! { "Finder" },
+                                    r#as: move |attributes: Vec<Attribute>| rsx! {
+                                        button {
+                                            onclick: move |_| {
+                                                let _ = navigator.push(Route::AdminFinderView {});
+                                            },
+                                            ..attributes,
+                                            SearchIcon {}
+                                            span { "Finder" }
                                         }
                                     },
                                 }

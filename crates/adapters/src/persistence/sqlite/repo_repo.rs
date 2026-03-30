@@ -222,6 +222,35 @@ impl RepoRepo for SqliteRepoRepo {
             .collect())
     }
 
+    async fn find_existing_github_repo_ids(&self, ids: &[i64]) -> AppResult<Vec<i64>> {
+        if ids.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut qb: QueryBuilder<Sqlite> = QueryBuilder::new(
+            r#"
+            SELECT github_repo_id
+            FROM repos
+            WHERE github_repo_id IS NOT NULL
+              AND github_repo_id IN (
+            "#,
+        );
+        let mut separated = qb.separated(", ");
+        for id in ids {
+            separated.push_bind(id);
+        }
+        qb.push(
+            r#"
+            )
+            "#,
+        );
+        let rows: Vec<(i64,)> = qb
+            .build_query_as()
+            .fetch_all(&self.pool)
+            .await
+            .map_err(db_err)?;
+        Ok(rows.into_iter().map(|(id,)| id).collect())
+    }
+
     async fn list_by_ids(&self, ids: &[RepoId]) -> AppResult<Vec<Repo>> {
         if ids.is_empty() {
             return Ok(Vec::new());

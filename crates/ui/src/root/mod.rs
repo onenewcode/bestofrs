@@ -18,8 +18,32 @@ const IA_WRITER_QUATTRO_REGULAR: Asset = asset!(
         .with_hash_suffix(false)
         .into_asset_options()
 );
+const IA_WRITER_QUATTRO_ITALIC: Asset = asset!(
+    "/assets/fonts/iAWriterQuattroS-Italic.woff2",
+    AssetOptions::builder()
+        .with_hash_suffix(false)
+        .into_asset_options()
+);
+const IA_WRITER_QUATTRO_BOLD: Asset = asset!(
+    "/assets/fonts/iAWriterQuattroS-Bold.woff2",
+    AssetOptions::builder()
+        .with_hash_suffix(false)
+        .into_asset_options()
+);
 const IA_WRITER_MONO_REGULAR: Asset = asset!(
     "/assets/fonts/iAWriterMonoS-Regular.woff2",
+    AssetOptions::builder()
+        .with_hash_suffix(false)
+        .into_asset_options()
+);
+const IA_WRITER_MONO_ITALIC: Asset = asset!(
+    "/assets/fonts/iAWriterMonoS-Italic.woff2",
+    AssetOptions::builder()
+        .with_hash_suffix(false)
+        .into_asset_options()
+);
+const IA_WRITER_MONO_BOLD: Asset = asset!(
+    "/assets/fonts/iAWriterMonoS-Bold.woff2",
     AssetOptions::builder()
         .with_hash_suffix(false)
         .into_asset_options()

@@ -8,7 +8,7 @@ mod tag;
 
 use super::layouts::{AdminLayout, RootLayout, UserLayout};
 use about::AboutView;
-use admin::{AdminBackupView, AdminJobView, AdminProjectsView, AdminTagsView};
+use admin::{AdminBackupView, AdminFinderView, AdminJobView, AdminProjectsView, AdminTagsView};
 use dioxus::prelude::*;
 use home::HomeView;
 use login::LoginView;
@@ -31,6 +31,8 @@ pub enum Route {
                 AdminJobView {},
                 #[route("/backup")]
                 AdminBackupView {},
+                #[route("/finder")]
+                AdminFinderView {},
             #[end_nest]
         #[end_layout]
         #[layout(UserLayout)]
@@ -72,6 +74,7 @@ impl Route {
                 | Route::AdminTagsView {}
                 | Route::AdminJobView {}
                 | Route::AdminBackupView {}
+                | Route::AdminFinderView {}
                 | Route::LoginView {}
         )
     }

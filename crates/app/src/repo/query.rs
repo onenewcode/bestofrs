@@ -7,8 +7,8 @@ use domain::{Repo, RepoId, RepoWithTags, Tag};
 use crate::app_error::AppResult;
 use crate::common::{Page, Pagination};
 use crate::repo::{
-    GithubGateway, RepoRankMetric, RepoRankQuery, RepoRepo, RepoSearchCache, RepoTagFacet,
-    RepoTagListItem, RepoTagRepo,
+    GithubGateway, GithubLatestPushedRepoInfo, GithubLatestPushedRepoSearchResult, RepoRankMetric,
+    RepoRankQuery, RepoRepo, RepoSearchCache, RepoTagFacet, RepoTagListItem, RepoTagRepo,
 };
 
 #[derive(Debug, Clone)]
@@ -23,6 +23,22 @@ pub struct RepoSearchTagItem {
     pub value: String,
     pub description: Option<String>,
     pub repos_total: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LatestPushedRepoQuery {
+    pub limit: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LatestPushedRepoCandidatesResult {
+    pub requested_limit: usize,
+    pub upstream_total_count: Option<u64>,
+    pub fetched_raw_count: usize,
+    pub unique_count: usize,
+    pub filtered_existing_count: usize,
+    pub returned_count: usize,
+    pub items: Vec<GithubLatestPushedRepoInfo>,
 }
 
 #[derive(Clone)]
@@ -67,6 +83,71 @@ impl RepoQueryHandler {
 
     pub async fn list(&self, page: Pagination) -> AppResult<Page<Repo>> {
         self.repos.list(page).await
+    }
+
+    pub async fn list_latest_pushed_candidates(
+        &self,
+        query: LatestPushedRepoQuery,
+    ) -> AppResult<LatestPushedRepoCandidatesResult> {
+        let GithubLatestPushedRepoSearchResult {
+            requested_limit,
+            upstream_total_count,
+            fetched_raw_count,
+            unique_count,
+            items: repos,
+        } = self
+            .github
+            .search_recently_pushed_repos(query.limit)
+            .await?;
+        if repos.is_empty() {
+            return Ok(LatestPushedRepoCandidatesResult {
+                requested_limit,
+                upstream_total_count,
+                fetched_raw_count,
+                unique_count,
+                filtered_existing_count: 0,
+                returned_count: 0,
+                items: Vec::new(),
+            });
+        }
+
+        let github_repo_ids: Vec<i64> = repos.iter().map(|repo| repo.id).collect();
+        if github_repo_ids.is_empty() {
+            let returned_count = repos.len();
+            return Ok(LatestPushedRepoCandidatesResult {
+                requested_limit,
+                upstream_total_count,
+                fetched_raw_count,
+                unique_count,
+                filtered_existing_count: 0,
+                returned_count,
+                items: repos,
+            });
+        }
+
+        let existing = self
+            .repos
+            .find_existing_github_repo_ids(&github_repo_ids)
+            .await?;
+        let existing_set: HashSet<i64> = existing.into_iter().collect();
+
+        let repos_before_filter = repos.len();
+        let items = repos
+            .into_iter()
+            .filter(|repo| !existing_set.contains(&repo.id))
+            .collect::<Vec<_>>();
+        let returned_count = items.len();
+        let filtered_existing_count = repos_before_filter.saturating_sub(returned_count);
+
+        Ok(LatestPushedRepoCandidatesResult {
+            requested_limit,
+            upstream_total_count,
+            fetched_raw_count,
+            unique_count,
+            filtered_existing_count,
+            returned_count,
+            items,
+        })
     }
     pub async fn get_with_tags(&self, repo_id: &RepoId) -> AppResult<Option<RepoWithTags>> {
         let repo = self.repos.get(repo_id).await?;
@@ -181,7 +262,11 @@ impl RepoQueryHandler {
                 let total = repos.len() as u64;
                 let offset = page.offset() as usize;
                 let limit = page.limit() as usize;
-                let repos = repos.into_iter().skip(offset).take(limit).collect::<Vec<_>>();
+                let repos = repos
+                    .into_iter()
+                    .skip(offset)
+                    .take(limit)
+                    .collect::<Vec<_>>();
 
                 Page {
                     items: repos,
@@ -355,7 +440,9 @@ impl RepoQueryHandler {
         value: String,
         top_n: u32,
     ) -> AppResult<Option<RepoTagListItem>> {
-        let mut items = self.list_tags_with_meta_by_values(vec![value], top_n).await?;
+        let mut items = self
+            .list_tags_with_meta_by_values(vec![value], top_n)
+            .await?;
         Ok(items.pop())
     }
 
@@ -370,7 +457,9 @@ impl RepoQueryHandler {
         let result = if key.is_empty() {
             RepoSearchResult {
                 repos: self.repos.list(page).await?,
-                tags: self.enrich_search_tags(self.repo_tags.list_tags(page).await?).await?,
+                tags: self
+                    .enrich_search_tags(self.repo_tags.list_tags(page).await?)
+                    .await?,
             }
         } else {
             RepoSearchResult {

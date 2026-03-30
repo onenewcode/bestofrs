@@ -42,6 +42,7 @@ pub trait RepoRepo: Send + Sync {
     async fn upsert_many(&self, repos: &[Repo]) -> AppResult<()>;
     async fn get(&self, id: &RepoId) -> AppResult<Option<Repo>>;
     async fn find_existing_ids(&self, ids: &[RepoId]) -> AppResult<Vec<RepoId>>;
+    async fn find_existing_github_repo_ids(&self, ids: &[i64]) -> AppResult<Vec<i64>>;
     async fn list_by_ids(&self, ids: &[RepoId]) -> AppResult<Vec<Repo>>;
     async fn list(&self, page: Pagination) -> AppResult<Page<Repo>>;
     async fn list_ranked(&self, query: RepoRankQuery, page: Pagination) -> AppResult<Page<Repo>>;
@@ -131,10 +132,32 @@ pub struct GithubReadme {
     pub download_url: Option<String>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GithubLatestPushedRepoInfo {
+    pub id: i64,
+    pub full_name: String,
+    pub stargazers_count: i64,
+    pub created_at: String,
+    pub pushed_at: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct GithubLatestPushedRepoSearchResult {
+    pub requested_limit: usize,
+    pub upstream_total_count: Option<u64>,
+    pub fetched_raw_count: usize,
+    pub unique_count: usize,
+    pub items: Vec<GithubLatestPushedRepoInfo>,
+}
+
 #[async_trait]
 pub trait GithubGateway: Send + Sync {
     async fn fetch_repo(&self, full_name: &str) -> AppResult<GithubRepoInfo>;
     async fn fetch_repo_by_github_id(&self, github_repo_id: i64) -> AppResult<GithubRepoInfo>;
+    async fn search_recently_pushed_repos(
+        &self,
+        limit: usize,
+    ) -> AppResult<GithubLatestPushedRepoSearchResult>;
     async fn fetch_repo_by_lookup_key(
         &self,
         key: &RepoGithubLookupKey,

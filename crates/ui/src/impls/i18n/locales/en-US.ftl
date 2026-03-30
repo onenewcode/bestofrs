@@ -153,6 +153,7 @@ common_breadcrumb_login = LOGIN
 common_breadcrumb_projects = PROJECTS
 common_breadcrumb_job = JOB
 common_breadcrumb_backup = BACKUP
+common_breadcrumb_finder = FINDER
 common_breadcrumb_404 = 404
 
 common_tag_content_no_description = No description

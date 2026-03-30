@@ -7,7 +7,9 @@ pub use crate::common::{DurationRange, Page, PageMeta, Pagination};
 pub use crate::project::{ProjectCommandHandler, ProjectEventHandler, ProjectQueryHandler, ProjectRepo};
 pub use crate::repo::RepoAvatarUrlsExt;
 pub use crate::repo::{
-    GithubGateway, GithubRepoInfo, RepoCommandHandler, RepoQueryHandler, RepoRepo, RepoTagRepo,
+    GithubGateway, GithubLatestPushedRepoInfo, GithubLatestPushedRepoSearchResult,
+    GithubRepoInfo, LatestPushedRepoCandidatesResult, LatestPushedRepoQuery, RepoCommandHandler,
+    RepoQueryHandler, RepoRepo, RepoTagRepo,
 };
 pub use crate::snapshot::{
     Clock, IngestDailySnapshots, IngestDailySnapshotsResult, SnapshotCommandHandler, SnapshotDelta,

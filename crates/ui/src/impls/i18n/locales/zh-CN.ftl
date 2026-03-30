@@ -153,6 +153,7 @@ common_breadcrumb_login = 登录
 common_breadcrumb_projects = 项目
 common_breadcrumb_job = 任务
 common_breadcrumb_backup = 备份
+common_breadcrumb_finder = 发现
 common_breadcrumb_404 = 404
 
 common_tag_content_no_description = 暂无描述

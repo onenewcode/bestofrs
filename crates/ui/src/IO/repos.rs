@@ -6,10 +6,11 @@ use crate::types::search::SearchResultDto;
 use crate::types::snapshot_deltas::SnapshotDeltaDto;
 use crate::types::snapshot_deltas_summary::SnapshotDeltasSummaryDto;
 use crate::types::snapshots::SnapshotDto;
+use crate::types::finder::LatestPushedRepoQueryResultDto;
 use crate::types::tags::{ImportTagsResult, TagDto, TagFacetDto, TagImportItem, TagListItemDto};
 use dioxus::prelude::*;
 
-use app::prelude::{DurationRange, Page, Pagination};
+use app::prelude::{DurationRange, LatestPushedRepoQuery, Page, Pagination};
 use app::repo::{
     BulkTagUpdateAction, BulkUpdateRepoTagCommand, ImportTagCommand, ImportTagsCommand,
     ReplaceRepoTagsCommand, RepoListQuery, RepoRankMetric, RepoRankQuery, TagInput,
@@ -66,6 +67,21 @@ pub async fn search_repos(key: String, page: Pagination) -> ServerFnResult<Searc
         .await
         .map_err(api_error)?;
     Ok(SearchResultDto::from(result))
+}
+
+#[post("/api/repos/find_latest_push", state: State, _auth: AdminAuth)]
+pub async fn find_latest_pushed_repos(
+    limit: usize,
+) -> ServerFnResult<LatestPushedRepoQueryResultDto> {
+    let app_state = state.0;
+    let result = app_state
+        .repo
+        .query
+        .list_latest_pushed_candidates(LatestPushedRepoQuery { limit })
+        .await
+        .map_err(api_error)?;
+
+    Ok(LatestPushedRepoQueryResultDto::from(result))
 }
 
 #[post("/api/repos/:owner/:name", state: State)]
