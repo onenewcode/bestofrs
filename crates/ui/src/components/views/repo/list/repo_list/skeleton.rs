@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 
 use crate::components::skeleton::Skeleton;
 
-use super::repo_list_content::RepoListContent;
 use super::super::RepoListContext;
+use super::repo_list_content::RepoListContent;
 
 #[component]
 pub(crate) fn RepoListCachedFallback() -> Element {

@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 use dioxus_i18n::t;
 
-use crate::IO::repos::get_repo_readme;
-use crate::components::common::CommonMarkdown;
 use super::RepoDetailContext;
+use crate::components::common::CommonMarkdown;
+use crate::IO::repos::get_repo_readme;
 
 pub(super) mod skeleton;
 

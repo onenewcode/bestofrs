@@ -2,9 +2,9 @@ use std::slice::from_ref;
 use std::sync::Arc;
 use std::{collections::HashMap, collections::HashSet};
 
-use domain::{Repo, RepoId, Tag, TagLabel, TagValue};
 use crate::app_error::AppResult;
 use crate::repo::{RepoRepo, RepoTagRepo};
+use domain::{Repo, RepoId, Tag, TagLabel, TagValue};
 
 #[derive(Clone)]
 pub struct RepoCommandHandler {
@@ -239,7 +239,8 @@ impl RepoCommandHandler {
 
         for repo_id in &repo_ids {
             let key = repo_id.as_str().to_string();
-            let current_tags = Self::normalize_business_tags(tags_by_repo.remove(&key).unwrap_or_default());
+            let current_tags =
+                Self::normalize_business_tags(tags_by_repo.remove(&key).unwrap_or_default());
             let mut next_tags = current_tags.clone();
 
             match cmd.action {
@@ -261,7 +262,9 @@ impl RepoCommandHandler {
             }
 
             next_tags = Self::normalize_business_tags(next_tags);
-            self.repo_tags.replace_repo_tags(repo_id, &next_tags).await?;
+            self.repo_tags
+                .replace_repo_tags(repo_id, &next_tags)
+                .await?;
             updated += 1;
         }
 

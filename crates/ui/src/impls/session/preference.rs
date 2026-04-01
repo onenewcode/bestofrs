@@ -5,11 +5,11 @@ mod server {
     use dioxus::prelude::ServerFnError;
 
     use crate::impls::i18n::{parse_language, DEFAULT_LANGUAGE};
-    use crate::impls::session::AppSession;
     use crate::impls::session::consts::{
         SESSION_PREFERENCE_GRID_THEME_KEY, SESSION_PREFERENCE_LOCALE_KEY,
         SESSION_PREFERENCE_PRIVACY_KEY, SESSION_PREFERENCE_THEME_KEY,
     };
+    use crate::impls::session::AppSession;
 
     const DEFAULT_GRID_THEME: &str = "green";
 
@@ -114,12 +114,17 @@ mod server {
     }
 
     pub fn resolve_grid_theme(session: &AppSession) -> String {
-        let theme = get(session, PreferenceField::GridTheme).unwrap_or_else(|| DEFAULT_GRID_THEME.to_string());
+        let theme = get(session, PreferenceField::GridTheme)
+            .unwrap_or_else(|| DEFAULT_GRID_THEME.to_string());
         normalize_grid_theme(&theme).to_string()
     }
 
     pub fn update_grid_theme(session: &AppSession, grid_theme: &str) {
-        set(session, PreferenceField::GridTheme, normalize_grid_theme(grid_theme));
+        set(
+            session,
+            PreferenceField::GridTheme,
+            normalize_grid_theme(grid_theme),
+        );
     }
 
     fn normalize_grid_theme(raw: &str) -> &'static str {

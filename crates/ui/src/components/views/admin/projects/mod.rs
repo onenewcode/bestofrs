@@ -72,7 +72,7 @@ pub fn Projects() -> Element {
                             ProjectTable {
                                 panel_open: panel_mode().is_some(),
                                 active_id: active_id.clone(),
-                                on_edit: move |project| panel_mode.set(Some(ProjectPanelMode::Edit(project))),
+                                on_edit: move |project| panel_mode.set(Some(ProjectPanelMode::Edit(Box::new(project)))),
                             }
                         }
                     }

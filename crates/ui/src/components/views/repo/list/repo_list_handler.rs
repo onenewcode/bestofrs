@@ -6,10 +6,7 @@ use crate::components::select::{
     SelectTrigger, SelectValue,
 };
 
-use super::{
-    normalize_page_size, repo_list_route_from_ctx, FilterType,
-    RepoListContext, SortType,
-};
+use super::{normalize_page_size, repo_list_route_from_ctx, FilterType, RepoListContext, SortType};
 
 #[component]
 pub(super) fn RepoListHandler() -> Element {

@@ -40,7 +40,7 @@ impl PageMeta {
         let total_pages = if total == 0 {
             0
         } else {
-            let pages = (total + limit as u64 - 1) / limit as u64;
+            let pages = total.div_ceil(limit as u64);
             pages.min(u32::MAX as u64) as u32
         };
         let current_page = if total == 0 { 0 } else { offset / limit + 1 };

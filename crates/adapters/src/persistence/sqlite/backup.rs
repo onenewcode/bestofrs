@@ -79,7 +79,10 @@ fn list_backups_from_dir(backup_dir: &Path, expected_ext: &str) -> AppResult<Vec
     for entry in std::fs::read_dir(backup_dir).map_err(AppError::internal)? {
         let entry = entry.map_err(AppError::internal)?;
         let path = entry.path();
-        let ext = path.extension().and_then(|v| v.to_str()).unwrap_or_default();
+        let ext = path
+            .extension()
+            .and_then(|v| v.to_str())
+            .unwrap_or_default();
         if ext != expected_ext {
             continue;
         }

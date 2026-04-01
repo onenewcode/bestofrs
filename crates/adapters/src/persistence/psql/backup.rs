@@ -74,7 +74,10 @@ impl DatabaseBackupPort for PostgresBackupAdapter {
             return Err(AppError::NotFound(format!("Backup not found: {name}")));
         }
 
-        let ext = path.extension().and_then(|v| v.to_str()).unwrap_or_default();
+        let ext = path
+            .extension()
+            .and_then(|v| v.to_str())
+            .unwrap_or_default();
         let output = if ext == "dump" {
             Command::new("pg_restore")
                 .arg("--dbname")
@@ -125,8 +128,11 @@ fn list_backups_from_dir(backup_dir: &Path, expected_exts: &[&str]) -> AppResult
     for entry in std::fs::read_dir(backup_dir).map_err(AppError::internal)? {
         let entry = entry.map_err(AppError::internal)?;
         let path = entry.path();
-        let ext = path.extension().and_then(|v| v.to_str()).unwrap_or_default();
-        if !expected_exts.iter().any(|expected| *expected == ext) {
+        let ext = path
+            .extension()
+            .and_then(|v| v.to_str())
+            .unwrap_or_default();
+        if !expected_exts.contains(&ext) {
             continue;
         }
         let Some(name) = path
@@ -168,9 +174,9 @@ fn now_stamp() -> String {
 
 fn map_command_error(bin: &'static str) -> impl FnOnce(std::io::Error) -> AppError {
     move |err| match err.kind() {
-        std::io::ErrorKind::NotFound => AppError::internal(format!(
-            "{bin} is not installed or not in PATH"
-        )),
+        std::io::ErrorKind::NotFound => {
+            AppError::internal(format!("{bin} is not installed or not in PATH"))
+        }
         _ => AppError::internal(err),
     }
 }

@@ -1,5 +1,5 @@
-use dioxus::prelude::*;
 use crate::types::projects::ProjectDto;
+use dioxus::prelude::*;
 
 #[derive(Clone, Copy, PartialEq)]
 pub(super) struct ProjectTablePaginationState {
@@ -31,5 +31,5 @@ pub(super) struct ProjectsContext {
 #[derive(Clone, PartialEq)]
 pub(super) enum ProjectPanelMode {
     Add,
-    Edit(ProjectDto),
+    Edit(Box<ProjectDto>),
 }

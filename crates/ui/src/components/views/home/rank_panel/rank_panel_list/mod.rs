@@ -30,7 +30,11 @@ pub(super) fn HomeRankPanelList(props: HomeRankPanelListProps) -> Element {
     })?;
     match repos() {
         Some(Ok(page)) => {
-            let current_list = page.items.into_iter().map(map_rank_repo).collect::<Vec<_>>();
+            let current_list = page
+                .items
+                .into_iter()
+                .map(map_rank_repo)
+                .collect::<Vec<_>>();
             rsx! {
                 div { class: "flex flex-col gap-2.5",
                     for (idx, repo) in current_list.into_iter().enumerate() {

@@ -1,12 +1,13 @@
-use std::sync::Arc;
 use chrono::{Duration, Utc};
+use std::sync::Arc;
 
 use domain::{RepoId, Snapshot};
 
 use crate::app_error::AppResult;
 use crate::common::{DurationRange, Page, Pagination};
 use crate::snapshot::{
-    SnapshotDelta, SnapshotDeltaRepo, SnapshotDeltasSummary, SnapshotMetricDeltaSummary, SnapshotRepo,
+    SnapshotDelta, SnapshotDeltaRepo, SnapshotDeltasSummary, SnapshotMetricDeltaSummary,
+    SnapshotRepo,
 };
 
 #[derive(Clone)]
@@ -101,10 +102,14 @@ impl SnapshotQueryHandler {
     ) -> AppResult<Page<SnapshotDelta>> {
         let full_name = format!("{owner}/{name}");
         let repo_id = RepoId::parse(&full_name)?;
-        self.list_deltas_by_repo_in_duration(&repo_id, duration).await
+        self.list_deltas_by_repo_in_duration(&repo_id, duration)
+            .await
     }
 
-    pub async fn list_deltas_summary_by_repo(&self, repo_id: &RepoId) -> AppResult<SnapshotDeltasSummary> {
+    pub async fn list_deltas_summary_by_repo(
+        &self,
+        repo_id: &RepoId,
+    ) -> AppResult<SnapshotDeltasSummary> {
         let page = Pagination {
             limit: Some(31),
             offset: Some(0),
@@ -143,11 +148,12 @@ impl SnapshotQueryHandler {
         let week = &items[week_idx];
         let month = &items[month_idx];
 
-        let to_summary = |latest: i64, prev: i64, week: i64, month: i64| SnapshotMetricDeltaSummary {
-            daily: latest - prev,
-            weekly: (latest - week) / 7,
-            monthly: (latest - month) / 30,
-        };
+        let to_summary =
+            |latest: i64, prev: i64, week: i64, month: i64| SnapshotMetricDeltaSummary {
+                daily: latest - prev,
+                weekly: (latest - week) / 7,
+                monthly: (latest - month) / 30,
+            };
 
         Ok(SnapshotDeltasSummary {
             stars: to_summary(latest.stars, prev.stars, week.stars, month.stars),

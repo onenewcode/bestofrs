@@ -1,4 +1,4 @@
-use app::app_error::{AppError, AppResult};
+use app::app_error::AppResult;
 use infra::setup::init_app_container;
 use tracing::warn;
 use tracing_subscriber::EnvFilter;

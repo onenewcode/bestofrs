@@ -2,9 +2,7 @@ use dioxus::prelude::*;
 use dioxus_markdown::{LinkDescription, Markdown};
 use dioxus_use_js::use_js;
 
-use super::rewrite::{
-    next_markdown_root_id, resolve_href, resolve_src,
-};
+use super::rewrite::{next_markdown_root_id, resolve_href, resolve_src};
 
 use_js!("src/js/dom_bridge.js"::rewrite_markdown_links);
 

@@ -4,8 +4,8 @@ mod readme_section;
 mod trend_section;
 
 use crate::components::common::{
-    CommonBreadcrumb, GradientDirection, GridBackground, GridLineType, GridPadding, GridPattern,
-    GridSlashTransition, GridType, GridWrapper, IOCell,
+    CommonBreadcrumb, GradientDirection, GridBackground, GridPadding, GridPattern,
+    GridSlashTransition, GridWrapper, IOCell,
 };
 use dioxus::prelude::*;
 

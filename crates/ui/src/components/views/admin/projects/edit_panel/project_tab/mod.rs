@@ -67,7 +67,7 @@ impl ProjectFormData {
     fn from_mode(mode: &ProjectPanelMode) -> Self {
         match mode {
             ProjectPanelMode::Add => Self::default(),
-            ProjectPanelMode::Edit(project) => project.into(),
+            ProjectPanelMode::Edit(project) => project.as_ref().into(),
         }
     }
 

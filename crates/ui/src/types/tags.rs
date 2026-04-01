@@ -84,7 +84,11 @@ impl From<RepoTagListItem> for TagListItemDto {
             value: value.value,
             description: value.description,
             repos_total: value.repos_total,
-            top_repos: value.top_repos.into_iter().map(TagTopRepoDto::from).collect(),
+            top_repos: value
+                .top_repos
+                .into_iter()
+                .map(TagTopRepoDto::from)
+                .collect(),
         }
     }
 }

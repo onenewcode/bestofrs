@@ -9,8 +9,7 @@ use crate::app_error::AppResult;
 use crate::common::pagination::Pagination;
 use crate::project::{ProjectQueryHandler, ProjectStatusExt};
 use crate::repo::{
-    GithubGateway, RepoCommandHandler, RepoGithubLookupExt,
-    RepoGithubLookupKey, RepoRepo,
+    GithubGateway, RepoCommandHandler, RepoGithubLookupExt, RepoGithubLookupKey, RepoRepo,
 };
 use crate::snapshot::{Clock, SnapshotEventHandler, SnapshotRepo};
 
@@ -247,7 +246,10 @@ impl IngestDailySnapshots {
         })
     }
 
-    fn resolve_homepage_url(github_homepage: Option<&str>, project_url: Option<&str>) -> Option<String> {
+    fn resolve_homepage_url(
+        github_homepage: Option<&str>,
+        project_url: Option<&str>,
+    ) -> Option<String> {
         github_homepage
             .and_then(Self::normalize_url)
             .or_else(|| project_url.and_then(Self::normalize_url))

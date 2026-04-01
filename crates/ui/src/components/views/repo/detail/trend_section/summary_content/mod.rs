@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 use dioxus_i18n::t;
 
 use crate::components::icons::RustGearIcon;
-use crate::IO::repos::list_repo_deltas_summary;
 use crate::types::snapshot_deltas_summary::SnapshotMetricDeltaSummaryDto;
+use crate::IO::repos::list_repo_deltas_summary;
 
 use super::super::RepoDetailContext;
 pub(super) mod skeleton;
@@ -19,7 +19,8 @@ fn format_delta(value: i64) -> String {
 #[component]
 pub(crate) fn TrendSummary(metric: Signal<String>) -> Element {
     let repo_ctx = use_context::<RepoDetailContext>();
-    let summary_fut = use_server_future(move || list_repo_deltas_summary((repo_ctx.owner)(), (repo_ctx.name)()))?;
+    let summary_fut =
+        use_server_future(move || list_repo_deltas_summary((repo_ctx.owner)(), (repo_ctx.name)()))?;
 
     match summary_fut() {
         Some(Ok(summary)) => {

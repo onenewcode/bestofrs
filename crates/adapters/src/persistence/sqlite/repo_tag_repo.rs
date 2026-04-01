@@ -1,17 +1,16 @@
-use std::collections::{HashMap, HashSet};
 use app::app_error::AppResult;
 use app::common::pagination::{Page, Pagination};
 use app::repo::{build_avatar_urls, RepoTagFacet, RepoTagListItem, RepoTagRepo, RepoTagTopRepo};
 use async_trait::async_trait;
 use domain::{RepoId, Tag, TagLabel, TagValue};
 use sqlx::{QueryBuilder, Sqlite};
+use std::collections::{HashMap, HashSet};
 
 use super::db_err;
 
 fn tag_id(label: &str, value: &str) -> String {
     format!("tag:{label}:{value}")
 }
-
 
 #[derive(Debug, sqlx::FromRow)]
 struct RepoTagRow {
@@ -94,7 +93,8 @@ impl SqliteRepoTagRepo {
 #[async_trait]
 impl RepoTagRepo for SqliteRepoTagRepo {
     async fn replace_repo_tags(&self, repo_id: &RepoId, tags: &[Tag]) -> AppResult<()> {
-        self.replace_repo_tags_bulk(&[(repo_id.clone(), tags.to_vec())]).await
+        self.replace_repo_tags_bulk(&[(repo_id.clone(), tags.to_vec())])
+            .await
     }
 
     async fn replace_repo_tags_bulk(&self, items: &[(RepoId, Vec<Tag>)]) -> AppResult<()> {
@@ -311,9 +311,9 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         let limit = page.limit();
         let offset = page.offset();
         let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tags")
-        .fetch_one(&self.pool)
-        .await
-        .map_err(db_err)?;
+            .fetch_one(&self.pool)
+            .await
+            .map_err(db_err)?;
 
         let tag_rows: Vec<TagRow> = sqlx::query_as(
             r#"
@@ -331,7 +331,10 @@ impl RepoTagRepo for SqliteRepoTagRepo {
 
         let mut repo_total_by_tag: HashMap<String, u64> = HashMap::new();
         if !tag_rows.is_empty() {
-            let tag_ids = tag_rows.iter().map(|row| row.id.clone()).collect::<Vec<_>>();
+            let tag_ids = tag_rows
+                .iter()
+                .map(|row| row.id.clone())
+                .collect::<Vec<_>>();
             repo_total_by_tag = self.repo_totals_by_tag_ids(&tag_ids).await?;
         }
 
@@ -353,7 +356,9 @@ impl RepoTagRepo for SqliteRepoTagRepo {
                 first = false;
                 builder.push_bind(row.id.clone());
             }
-            builder.push(") ) SELECT tag_id, repo_id, avatar_url, homepage_url FROM ranked WHERE rn <= ");
+            builder.push(
+                ") ) SELECT tag_id, repo_id, avatar_url, homepage_url FROM ranked WHERE rn <= ",
+            );
             builder.push_bind(top_n as i64);
             builder.push(" ORDER BY tag_id, rn");
             let rows: Vec<TagTopRepoRow> = builder
@@ -414,7 +419,10 @@ impl RepoTagRepo for SqliteRepoTagRepo {
 
         let mut repo_total_by_tag: HashMap<String, u64> = HashMap::new();
         if !tag_rows.is_empty() {
-            let tag_ids = tag_rows.iter().map(|row| row.id.clone()).collect::<Vec<_>>();
+            let tag_ids = tag_rows
+                .iter()
+                .map(|row| row.id.clone())
+                .collect::<Vec<_>>();
             repo_total_by_tag = self.repo_totals_by_tag_ids(&tag_ids).await?;
         }
 
@@ -436,7 +444,9 @@ impl RepoTagRepo for SqliteRepoTagRepo {
                 first = false;
                 builder.push_bind(row.id.clone());
             }
-            builder.push(") ) SELECT tag_id, repo_id, avatar_url, homepage_url FROM ranked WHERE rn <= ");
+            builder.push(
+                ") ) SELECT tag_id, repo_id, avatar_url, homepage_url FROM ranked WHERE rn <= ",
+            );
             builder.push_bind(top_n as i64);
             builder.push(" ORDER BY tag_id, rn");
             let rows: Vec<TagTopRepoRow> = builder
@@ -522,9 +532,9 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         let limit = page.limit();
         let offset = page.offset();
         let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM tags")
-        .fetch_one(&self.pool)
-        .await
-        .map_err(db_err)?;
+            .fetch_one(&self.pool)
+            .await
+            .map_err(db_err)?;
 
         let rows: Vec<(String, String, Option<String>)> = sqlx::query_as(
             r#"
@@ -595,10 +605,7 @@ impl RepoTagRepo for SqliteRepoTagRepo {
         Ok(page.to_page(items, total as u64))
     }
 
-    async fn count_repos_by_tags(
-        &self,
-        tags: &[Tag],
-    ) -> AppResult<HashMap<(String, String), u64>> {
+    async fn count_repos_by_tags(&self, tags: &[Tag]) -> AppResult<HashMap<(String, String), u64>> {
         if tags.is_empty() {
             return Ok(HashMap::new());
         }
@@ -696,5 +703,4 @@ impl RepoTagRepo for SqliteRepoTagRepo {
             })
             .collect())
     }
-
 }

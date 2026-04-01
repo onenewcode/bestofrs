@@ -12,4 +12,3 @@ pub(crate) fn BaseTabSkeleton() -> Element {
         }
     }
 }
-

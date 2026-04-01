@@ -1,8 +1,6 @@
 use dioxus::prelude::*;
+use dioxus_primitives::hover_card::{self, HoverCardContentProps, HoverCardTriggerProps};
 use dioxus_sdk_time::use_debounce;
-use dioxus_primitives::hover_card::{
-    self, HoverCardContentProps, HoverCardTriggerProps,
-};
 
 #[derive(Props, Clone, PartialEq)]
 pub struct HoverCardProps {
@@ -58,7 +56,7 @@ pub fn HoverCard(props: HoverCardProps) -> Element {
         delayed_close.action(close_ticket());
     };
 
-    let resolved_open = (props.open)().unwrap_or_else(|| internal_open());
+    let resolved_open = (props.open)().unwrap_or(internal_open());
 
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("./style.css") }

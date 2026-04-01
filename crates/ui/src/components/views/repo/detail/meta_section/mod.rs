@@ -41,13 +41,13 @@ pub(crate) fn MetaSection() -> Element {
 
     // SEO part
     let seo_description = repo_data.description.clone().unwrap_or_else(|| {
-            t!(
-                "view_repo_detail_meta_seo_description_fallback",
-                owner: owner.clone(),
-                name: name.clone()
-            )
-            .to_string()
-        });
+        t!(
+            "view_repo_detail_meta_seo_description_fallback",
+            owner: owner.clone(),
+            name: name.clone()
+        )
+        .to_string()
+    });
 
     let seo_keywords = {
         let tag_values = repo_data

@@ -54,7 +54,7 @@ pub(super) struct HomeRankTag {
 }
 
 #[derive(Clone, PartialEq, Eq)]
-struct HomeRankRepo {
+pub(super) struct HomeRankRepo {
     id: String,
     name: String,
     description: String,

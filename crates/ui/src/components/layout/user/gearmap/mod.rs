@@ -1,9 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{
-    components::icons::RustGearIcon,
-    IO::health::today,
-};
+use crate::{components::icons::RustGearIcon, IO::health::today};
 
 const VIEW_W: f32 = 1000.0;
 const VIEW_H: f32 = 700.0;

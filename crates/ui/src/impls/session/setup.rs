@@ -18,9 +18,8 @@ pub async fn create_session_setup(
     session_ttl_seconds: u64,
     is_production: bool,
 ) -> SessionSetup {
-    let ttl = chrono::Duration::try_seconds(session_ttl_seconds as i64).unwrap_or_else(|| {
-        chrono::Duration::try_days(SESSION_TTL_FALLBACK_DAYS).unwrap()
-    });
+    let ttl = chrono::Duration::try_seconds(session_ttl_seconds as i64)
+        .unwrap_or_else(|| chrono::Duration::try_days(SESSION_TTL_FALLBACK_DAYS).unwrap());
 
     let max_lifetime = chrono::Duration::try_days(SESSION_MAX_LIFETIME_DAYS)
         .unwrap_or_else(|| chrono::Duration::try_days(SESSION_MAX_LIFETIME_FALLBACK_DAYS).unwrap());

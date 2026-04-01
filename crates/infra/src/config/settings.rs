@@ -60,16 +60,10 @@ impl Default for BackupConfig {
         }
     }
 }
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Default)]
 pub struct RedisConfig {
     #[serde(default)]
     pub url: String,
-}
-
-impl Default for RedisConfig {
-    fn default() -> Self {
-        Self { url: String::new() }
-    }
 }
 
 #[derive(Debug, Clone, Deserialize)]

@@ -1,5 +1,5 @@
-use crate::components::ui::button::{Button, ButtonVariant};
 use crate::components::icons::{EraserIcon, PlusIcon, SearchIcon};
+use crate::components::ui::button::{Button, ButtonVariant};
 use crate::components::ui::input::Input;
 use dioxus::prelude::*;
 

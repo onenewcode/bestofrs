@@ -1,7 +1,7 @@
 pub(crate) mod skeleton;
 
-use dioxus::prelude::*;
 use crate::components::icons::{PlusIcon, SaveIcon};
+use dioxus::prelude::*;
 
 use crate::components::ui::button::Button;
 use crate::components::ui::input::Input;

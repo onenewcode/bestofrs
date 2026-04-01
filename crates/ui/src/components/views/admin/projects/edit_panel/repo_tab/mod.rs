@@ -71,7 +71,7 @@ fn RepoTabAddMode(props: RepoTabAddModeProps) -> Element {
 
 #[derive(Props, Clone, PartialEq)]
 struct RepoTabEditModeProps {
-    project: crate::types::projects::ProjectDto,
+    project: Box<crate::types::projects::ProjectDto>,
     busy: Signal<bool>,
 }
 

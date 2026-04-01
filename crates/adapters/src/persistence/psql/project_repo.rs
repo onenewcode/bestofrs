@@ -1,6 +1,6 @@
 use app::app_error::AppResult;
 use app::common::pagination::{Page, Pagination};
-use app::project::{ProjectRepo, parse_project_status, project_status_value};
+use app::project::{parse_project_status, project_status_value, ProjectRepo};
 use domain::{Project, ProjectStatus, RepoId};
 use sqlx::{Postgres, QueryBuilder};
 

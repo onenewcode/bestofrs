@@ -285,10 +285,7 @@ impl RepoQueryHandler {
             tags_by_repo.entry(repo_id).or_default().push(tag);
         }
         Ok(repos_page.map(|repo| {
-            let tags = match tags_by_repo.remove(&repo.id) {
-                Some(tags) => tags,
-                None => Vec::new(),
-            };
+            let tags = tags_by_repo.remove(&repo.id).unwrap_or_default();
             RepoWithTags { repo, tags }
         }))
     }
@@ -310,10 +307,7 @@ impl RepoQueryHandler {
             tags_by_repo.entry(repo_id).or_default().push(tag);
         }
         Ok(repos_page.map(|repo| {
-            let tags = match tags_by_repo.remove(&repo.id) {
-                Some(tags) => tags,
-                None => Vec::new(),
-            };
+            let tags = tags_by_repo.remove(&repo.id).unwrap_or_default();
             RepoWithTags { repo, tags }
         }))
     }
@@ -346,10 +340,7 @@ impl RepoQueryHandler {
         let items = repos
             .into_iter()
             .map(|repo| {
-                let tags = match tags_by_repo.remove(&repo.id) {
-                    Some(tags) => tags,
-                    None => Vec::new(),
-                };
+                let tags = tags_by_repo.remove(&repo.id).unwrap_or_default();
                 RepoWithTags { repo, tags }
             })
             .collect();

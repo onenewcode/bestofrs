@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
 
 use crate::impls::error::api_error;
-use crate::impls::session::AppSession;
 use crate::impls::session::auth;
+use crate::impls::session::AppSession;
 use crate::impls::state::State;
 use crate::types::auth::MeDto;
 use dioxus_fullstack::response::{IntoResponse, Redirect, Response};
@@ -35,13 +35,12 @@ pub async fn github_login_start() -> ServerFnResult<Response> {
 pub async fn github_login_callback(code: String, state: String) -> ServerFnResult<Response> {
     let app_state = ext_state.0;
 
-    let pending = auth::consume_pending_oauth(&session, &state).map_err(|e| {
-        ServerFnError::ServerError {
+    let pending =
+        auth::consume_pending_oauth(&session, &state).map_err(|e| ServerFnError::ServerError {
             code: 401,
             message: e.to_string(),
             details: None,
-        }
-    })?;
+        })?;
 
     let auth_user = app_state
         .auth

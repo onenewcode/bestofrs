@@ -20,7 +20,6 @@ pub(super) struct TrendContext {
     pub(super) metric: Signal<String>,
     pub(super) delta_timeframe: Signal<String>,
     pub(super) snapshot_timeframe: Signal<String>,
-    pub(super) active_tab: Signal<Option<String>>,
 }
 
 fn metric_dataset_label(metric: &str, chart_kind: &str) -> &'static str {
@@ -80,7 +79,6 @@ pub(crate) fn TrendSection(initial_metric: ReadSignal<Option<String>>) -> Elemen
         metric,
         delta_timeframe,
         snapshot_timeframe,
-        active_tab,
     });
     let active_tab_read: ReadSignal<Option<String>> = active_tab.into();
 

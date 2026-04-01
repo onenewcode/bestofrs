@@ -12,15 +12,21 @@ pub fn TypingText(
     let mut typed_len = use_signal(|| 0usize);
     let text_for_tick = text.clone();
     let total_len = text.chars().count();
-    use_interval(std::time::Duration::from_millis(speed_ms.max(1)), move |_| {
-        if active {
-            let next = typed_len().saturating_add(1);
-            typed_len.set(next.min(text_for_tick.chars().count()));
-        } else if typed_len() != 0 {
-            typed_len.set(0);
-        }
-    });
-    let typed = text.chars().take(typed_len().min(total_len)).collect::<String>();
+    use_interval(
+        std::time::Duration::from_millis(speed_ms.max(1)),
+        move |_| {
+            if active {
+                let next = typed_len().saturating_add(1);
+                typed_len.set(next.min(text_for_tick.chars().count()));
+            } else if typed_len() != 0 {
+                typed_len.set(0);
+            }
+        },
+    );
+    let typed = text
+        .chars()
+        .take(typed_len().min(total_len))
+        .collect::<String>();
 
     rsx! {
         span {

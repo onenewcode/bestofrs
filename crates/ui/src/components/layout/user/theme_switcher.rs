@@ -10,8 +10,8 @@ use_js!("src/js/theme_bridge.js"::{js_apply_theme, js_toggle_theme});
 
 #[component]
 pub fn ThemeSwitcher() -> Element {
-    let mut preference = use_context::<PreferenceContext>();
-    let mut persist_theme = use_action(move |theme: String| async move { set_theme(theme).await });
+    let preference = use_context::<PreferenceContext>();
+    let persist_theme = use_action(move |theme: String| async move { set_theme(theme).await });
 
     use_effect(move || {
         let preferred_theme = preference().theme.clone();

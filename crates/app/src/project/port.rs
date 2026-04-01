@@ -12,7 +12,10 @@ pub trait ProjectRepo: Send + Sync {
     async fn list(&self, page: Pagination) -> AppResult<Page<Project>>;
     async fn search_by_key(&self, key: String, page: Pagination) -> AppResult<Page<Project>>;
     async fn list_disabled(&self, page: Pagination) -> AppResult<Page<Project>>;
-    async fn search_disabled_by_key(&self, key: String, page: Pagination)
-        -> AppResult<Page<Project>>;
+    async fn search_disabled_by_key(
+        &self,
+        key: String,
+        page: Pagination,
+    ) -> AppResult<Page<Project>>;
     async fn remove(&self, repo_id: String) -> AppResult<()>;
 }

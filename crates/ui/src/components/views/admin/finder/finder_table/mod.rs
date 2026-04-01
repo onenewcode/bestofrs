@@ -2,8 +2,8 @@ pub(super) mod skeleton;
 
 use dioxus::prelude::*;
 
-use crate::IO::repos::find_latest_pushed_repos;
 use crate::types::finder::{LatestPushedRepoDto, LatestPushedRepoQueryResultDto};
+use crate::IO::repos::find_latest_pushed_repos;
 
 use super::context::{FinderContext, FinderSortBy, FinderTablePaginationState};
 use skeleton::FinderTableSkeleton;
@@ -71,7 +71,7 @@ fn FinderTableLoaded(mut props: FinderTableLoadedProps) -> Element {
     let total_pages = if total_items == 0 {
         0
     } else {
-        ((total_items + page_size as u64 - 1) / page_size as u64) as u32
+        total_items.div_ceil(page_size as u64) as u32
     };
 
     if total_pages > 0 && state.current_page > total_pages {

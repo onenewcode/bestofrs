@@ -42,7 +42,11 @@ impl From<LatestPushedRepoCandidatesResult> for LatestPushedRepoQueryResultDto {
             unique_count: value.unique_count,
             filtered_existing_count: value.filtered_existing_count,
             returned_count: value.returned_count,
-            items: value.items.into_iter().map(LatestPushedRepoDto::from).collect(),
+            items: value
+                .items
+                .into_iter()
+                .map(LatestPushedRepoDto::from)
+                .collect(),
         }
     }
 }

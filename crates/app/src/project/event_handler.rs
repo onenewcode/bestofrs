@@ -10,10 +10,7 @@ pub struct ProjectEventHandler {
 }
 
 impl ProjectEventHandler {
-    pub fn new(
-        repo_command: RepoCommandHandler,
-        repos: Arc<dyn RepoRepo>,
-    ) -> Self {
+    pub fn new(repo_command: RepoCommandHandler, repos: Arc<dyn RepoRepo>) -> Self {
         Self {
             repo_command,
             repos,

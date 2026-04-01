@@ -56,8 +56,9 @@ fn normalize_short_utc_offset(value: &str) -> Option<String> {
     }
     let suffix = &value[value.len() - 3..];
     let bytes = suffix.as_bytes();
-    let is_short_offset =
-        (bytes[0] == b'+' || bytes[0] == b'-') && bytes[1].is_ascii_digit() && bytes[2].is_ascii_digit();
+    let is_short_offset = (bytes[0] == b'+' || bytes[0] == b'-')
+        && bytes[1].is_ascii_digit()
+        && bytes[2].is_ascii_digit();
     if !is_short_offset {
         return None;
     }

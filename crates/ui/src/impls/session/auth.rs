@@ -33,8 +33,8 @@ mod server {
 
     use super::{PendingOAuth, SessionAuthUser};
     use crate::impls::error::api_error;
-    use crate::impls::session::AppSession;
     use crate::impls::session::consts::{SESSION_AUTH_PENDING_OAUTH_KEY, SESSION_AUTH_USER_KEY};
+    use crate::impls::session::AppSession;
 
     #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     enum AuthField {
