@@ -75,10 +75,9 @@ pub fn ColorSwitcher() -> Element {
                                 });
                             },
                             span {
-                                class: if normalize_grid_theme(&preference().grid_theme) == *theme {
-                                    "block h-3 w-3 rounded-full ring-1 ring-secondary-2 ring-offset-1 ring-offset-primary"
-                                } else {
-                                    "block h-3 w-3 rounded-full"
+                                class: match normalize_grid_theme(&preference().grid_theme) == *theme {
+                                    true => "block h-3 w-3 rounded-full ring-1 ring-secondary-2 ring-offset-1 ring-offset-primary",
+                                    false => "block h-3 w-3 rounded-full",
                                 },
                                 style: "background-color: {color};",
                             }

@@ -5,18 +5,16 @@ use dioxus::prelude::*;
 
 use crate::components::ui::button::Button;
 use crate::components::ui::input::Input;
-use crate::types::search::SearchResultDto;
-use crate::IO::repos::{bulk_update_repo_tag, search_repos};
+use crate::types::search::SearchRepoDto;
+use crate::IO::repos::bulk_update_repo_tag;
+use crate::IO::search::search_repo_page;
 
 use app::prelude::Pagination;
 
 use super::super::context::TagPanelMode;
 
-fn empty_search_result(page: Pagination) -> SearchResultDto {
-    SearchResultDto {
-        repos: page.to_page(Vec::new(), 0),
-        tags: page.to_page(Vec::new(), 0),
-    }
+fn empty_search_result(page: Pagination) -> app::prelude::Page<SearchRepoDto> {
+    page.to_page(Vec::new(), 0)
 }
 
 #[derive(Props, Clone, PartialEq)]
@@ -42,7 +40,7 @@ pub(super) fn GroupTab(props: GroupTabProps) -> Element {
             if key.trim().is_empty() {
                 return Ok(empty_search_result(page));
             }
-            search_repos(key, page).await
+            search_repo_page(key, page).await
         }
     });
 
@@ -98,8 +96,8 @@ pub(super) fn GroupTab(props: GroupTabProps) -> Element {
 
                         if let Some(Ok(result)) = repo_search.value() {
                             {
-                                let repos_for_select_all = result().repos.items.clone();
-                                let repos_for_list = result().repos.items.clone();
+                                let repos_for_select_all = result().items.clone();
+                                let repos_for_list = result().items.clone();
                                 rsx! {
                                     div { class: "space-y-2",
                                         div { class: "flex items-center gap-2",

@@ -66,10 +66,9 @@ pub fn CommonPagination(
                         PaginationPrevious {
                             href: "#",
                             aria_disabled: if can_prev { "false" } else { "true" },
-                            style: if can_prev {
-                                "opacity: 1; pointer-events: auto;"
-                            } else {
-                                "opacity: 0.5; pointer-events: none;"
+                            style: match can_prev {
+                                true => "opacity: 1; pointer-events: auto;",
+                                false => "opacity: 0.5; pointer-events: none;",
                             },
                             onclick: move |e: MouseEvent| {
                                 e.prevent_default();

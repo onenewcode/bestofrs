@@ -116,7 +116,7 @@ impl SnapshotQueryHandler {
         };
         let snapshots = self.snapshots.list_by_repo(repo_id, page).await?;
         let mut items = snapshots.items;
-        items.sort_by(|a, b| a.snapshot_date.cmp(&b.snapshot_date));
+        items.sort_by_key(|a| a.snapshot_date);
 
         if items.is_empty() {
             return Ok(SnapshotDeltasSummary {

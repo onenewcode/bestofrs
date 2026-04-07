@@ -152,13 +152,12 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                             } else {
                                 rsx! {
                                     for item in display_items.clone() {
-                                        tr {
-                                            key: "{item.id}",
-                                            class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) {
-                                                "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0"
-                                            } else {
-                                                "border-b border-primary-6 last:border-b-0"
-                                            },
+                                            tr {
+                                                key: "{item.id}",
+                                                class: match props.active_id.as_deref() == Some(item.repo_id.as_str()) {
+                                                    true => "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0",
+                                                    false => "border-b border-primary-6 last:border-b-0",
+                                                },
                                             td { class: "px-3 py-2",
                                                 span { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "font-medium" } else { "" }, "{item.name}" }
                                             }
@@ -216,10 +215,9 @@ pub(super) fn ProjectTable(props: ProjectTableProps) -> Element {
                                 for item in display_items.clone() {
                                     tr {
                                         key: "{item.id}",
-                                        class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) {
-                                            "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0"
-                                        } else {
-                                            "border-b border-primary-6 last:border-b-0"
+                                        class: match props.active_id.as_deref() == Some(item.repo_id.as_str()) {
+                                            true => "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0",
+                                            false => "border-b border-primary-6 last:border-b-0",
                                         },
                                         td { class: "px-3 py-2",
                                             span { class: if props.active_id.as_deref() == Some(item.repo_id.as_str()) { "font-medium" } else { "" }, "{item.name}" }

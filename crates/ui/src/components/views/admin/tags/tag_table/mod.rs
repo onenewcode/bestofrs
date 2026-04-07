@@ -129,25 +129,22 @@ pub(super) fn TagTable(props: TagTableProps) -> Element {
                                                 rsx! {
                                                     tr {
                                                         key: "{row_id}",
-                                                        class: if is_active {
-                                                            "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0"
-                                                        } else {
-                                                            "border-b border-primary-6 last:border-b-0"
+                                                        class: match is_active {
+                                                            true => "border-b border-primary-6 bg-secondary-2 text-primary last:border-b-0",
+                                                            false => "border-b border-primary-6 last:border-b-0",
                                                         },
                                                         td {
-                                                            class: if is_active {
-                                                                "px-3 py-2 font-mono text-xs font-medium text-primary"
-                                                            } else {
-                                                                "px-3 py-2 font-mono text-xs"
+                                                            class: match is_active {
+                                                                true => "px-3 py-2 font-mono text-xs font-medium text-primary",
+                                                                false => "px-3 py-2 font-mono text-xs",
                                                             },
                                                             "{tag.label}:{tag.value}"
                                                         }
                                                         if !props.panel_open {
                                                             td {
-                                                                class: if is_active {
-                                                                    "px-3 py-2 max-w-[320px] truncate text-primary"
-                                                                } else {
-                                                                    "px-3 py-2 text-secondary-5 max-w-[320px] truncate"
+                                                                class: match is_active {
+                                                                    true => "px-3 py-2 max-w-[320px] truncate text-primary",
+                                                                    false => "px-3 py-2 text-secondary-5 max-w-[320px] truncate",
                                                                 },
                                                                 "{tag.description.clone().unwrap_or_default()}"
                                                             }

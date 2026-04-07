@@ -82,7 +82,7 @@ impl RepoQueryHandler {
     }
 
     pub async fn list(&self, page: Pagination) -> AppResult<Page<Repo>> {
-        self.repos.list(page).await
+        self.repos.list_repos(page).await
     }
 
     pub async fn list_latest_pushed_candidates(
@@ -182,7 +182,7 @@ impl RepoQueryHandler {
         }
 
         let repos_page = if normalized_values.is_empty() {
-            self.repos.list(page).await?
+            self.repos.list_repos(page).await?
         } else {
             let tags = self
                 .repo_tags
@@ -437,6 +437,45 @@ impl RepoQueryHandler {
         Ok(items.pop())
     }
 
+    pub async fn search_repo_page_by_key(
+        &self,
+        key: &str,
+        page: Pagination,
+    ) -> AppResult<Page<Repo>> {
+        let key = key.trim();
+        if key.is_empty() {
+            self.repos.list_repos(page).await
+        } else {
+            self.repos.search_repos_by_key(key, page).await
+        }
+    }
+
+    pub async fn search_tag_page_by_key(
+        &self,
+        key: &str,
+        page: Pagination,
+    ) -> AppResult<Page<RepoSearchTagItem>> {
+        let key = key.trim();
+        let tags = if key.is_empty() {
+            self.repo_tags.list_tags(page).await?
+        } else {
+            self.repo_tags.search_tags_by_key(key, page).await?
+        };
+        self.enrich_search_tags(tags).await
+    }
+
+    pub async fn search_fuzzy_by_key(
+        &self,
+        key: &str,
+        repo_page: Pagination,
+        tag_page: Pagination,
+    ) -> AppResult<RepoSearchResult> {
+        Ok(RepoSearchResult {
+            repos: self.search_repo_page_by_key(key, repo_page).await?,
+            tags: self.search_tag_page_by_key(key, tag_page).await?,
+        })
+    }
+
     pub async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<RepoSearchResult> {
         let key = key.trim();
         if let Some(cache) = &self.cache {
@@ -445,21 +484,7 @@ impl RepoQueryHandler {
             }
         }
 
-        let result = if key.is_empty() {
-            RepoSearchResult {
-                repos: self.repos.list(page).await?,
-                tags: self
-                    .enrich_search_tags(self.repo_tags.list_tags(page).await?)
-                    .await?,
-            }
-        } else {
-            RepoSearchResult {
-                repos: self.repos.search_by_key(key, page).await?,
-                tags: self
-                    .enrich_search_tags(self.repo_tags.search_tags_by_key(key, page).await?)
-                    .await?,
-            }
-        };
+        let result = self.search_fuzzy_by_key(key, page, page).await?;
 
         if let Some(cache) = &self.cache {
             let _ = cache.set(key, page, &result).await;
