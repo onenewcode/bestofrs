@@ -286,7 +286,7 @@ impl RepoRepo for SqliteRepoRepo {
         Ok(rows.into_iter().map(Into::into).collect())
     }
 
-    async fn list(&self, page: Pagination) -> AppResult<Page<Repo>> {
+    async fn list_repos(&self, page: Pagination) -> AppResult<Page<Repo>> {
         let limit = page.limit();
         let offset = page.offset();
         let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM repos")
@@ -431,7 +431,7 @@ impl RepoRepo for SqliteRepoRepo {
         Ok(page.to_page(items, total as u64))
     }
 
-    async fn search_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Repo>> {
+    async fn search_repos_by_key(&self, key: &str, page: Pagination) -> AppResult<Page<Repo>> {
         let key = format!("%{key}%");
         let limit = page.limit();
         let offset = page.offset();

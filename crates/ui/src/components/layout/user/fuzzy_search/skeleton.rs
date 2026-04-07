@@ -32,10 +32,15 @@ pub(super) fn FuzzySearchCachedFallback(props: FuzzySearchCachedFallbackProps) -
     if let Some(cached) = props.cached {
         rsx! {
             FuzzySearchResultList {
-                repos: cached.repos,
-                tags: cached.tags,
+                repo_state: cached.repos,
+                tag_state: cached.tags,
                 on_repo_select: props.on_repo_select,
                 on_tag_select: props.on_tag_select,
+                on_repo_prefetch: |_| {},
+                on_tag_prefetch: |_| {},
+                on_repo_retry: |_| {},
+                on_tag_retry: |_| {},
+                allow_load_more: false,
             }
         }
     } else {

@@ -40,6 +40,10 @@ layout_user_fuzzy_search_input_aria_label = Search
 layout_user_fuzzy_search_fallback_hi_ferris = Hi, Ferris here!
 layout_user_fuzzy_search_fallback_typing = Type a keyword and I'll find matching repos and tags
 layout_user_fuzzy_search_no_description = No description yet
+layout_user_fuzzy_search_no_matching_repos = No matching repos
+layout_user_fuzzy_search_no_matching_tags = No matching tags
+layout_user_fuzzy_search_loading_more = Loading more...
+layout_user_fuzzy_search_retry = Retry
 
 view_home_seo_title = Daily Trends
 view_home_seo_description = Discover awesome Rust open source projects with daily tracked stars, forks, issues, and ecosystem momentum.

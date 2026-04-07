@@ -79,10 +79,9 @@ pub fn Finder() -> Element {
                 div { class: "flex flex-wrap items-center justify-between gap-2",
                     div { class: "inline-flex items-center gap-1 rounded-md border border-primary-6 bg-primary-1 p-1 text-xs",
                         button {
-                            class: if sort_by() == FinderSortBy::CreatedAtDesc {
-                                "rounded px-2 py-1 bg-secondary-2 text-primary"
-                            } else {
-                                "rounded px-2 py-1 text-secondary-5 hover:bg-primary-3"
+                            class: match sort_by() == FinderSortBy::CreatedAtDesc {
+                                true => "rounded px-2 py-1 bg-secondary-2 text-primary",
+                                false => "rounded px-2 py-1 text-secondary-5 hover:bg-primary-3",
                             },
                             onclick: move |_| {
                                 sort_by.set(FinderSortBy::CreatedAtDesc);
@@ -91,10 +90,9 @@ pub fn Finder() -> Element {
                             "Created At"
                         }
                         button {
-                            class: if sort_by() == FinderSortBy::StarsDesc {
-                                "rounded px-2 py-1 bg-secondary-2 text-primary"
-                            } else {
-                                "rounded px-2 py-1 text-secondary-5 hover:bg-primary-3"
+                            class: match sort_by() == FinderSortBy::StarsDesc {
+                                true => "rounded px-2 py-1 bg-secondary-2 text-primary",
+                                false => "rounded px-2 py-1 text-secondary-5 hover:bg-primary-3",
                             },
                             onclick: move |_| {
                                 sort_by.set(FinderSortBy::StarsDesc);

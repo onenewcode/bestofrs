@@ -1,9 +1,7 @@
 use app::prelude::Page;
-use app::repo::RepoSearchResult;
+use app::repo::{RepoSearchResult, RepoSearchTagItem};
 use domain::Repo;
 use serde::{Deserialize, Serialize};
-
-use super::tags::TagDto;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SearchRepoDto {
@@ -25,16 +23,35 @@ impl From<Repo> for SearchRepoDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SearchTagDto {
+    pub label: String,
+    pub value: String,
+    pub description: Option<String>,
+    pub repos_total: u64,
+}
+
+impl From<RepoSearchTagItem> for SearchTagDto {
+    fn from(value: RepoSearchTagItem) -> Self {
+        Self {
+            label: value.label,
+            value: value.value,
+            description: value.description,
+            repos_total: value.repos_total,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SearchResultDto {
     pub repos: Page<SearchRepoDto>,
-    pub tags: Page<TagDto>,
+    pub tags: Page<SearchTagDto>,
 }
 
 impl From<RepoSearchResult> for SearchResultDto {
     fn from(value: RepoSearchResult) -> Self {
         Self {
             repos: value.repos.map(SearchRepoDto::from),
-            tags: value.tags.map(TagDto::from),
+            tags: value.tags.map(SearchTagDto::from),
         }
     }
 }

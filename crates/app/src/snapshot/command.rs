@@ -149,7 +149,7 @@ impl IngestDailySnapshots {
             .collect::<Vec<_>>();
 
         let github = self.github.clone();
-        let fetched = stream::iter(fetch_items.into_iter())
+        let fetched = stream::iter(fetch_items)
             .map(|(project, lookup_key)| {
                 let github = github.clone();
                 let fetched_at = fetched_at.clone();

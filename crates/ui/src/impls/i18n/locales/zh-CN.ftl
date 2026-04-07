@@ -40,6 +40,10 @@ layout_user_fuzzy_search_input_aria_label = 搜索
 layout_user_fuzzy_search_fallback_hi_ferris = 你好，我是 Ferris！
 layout_user_fuzzy_search_fallback_typing = 输入关键词，我会帮你找到匹配的仓库和标签
 layout_user_fuzzy_search_no_description = 暂无描述
+layout_user_fuzzy_search_no_matching_repos = 没有匹配的仓库
+layout_user_fuzzy_search_no_matching_tags = 没有匹配的标签
+layout_user_fuzzy_search_loading_more = 正在加载更多...
+layout_user_fuzzy_search_retry = 重试
 
 view_home_seo_title = 每日趋势
 view_home_seo_description = 发现优质 Rust 开源项目，追踪每日 Star、Fork、Issue 与生态增长动能。
