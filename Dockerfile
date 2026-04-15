@@ -17,7 +17,7 @@ RUN dx bundle --package ui --release --fullstack --force-sequential
 
 FROM debian:bookworm-slim AS runtime
 WORKDIR /app
-# For Prod PG_dump
+
 ARG PG_MAJOR=16
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -33,10 +33,7 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove curl gnupg \
     && rm -rf /var/lib/apt/lists/*
 
-#
 COPY --from=builder /app/target/dx/ui/release/web/server ./server
 COPY --from=builder /app/target/dx/ui/release/web/public ./public
-# COPY --from=builder /app/target/dx/ui/release/web/ui ./ui
-# COPY --from=builder /app/target/dx/ui/release/web/public ./public
-# ENTRYPOINT ["./ui"]
+
 ENTRYPOINT ["./server"]
