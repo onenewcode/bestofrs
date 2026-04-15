@@ -13,7 +13,8 @@ use dioxus::prelude::*;
 use app::prelude::{DurationRange, LatestPushedRepoQuery, Page, Pagination};
 use app::repo::{
     BulkTagUpdateAction, BulkUpdateRepoTagCommand, ImportTagCommand, ImportTagsCommand,
-    ReplaceRepoTagsCommand, RepoListQuery, RepoRankMetric, RepoRankQuery, TagInput,
+    ReplaceRepoTagsCommand, RepoListQuery, RepoRankMetric, RepoRankQuery, RepoRankTimeRange,
+    TagInput,
 };
 use serde::Deserialize;
 
@@ -44,6 +45,19 @@ pub async fn list_repos_with_query(query: RepoListQuery) -> ServerFnResult<Page<
             .map_err(api_error)?
     } else if query.metric.is_none() && query.range.is_none() {
         return list_repos(query.page).await;
+    } else if query.metric == Some(RepoRankMetric::Recent) {
+        app_state
+            .repo
+            .query
+            .list_ranked_with_tags(
+                RepoRankQuery {
+                    metric: RepoRankMetric::Recent,
+                    range: RepoRankTimeRange::All,
+                },
+                query.page,
+            )
+            .await
+            .map_err(api_error)?
     } else if let (Some(metric), Some(range)) = (query.metric, query.range) {
         app_state
             .repo
